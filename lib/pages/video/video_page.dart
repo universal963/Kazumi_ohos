@@ -418,13 +418,13 @@ class _VideoPageState extends State<VideoPage>
               : PlayerItem(openMenu: openTabBodyAnimated, locateEpisode: menuJumpToCurrentEpisode),
         ),
 
-        /// workaround for webview_windows
+        /// workaround for webview_windows and webview_ohos
         /// The webview_windows component cannot be removed from the widget tree; otherwise, it can never be reinitialized.
         Positioned(
             child: SizedBox(
                 height: (videoPageController.loading ||
                         videoPageController.currentPlugin.useNativePlayer)
-                    ? 0
+                    ? 1
                     : null,
                 child: const WebviewItem()))
       ],

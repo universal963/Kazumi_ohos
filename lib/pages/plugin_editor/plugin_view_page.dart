@@ -123,7 +123,7 @@ class _PluginViewPageState extends State<PluginViewPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
+      onPopInvoked: (bool didPop) {
         onBackPressed(context);
       },
       child: Scaffold(

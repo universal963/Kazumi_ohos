@@ -70,7 +70,7 @@ class _HistoryPageState extends State<HistoryPage>
       return Observer(builder: (context) {
         return PopScope(
           canPop: true,
-          onPopInvokedWithResult: (bool didPop, Object? result) async {
+          onPopInvoked: (bool didPop) async {
             onBackPressed(context);
           },
           child: Scaffold(
@@ -89,12 +89,12 @@ class _HistoryPageState extends State<HistoryPage>
               ],
             ),
             body: renderBody(orientation),
-            floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.clear_all),
-              onPressed: () {
-                showHistoryClearDialog();
-              },
-            ),
+            // floatingActionButton: FloatingActionButton(
+            //   child: const Icon(Icons.clear_all),
+            //   onPressed: () {
+            //     showHistoryClearDialog();
+            //   },
+            // ),
           ),
         );
       });

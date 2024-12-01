@@ -4,7 +4,8 @@ import 'package:kazumi/utils/utils.dart';
 import 'package:kazumi/pages/webview/webview_controller.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class WebviewItemControllerImpel extends WebviewItemController<WebViewController> {
+class WebviewItemControllerImpel
+    extends WebviewItemController<WebViewController> {
   // workaround for webview_flutter lib.
   // webview_flutter lib won't change currentUrl after redirect using window.location.href.
   // which causes multiple redirects to the same url.
@@ -16,36 +17,12 @@ class WebviewItemControllerImpel extends WebviewItemController<WebViewController
 
   @override
   Future<void> init() async {
-    webviewController ??= WebViewController();
-    videoPageController.changeEpisode(videoPageController.currentEpisode,
-        currentRoad: videoPageController.currentRoad,
-        offset: videoPageController.historyOffset);
-  }
-
-  @override
-  Future<void> loadUrl(String url, {int offset = 0}) async {
-    ifrmaeParserTimer?.cancel();
-    videoParserTimer?.cancel();
-    await unloadPage();
-    await setDesktopUserAgent();
-    count = 0;
-    currentUrl = '';
-    this.offset = offset;
-    isIframeLoaded = false;
-    isVideoSourceLoaded = false;
-    videoPageController.loading = true;
-    await webviewController!
-        .setNavigationDelegate(NavigationDelegate(onUrlChange: (currentUrl) {
-      debugPrint('Current URL: ${currentUrl.url}');
-      if (videoPageController.currentPlugin.useNativePlayer &&
-          !videoPageController.currentPlugin.useLegacyParser) {
-        addBlobParser();
-        addInviewIframeBridge();
-      }
-      addFullscreenListener();
-    }));
-    await webviewController!.setJavaScriptMode(JavaScriptMode.unrestricted);
-    await webviewController!.addJavaScriptChannel('JSBridgeDebug',
+    late final PlatformWebViewControllerCreationParams params;
+    params = const PlatformWebViewControllerCreationParams();
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(params);
+    controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    controller.addJavaScriptChannel('JSBridgeDebug',
         onMessageReceived: (JavaScriptMessage message) {
       debugPrint('JS Bridge: ${message.message}');
       videoPageController.logLines.add('Callback received: ${message.message}');
@@ -81,7 +58,7 @@ class WebviewItemControllerImpel extends WebviewItemController<WebViewController
       }
     });
     if (!videoPageController.currentPlugin.useLegacyParser) {
-      await webviewController!.addJavaScriptChannel('VideoBridgeDebug',
+      controller.addJavaScriptChannel('VideoBridgeDebug',
           onMessageReceived: (JavaScriptMessage message) {
         debugPrint('VideoJS Bridge: ${message.message}');
         videoPageController.logLines
@@ -101,7 +78,7 @@ class WebviewItemControllerImpel extends WebviewItemController<WebViewController
         }
       });
     }
-    await webviewController!.addJavaScriptChannel('FullscreenBridgeDebug',
+    controller.addJavaScriptChannel('FullscreenBridgeDebug',
         onMessageReceived: (JavaScriptMessage message) {
       debugPrint('FullscreenJS桥收到的消息为 ${message.message}');
       if (message.message == 'enteredFullscreen') {
@@ -113,7 +90,34 @@ class WebviewItemControllerImpel extends WebviewItemController<WebViewController
         Utils.exitFullScreen();
       }
     });
-    await webviewController!.loadRequest(Uri.parse(url));
+    controller
+        .setNavigationDelegate(NavigationDelegate(onUrlChange: (currentUrl) {
+      debugPrint('Current URL: ${currentUrl.url}');
+      if (videoPageController.currentPlugin.useNativePlayer &&
+          !videoPageController.currentPlugin.useLegacyParser) {
+        addBlobParser();
+        addInviewIframeBridge();
+      }
+      addFullscreenListener();
+    }));
+    webviewController = controller;
+    videoPageController.changeEpisode(videoPageController.currentEpisode,
+        currentRoad: videoPageController.currentRoad,
+        offset: videoPageController.historyOffset);
+  }
+
+  @override
+  Future<void> loadUrl(String url, {int offset = 0}) async {
+    ifrmaeParserTimer?.cancel();
+    videoParserTimer?.cancel();
+    await setDesktopUserAgent();
+    count = 0;
+    currentUrl = '';
+    this.offset = offset;
+    isIframeLoaded = false;
+    isVideoSourceLoaded = false;
+    videoPageController.loading = true;
+    webviewController!.loadRequest(Uri.parse(url));
 
     ifrmaeParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (isIframeLoaded) {
@@ -147,14 +151,14 @@ class WebviewItemControllerImpel extends WebviewItemController<WebViewController
 
   @override
   Future<void> unloadPage() async {
-    await webviewController
-        !.removeJavaScriptChannel('JSBridgeDebug')
+    await webviewController!
+        .removeJavaScriptChannel('JSBridgeDebug')
         .catchError((_) {});
-    await webviewController
-        !.removeJavaScriptChannel('VideoBridgeDebug')
+    await webviewController!
+        .removeJavaScriptChannel('VideoBridgeDebug')
         .catchError((_) {});
-    await webviewController
-        !.removeJavaScriptChannel('FullscreenBridgeDebug')
+    await webviewController!
+        .removeJavaScriptChannel('FullscreenBridgeDebug')
         .catchError((_) {});
     await webviewController!.loadRequest(Uri.parse('about:blank'));
     await webviewController!.clearCache();

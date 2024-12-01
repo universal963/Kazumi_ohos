@@ -83,7 +83,7 @@ class _TimelinePageState extends State<TimelinePage>
       return Observer(builder: (context) {
         return PopScope(
           canPop: false,
-          onPopInvokedWithResult: (bool didPop, Object? result) {
+          onPopInvoked: (bool didPop) {
             if (didPop) {
               return;
             }

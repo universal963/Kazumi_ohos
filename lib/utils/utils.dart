@@ -479,7 +479,7 @@ class Utils {
     }
     late SystemUiMode mode = SystemUiMode.edgeToEdge;
     try {
-      if (Platform.isAndroid || Platform.isIOS) {
+      if (Platform.isAndroid || Platform.isIOS || Platform.isOhos) {
         if (Platform.isAndroid &&
             (await DeviceInfoPlugin().androidInfo).version.sdkInt < 29) {
           mode = SystemUiMode.manual;
@@ -510,7 +510,7 @@ class Utils {
     try {
       if (kIsWeb) {
         await document.documentElement?.requestFullscreen();
-      } else if (Platform.isAndroid || Platform.isIOS) {
+      } else if (Platform.isAndroid || Platform.isIOS || Platform.isOhos) {
         await SystemChrome.setPreferredOrientations(
           [
             DeviceOrientation.landscapeLeft,

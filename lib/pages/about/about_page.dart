@@ -116,7 +116,7 @@ class _AboutPageState extends State<AboutPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (bool didPop, Object? result) async {
+      onPopInvoked: (bool didPop) async {
         onBackPressed(context);
       },
       child: Scaffold(

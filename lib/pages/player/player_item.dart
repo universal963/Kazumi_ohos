@@ -231,7 +231,7 @@ class _PlayerItemState extends State<PlayerItem>
           ? Duration.zero
           : playerController.mediaPlayer.value.buffered[0].end;
       playerController.duration = playerController.mediaPlayer.value.duration;
-      playerController.completed = playerController.mediaPlayer.value.isCompleted;
+      playerController.completed = playerController.mediaPlayer.value.position >= playerController.mediaPlayer.value.duration;
       // 弹幕相关
       if (playerController.currentPosition.inMicroseconds != 0 &&
           playerController.mediaPlayer.value.isPlaying == true &&
@@ -710,7 +710,7 @@ class _PlayerItemState extends State<PlayerItem>
     return PopScope(
       // key: _key,
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
+      onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }

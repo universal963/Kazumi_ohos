@@ -115,7 +115,7 @@ abstract class _PlayerController with Store {
     mediaPlayer = VideoPlayerController.networkUrl(Uri.parse(videoUrl),
         httpHeaders: httpHeaders);
     mediaPlayer.addListener(() {
-      if (mediaPlayer.value.hasError && !mediaPlayer.value.isCompleted) {
+      if (mediaPlayer.value.hasError && mediaPlayer.value.position < mediaPlayer.value.duration) {
         SmartDialog.showToast('播放器内部错误 ${mediaPlayer.value.errorDescription}');
         KazumiLogger().log(Level.error, 'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
       }

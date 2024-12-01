@@ -37,7 +37,7 @@ class _MyPageState extends State<MyPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
+      onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }

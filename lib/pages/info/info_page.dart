@@ -187,24 +187,24 @@ class _InfoPageState extends State<InfoPage>
                 )
               ],
             ),
-            floatingActionButton: FloatingActionButton(
-              child: const Icon(Icons.comment),
-              onPressed: () async {
-                showModalBottomSheet(
-                    isScrollControlled: true,
-                    enableDrag: false,
-                    constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 3 / 4,
-                        maxWidth: (Utils.isDesktop() || Utils.isTablet())
-                            ? MediaQuery.of(context).size.width * 9 / 16
-                            : MediaQuery.of(context).size.width),
-                    clipBehavior: Clip.antiAlias,
-                    context: context,
-                    builder: (context) {
-                      return const CommentsBottomSheet();
-                    });
-              },
-            ),
+            // floatingActionButton: FloatingActionButton(
+            //   child: const Icon(Icons.comment),
+            //   onPressed: () async {
+            //     showModalBottomSheet(
+            //         isScrollControlled: true,
+            //         enableDrag: false,
+            //         constraints: BoxConstraints(
+            //             maxHeight: MediaQuery.of(context).size.height * 3 / 4,
+            //             maxWidth: (Utils.isDesktop() || Utils.isTablet())
+            //                 ? MediaQuery.of(context).size.width * 9 / 16
+            //                 : MediaQuery.of(context).size.width),
+            //         clipBehavior: Clip.antiAlias,
+            //         context: context,
+            //         builder: (context) {
+            //           return const CommentsBottomSheet();
+            //         });
+            //   },
+            // ),
           ),
         ],
       ),

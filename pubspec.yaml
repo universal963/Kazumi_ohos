@@ -20,7 +20,7 @@ version: 1.4.4+1
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
-  flutter: 3.24.5
+  flutter: 3.22.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,23 +37,26 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.2
   flutter_modular: ^6.3.4
   mobx: ^2.3.3
   flutter_mobx: ^2.2.1
   dio: ^5.0.0
   cookie_jar: ^4.0.8
   dio_cookie_manager: ^3.1.1
-  connectivity_plus: ^6.0.5
+  connectivity_plus:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_plus_plugins
+      path: packages/connectivity_plus/connectivity_plus
+      ref: a1347adcca3a46346a6ddd127cebcec9970cad6c
 
-  path_provider: ^2.1.1
+
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   flutter_smart_dialog: ^4.9.8
-  cached_network_image: ^3.4.1
+  cached_network_image: 3.4.0
 
-  fvp: ^0.28.0
-  video_player: ^2.9.1
+  fvp: ^0.26.1
 
   flutter_volume_controller: ^1.3.2
   screen_brightness: ^1.0.1
@@ -62,12 +65,27 @@ dependencies:
   adaptive_theme: ^3.6.0
   flutter_displaymode: ^0.6.0
 
-  url_launcher: ^6.3.0
-  device_info_plus: ^10.1.2
+  url_launcher: 
+    git:
+      url: "https://gitee.com/openharmony-sig/flutter_packages.git"
+      path: "packages/url_launcher/url_launcher"
+  device_info_plus:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_plus_plugins.git
+      path: packages/device_info_plus/device_info_plus
+      ref: a1347adcca3a46346a6ddd127cebcec9970cad6c
   window_manager: ^0.4.2
   xpath_selector: ^3.0.2
   xpath_selector_html_parser: ^3.0.1
-  webview_flutter: ^4.9.0
+
+  webview_flutter:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_packages.git
+      path: "packages/webview_flutter/webview_flutter"
+  webview_flutter_ohos:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_packages.git
+      path: "packages/webview_flutter/webview_flutter_ohos"
   canvas_danmaku: ^0.2.3
   webdav_client: ^1.2.2
   tray_manager: ^0.2.3
@@ -89,6 +107,17 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  path_provider:
+    git:
+      url: https://gitee.com/openharmony-sig/flutter_packages.git
+      path: "packages/path_provider/path_provider"
+  video_player:
+    git:
+      url: "https://gitee.com/openharmony-sig/flutter_packages.git"
+      path: "packages/video_player/video_player"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
