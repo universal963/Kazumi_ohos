@@ -89,12 +89,12 @@ class _HistoryPageState extends State<HistoryPage>
               ],
             ),
             body: renderBody(orientation),
-            // floatingActionButton: FloatingActionButton(
-            //   child: const Icon(Icons.clear_all),
-            //   onPressed: () {
-            //     showHistoryClearDialog();
-            //   },
-            // ),
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.clear_all),
+              onPressed: () {
+                showHistoryClearDialog();
+              },
+            ),
           ),
         );
       });

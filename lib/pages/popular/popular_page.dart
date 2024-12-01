@@ -321,12 +321,12 @@ class _PopularPageState extends State<PopularPage>
                   ),
                 ],
               ),
-              // floatingActionButton: FloatingActionButton(
-              //   onPressed: () {
-              //     scrollController.jumpTo(0.0);
-              //   },
-              //   child: const Icon(Icons.arrow_upward),
-              // )
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  scrollController.jumpTo(0.0);
+                },
+                child: const Icon(Icons.arrow_upward),
+              )
               // backgroundColor: themedata.colorScheme.primaryContainer,
               ),
         ),
