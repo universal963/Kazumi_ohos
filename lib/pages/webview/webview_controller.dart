@@ -7,6 +7,7 @@ import 'package:kazumi/pages/webview/webview_controller_impel/webview_controller
 import 'package:kazumi/pages/webview/webview_controller_impel/webview_windows_controller_impel.dart';
 import 'package:kazumi/pages/webview/webview_controller_impel/webview_linux_controller_impel.dart';
 import 'package:kazumi/pages/webview/webview_controller_impel/webview_apple_controller_impel.dart';
+import 'package:kazumi/pages/webview/webview_controller_impel/webview_ohos_controller_impel.dart';
 
 abstract class WebviewItemController<T> {
   // Webview controller
@@ -45,6 +46,9 @@ class WebviewItemControllerFactory {
     }
     if (Platform.isMacOS || Platform.isIOS) {
       return WebviewAppleItemControllerImpel();
+    }
+    if (Platform.isOhos) {
+      return WebviewOhosItemControllerImpel();
     }
     return WebviewItemControllerImpel();
   }
