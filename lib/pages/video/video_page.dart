@@ -426,6 +426,10 @@ class _VideoPageState extends State<VideoPage>
                         videoPageController.currentPlugin.useNativePlayer)
                     ? 1
                     : null,
+                width: (videoPageController.loading ||
+                        videoPageController.currentPlugin.useNativePlayer)
+                    ? 1
+                    : null,
                 child: const WebviewItem()))
       ],
     );
