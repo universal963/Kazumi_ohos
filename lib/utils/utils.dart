@@ -423,30 +423,26 @@ class Utils {
   }
 
   static Future<void> enterWindowsFullscreen() async {
-    if (Platform.isWindows) {
-      const platform = MethodChannel('com.predidit.kazumi/intent');
-      try {
-        await platform.invokeMethod('enterFullscreen');
-      } on PlatformException catch (e) {
-        print("Failed to enter native window mode: '${e.message}'.");
-      }
+    const platform = MethodChannel('com.predidit.kazumi/intent');
+    try {
+      await platform.invokeMethod('enterFullscreen');
+    } on PlatformException catch (e) {
+      print("Failed to enter native window mode: '${e.message}'.");
     }
   }
 
   static Future<void> exitWindowsFullscreen() async {
-    if (Platform.isWindows) {
-      const platform = MethodChannel('com.predidit.kazumi/intent');
-      try {
-        await platform.invokeMethod('exitFullscreen');
-      } on PlatformException catch (e) {
-        print("Failed to exit native window mode: '${e.message}'.");
-      }
+    const platform = MethodChannel('com.predidit.kazumi/intent');
+    try {
+      await platform.invokeMethod('exitFullscreen');
+    } on PlatformException catch (e) {
+      print("Failed to exit native window mode: '${e.message}'.");
     }
   }
 
   // 进入全屏显示
   static Future<void> enterFullScreen({bool lockOrientation = true}) async {
-    if (Platform.isWindows) {
+    if (Platform.isWindows || Platform.isOhos) {
       await enterWindowsFullscreen();
       return;
     }
@@ -471,7 +467,7 @@ class Utils {
 
   //退出全屏显示
   static Future<void> exitFullScreen({bool lockOrientation = true}) async {
-    if (Platform.isWindows) {
+    if (Platform.isWindows || Platform.isOhos) {
       await exitWindowsFullscreen();
     }
     if (Platform.isLinux || Platform.isMacOS) {

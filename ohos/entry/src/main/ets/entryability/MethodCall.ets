@@ -2,6 +2,7 @@ import { FlutterPlugin, FlutterPluginBinding, MethodCall, MethodChannel, MethodR
 import { common, Want } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
 import uri from "@ohos.uri";
+import { window } from "@kit.ArkUI";
 
 export default class MethodCallPlugin implements FlutterPlugin {
   private channel?: MethodChannel;
@@ -15,6 +16,14 @@ export default class MethodCallPlugin implements FlutterPlugin {
             let url = String(call.argument("url"));
             let mimeType = String(call.argument("mimeType"));
             this.openWithMime(url, mimeType);
+            result.success("");
+            break;
+          case "enterFullscreen":
+            this.enterFullScreen();
+            result.success("");
+            break;
+          case "exitFullscreen":
+            this.exitFullScreen();
             result.success("");
             break;
           default:
@@ -37,6 +46,21 @@ export default class MethodCallPlugin implements FlutterPlugin {
         console.error(`Failed to startAbility. Code: ${err.code}, message: ${err.message}`);
       }
     });
+  }
+
+  private enterFullScreen(): void {
+    let context = getContext(this) as common.UIAbilityContext;
+    window.getLastWindow(context).then((lastWindow)=> {
+      lastWindow.setPreferredOrientation(window.Orientation.LANDSCAPE);
+      lastWindow.setWindowSystemBarEnable([]);
+    })
+  }
+
+  private exitFullScreen(): void {
+    let context = getContext(this) as common.UIAbilityContext;
+    window.getLastWindow(context).then((lastWindow)=> {
+      lastWindow.setPreferredOrientation(window.Orientation.PORTRAIT);
+    })
   }
 
   getUniqueClassName(): string {
