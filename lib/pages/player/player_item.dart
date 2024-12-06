@@ -33,7 +33,8 @@ import 'package:kazumi/utils/constants.dart';
 import 'package:kazumi/pages/player/episode_comments_sheet.dart';
 
 class PlayerItem extends StatefulWidget {
-  const PlayerItem({super.key, required this.openMenu, required this.locateEpisode});
+  const PlayerItem(
+      {super.key, required this.openMenu, required this.locateEpisode});
 
   final VoidCallback openMenu;
   final VoidCallback locateEpisode;
@@ -43,13 +44,18 @@ class PlayerItem extends StatefulWidget {
 }
 
 class _PlayerItemState extends State<PlayerItem>
-    with WindowListener, WidgetsBindingObserver, SingleTickerProviderStateMixin {
+    with
+        WindowListener,
+        WidgetsBindingObserver,
+        SingleTickerProviderStateMixin {
   Box setting = GStorage.setting;
   final PlayerController playerController = Modular.get<PlayerController>();
-  final VideoPageController videoPageController = Modular.get<VideoPageController>();
+  final VideoPageController videoPageController =
+      Modular.get<VideoPageController>();
   final HistoryController historyController = Modular.get<HistoryController>();
   final InfoController infoController = Modular.get<InfoController>();
-  final FavoriteController favoriteController = Modular.get<FavoriteController>();
+  final FavoriteController favoriteController =
+      Modular.get<FavoriteController>();
   final FocusNode _focusNode = FocusNode();
   late DanmakuController danmakuController;
   late bool isFavorite;
@@ -204,7 +210,8 @@ class _PlayerItemState extends State<PlayerItem>
             content: SelectableText.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: '规则: ${videoPageController.currentPlugin.name}\n'),
+                  TextSpan(
+                      text: '规则: ${videoPageController.currentPlugin.name}\n'),
                   TextSpan(text: '硬件解码: ${haEnable ? '启用' : '禁用'}\n'),
                   TextSpan(text: '解复用器: $currentDemux\n'),
                   const TextSpan(text: '资源地址: '),
@@ -236,7 +243,9 @@ class _PlayerItemState extends State<PlayerItem>
       if (playerController.currentPosition.inMicroseconds != 0 &&
           playerController.mediaPlayer.value.isPlaying == true &&
           playerController.danmakuOn == true) {
-        playerController.danDanmakus[playerController.currentPosition.inSeconds]?.asMap().forEach((idx, danmaku) async {
+        playerController.danDanmakus[playerController.currentPosition.inSeconds]
+            ?.asMap()
+            .forEach((idx, danmaku) async {
           if (!_danmakuColor) {
             danmaku.color = Colors.white;
           }
@@ -246,22 +255,31 @@ class _PlayerItemState extends State<PlayerItem>
           if (!_danmakuGamerSource && danmaku.source.contains('Gamer')) {
             return;
           }
-          if (!_danmakuDanDanSource && !(danmaku.source.contains('BiliBili') || danmaku.source.contains('Gamer'))) {
+          if (!_danmakuDanDanSource &&
+              !(danmaku.source.contains('BiliBili') ||
+                  danmaku.source.contains('Gamer'))) {
             return;
           }
           await Future.delayed(
               Duration(
-                  milliseconds:
-                      idx * 1000 ~/ playerController.danDanmakus[playerController.currentPosition.inSeconds]!.length),
+                  milliseconds: idx *
+                      1000 ~/
+                      playerController
+                          .danDanmakus[
+                              playerController.currentPosition.inSeconds]!
+                          .length),
               () => mounted &&
                       playerController.mediaPlayer.value.isPlaying &&
                       !playerController.mediaPlayer.value.isBuffering &&
                       playerController.danmakuOn
-                  ? danmakuController.addDanmaku(DanmakuContentItem(danmaku.message,
+                  ? danmakuController.addDanmaku(DanmakuContentItem(
+                      danmaku.message,
                       color: danmaku.color,
                       type: danmaku.type == 4
                           ? DanmakuItemType.bottom
-                          : (danmaku.type == 5 ? DanmakuItemType.top : DanmakuItemType.scroll)))
+                          : (danmaku.type == 5
+                              ? DanmakuItemType.top
+                              : DanmakuItemType.scroll)))
                   : null);
         });
       }
@@ -286,20 +304,22 @@ class _PlayerItemState extends State<PlayerItem>
             infoController.bangumiItem,
             playerController.mediaPlayer.value.position,
             videoPageController.src,
-            videoPageController
-                .roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode - 1]);
+            videoPageController.roadList[videoPageController.currentRoad]
+                .identifier[videoPageController.currentEpisode - 1]);
       }
       // 自动播放下一集
       if (playerController.completed &&
           videoPageController.currentEpisode <
-              videoPageController.roadList[videoPageController.currentRoad].data.length &&
+              videoPageController
+                  .roadList[videoPageController.currentRoad].data.length &&
           !videoPageController.loading) {
         SmartDialog.showToast(
             '正在加载${videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode]}');
         try {
           playerTimer!.cancel();
         } catch (_) {}
-        videoPageController.changeEpisode(videoPageController.currentEpisode + 1,
+        videoPageController.changeEpisode(
+            videoPageController.currentEpisode + 1,
             currentRoad: videoPageController.currentRoad);
       }
     });
@@ -354,12 +374,14 @@ class _PlayerItemState extends State<PlayerItem>
       Utils.enterFullScreen();
       videoPageController.showTabBody = false;
     }
-    videoPageController.androidFullscreen = !videoPageController.androidFullscreen;
+    videoPageController.androidFullscreen =
+        !videoPageController.androidFullscreen;
   }
 
   void _handleDanmaku() {
     if (playerController.danDanmakus.isEmpty) {
-      SmartDialog.showToast('当前剧集没有找到弹幕的说 尝试手动检索', displayType: SmartToastType.last);
+      SmartDialog.showToast('当前剧集没有找到弹幕的说 尝试手动检索',
+          displayType: SmartToastType.last);
       showDanmakuSwitch();
       return;
     }
@@ -376,7 +398,8 @@ class _PlayerItemState extends State<PlayerItem>
         builder: (context) {
           return AlertDialog(
             title: const Text('发送弹幕'),
-            content: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+            content: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
               return TextField(
                 controller: textController,
               );
@@ -386,10 +409,12 @@ class _PlayerItemState extends State<PlayerItem>
                 onPressed: () => SmartDialog.dismiss(),
                 child: Text(
                   '取消',
-                  style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.outline),
                 ),
               ),
-              StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+              StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
                 return TextButton(
                   onPressed: isSending
                       ? null
@@ -411,7 +436,8 @@ class _PlayerItemState extends State<PlayerItem>
                             isSending = false; // 发送结束，更新状态
                           });
                           SmartDialog.showToast('发送成功');
-                          danmakuController.addDanmaku(DanmakuContentItem(msg, selfSend: true));
+                          danmakuController.addDanmaku(
+                              DanmakuContentItem(msg, selfSend: true));
                           SmartDialog.dismiss();
                         },
                   child: Text(isSending ? '发送中' : '发送'),
@@ -422,6 +448,13 @@ class _PlayerItemState extends State<PlayerItem>
         });
   }
 
+  Future<void> _setPlaybackSpeed(double speed) async {
+    await playerController.setPlaybackSpeed(speed);
+    danmakuController.updateOption(
+      danmakuController.option.copyWith(duration: _duration ~/ speed),
+    );
+  }
+
   // 选择倍速
   void showSetSpeedSheet() {
     final double currentSpeed = playerController.playerSpeed;
@@ -430,29 +463,29 @@ class _PlayerItemState extends State<PlayerItem>
         builder: (context) {
           return AlertDialog(
             title: const Text('播放速度'),
-            content: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+            content: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
               return Wrap(
                 spacing: 8,
                 runSpacing: 2,
                 children: [
                   for (final double i in playSpeedList) ...<Widget>[
-                    if (i == currentSpeed) ...<Widget>[
+                    if (i == currentSpeed)
                       FilledButton(
                         onPressed: () async {
-                          await playerController.setPlaybackSpeed(i);
+                          await _setPlaybackSpeed(i);
                           SmartDialog.dismiss();
                         },
                         child: Text(i.toString()),
-                      ),
-                    ] else ...[
+                      )
+                    else
                       FilledButton.tonal(
                         onPressed: () async {
-                          await playerController.setPlaybackSpeed(i);
+                          await _setPlaybackSpeed(i);
                           SmartDialog.dismiss();
                         },
                         child: Text(i.toString()),
                       ),
-                    ]
                   ]
                 ],
               );
@@ -462,12 +495,13 @@ class _PlayerItemState extends State<PlayerItem>
                 onPressed: () => SmartDialog.dismiss(),
                 child: Text(
                   '取消',
-                  style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.outline),
                 ),
               ),
               TextButton(
                 onPressed: () async {
-                  await playerController.setPlaybackSpeed(1.0);
+                  await _setPlaybackSpeed(1.0);
                   SmartDialog.dismiss();
                 },
                 child: const Text('默认速度'),
@@ -483,7 +517,8 @@ class _PlayerItemState extends State<PlayerItem>
     DanmakuSearchResponse danmakuSearchResponse;
     DanmakuEpisodeResponse danmakuEpisodeResponse;
     try {
-      danmakuSearchResponse = await DanmakuRequest.getDanmakuSearchResponse(keyword);
+      danmakuSearchResponse =
+          await DanmakuRequest.getDanmakuSearchResponse(keyword);
     } catch (e) {
       SmartDialog.dismiss();
       SmartDialog.showToast('检索弹幕失败 ${e.toString()}');
@@ -507,7 +542,9 @@ class _PlayerItemState extends State<PlayerItem>
                     SmartDialog.dismiss();
                     SmartDialog.showLoading(msg: '弹幕检索中');
                     try {
-                      danmakuEpisodeResponse = await DanmakuRequest.getDanDanEpisodesByBangumiID(danmakuInfo.animeId);
+                      danmakuEpisodeResponse =
+                          await DanmakuRequest.getDanDanEpisodesByBangumiID(
+                              danmakuInfo.animeId);
                     } catch (e) {
                       SmartDialog.dismiss();
                       SmartDialog.showToast('检索弹幕失败 ${e.toString()}');
@@ -524,13 +561,15 @@ class _PlayerItemState extends State<PlayerItem>
                           return Dialog(
                             child: ListView(
                               shrinkWrap: true,
-                              children: danmakuEpisodeResponse.episodes.map((episode) {
+                              children: danmakuEpisodeResponse.episodes
+                                  .map((episode) {
                                 return ListTile(
                                   title: Text(episode.episodeTitle),
                                   onTap: () {
                                     SmartDialog.dismiss();
                                     SmartDialog.showToast('弹幕切换中');
-                                    playerController.getDanDanmakuByEpisodeID(episode.episodeId);
+                                    playerController.getDanDanmakuByEpisodeID(
+                                        episode.episodeId);
                                   },
                                 );
                               }).toList(),
@@ -555,7 +594,8 @@ class _PlayerItemState extends State<PlayerItem>
         _focusNode.requestFocus();
       },
       builder: (context) {
-        final TextEditingController searchTextController = TextEditingController();
+        final TextEditingController searchTextController =
+            TextEditingController();
         return AlertDialog(
           title: const Text('弹幕检索'),
           content: TextField(
@@ -635,7 +675,8 @@ class _PlayerItemState extends State<PlayerItem>
     super.initState();
     // workaround for #214
     if (Platform.isIOS) {
-      FlutterVolumeController.setIOSAudioSessionCategory(category: AudioSessionCategory.playback);
+      FlutterVolumeController.setIOSAudioSessionCategory(
+          category: AudioSessionCategory.playback);
     }
     WidgetsBinding.instance.addObserver(this);
     _animationController = AnimationController(
@@ -664,25 +705,34 @@ class _PlayerItemState extends State<PlayerItem>
       curve: Curves.easeInOut,
     ));
     webDavEnable = setting.get(SettingBoxKey.webDavEnable, defaultValue: false);
-    playerController.danmakuOn = setting.get(SettingBoxKey.danmakuEnabledByDefault, defaultValue: false);
+    playerController.danmakuOn =
+        setting.get(SettingBoxKey.danmakuEnabledByDefault, defaultValue: false);
     _border = setting.get(SettingBoxKey.danmakuBorder, defaultValue: true);
     _opacity = setting.get(SettingBoxKey.danmakuOpacity, defaultValue: 1.0);
     _duration = 8;
-    _fontSize = setting.get(SettingBoxKey.danmakuFontSize, defaultValue: (Utils.isCompact()) ? 16.0 : 25.0);
+    _fontSize = setting.get(SettingBoxKey.danmakuFontSize,
+        defaultValue: (Utils.isCompact()) ? 16.0 : 25.0);
     danmakuArea = setting.get(SettingBoxKey.danmakuArea, defaultValue: 1.0);
     _hideTop = !setting.get(SettingBoxKey.danmakuTop, defaultValue: true);
-    _hideBottom = !setting.get(SettingBoxKey.danmakuBottom, defaultValue: false);
+    _hideBottom =
+        !setting.get(SettingBoxKey.danmakuBottom, defaultValue: false);
     _hideScroll = !setting.get(SettingBoxKey.danmakuScroll, defaultValue: true);
-    _massiveMode = setting.get(SettingBoxKey.danmakuMassive, defaultValue: false);
+    _massiveMode =
+        setting.get(SettingBoxKey.danmakuMassive, defaultValue: false);
     _danmakuColor = setting.get(SettingBoxKey.danmakuColor, defaultValue: true);
-    _danmakuBiliBiliSource = setting.get(SettingBoxKey.danmakuBiliBiliSource, defaultValue: true);
-    _danmakuGamerSource = setting.get(SettingBoxKey.danmakuGamerSource, defaultValue: true);
-    _danmakuDanDanSource = setting.get(SettingBoxKey.danmakuDanDanSource, defaultValue: true);
-    _danmakuFontWeight = setting.get(SettingBoxKey.danmakuFontWeight, defaultValue: 4);
+    _danmakuBiliBiliSource =
+        setting.get(SettingBoxKey.danmakuBiliBiliSource, defaultValue: true);
+    _danmakuGamerSource =
+        setting.get(SettingBoxKey.danmakuGamerSource, defaultValue: true);
+    _danmakuDanDanSource =
+        setting.get(SettingBoxKey.danmakuDanDanSource, defaultValue: true);
+    _danmakuFontWeight =
+        setting.get(SettingBoxKey.danmakuFontWeight, defaultValue: 4);
     haEnable = setting.get(SettingBoxKey.hAenable, defaultValue: true);
     playerTimer = getPlayerTimer();
     windowManager.addListener(this);
-    if (Platform.isIOS && setting.get(SettingBoxKey.hAenable, defaultValue: true)) {
+    if (Platform.isIOS &&
+        setting.get(SettingBoxKey.hAenable, defaultValue: true)) {
       playSpeedList = defaultPlaySpeedList;
     } else {
       playSpeedList = defaultPlaySpeedList + extendPlaySpeedList;
@@ -739,7 +789,8 @@ class _PlayerItemState extends State<PlayerItem>
                       if (pointerSignal is PointerScrollEvent) {
                         _handleMouseScroller();
                         final scrollDelta = pointerSignal.scrollDelta;
-                        final double volume = playerController.volume - scrollDelta.dy / 6000;
+                        final double volume =
+                            playerController.volume - scrollDelta.dy / 6000;
                         final double result = volume.clamp(0.0, 1.0);
                         setVolume(result);
                         playerController.volume = result;
@@ -756,22 +807,27 @@ class _PlayerItemState extends State<PlayerItem>
                             try {
                               playerController.playOrPause();
                             } catch (e) {
-                              KazumiLogger().log(Level.error, '播放器内部错误 ${e.toString()}');
+                              KazumiLogger()
+                                  .log(Level.error, '播放器内部错误 ${e.toString()}');
                             }
                           }
                           // 右方向键被按下
-                          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowRight) {
                             lastPlayerSpeed = playerController.playerSpeed;
                             if (keyShortPressTimer != null) {
                               keyShortPressTimer!.cancel();
                             }
-                            keyShortPressTimer = Timer(const Duration(milliseconds: 300), () {
+                            keyShortPressTimer =
+                                Timer(const Duration(milliseconds: 300), () {
                               keyShortPressTimer = null;
                             });
                           }
                           // 左方向键被按下
-                          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                            int targetPosition = playerController.currentPosition.inSeconds - 10;
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowLeft) {
+                            int targetPosition =
+                                playerController.currentPosition.inSeconds - 10;
                             if (targetPosition < 0) {
                               targetPosition = 0;
                             }
@@ -779,8 +835,10 @@ class _PlayerItemState extends State<PlayerItem>
                               if (playerTimer != null) {
                                 playerTimer!.cancel();
                               }
-                              playerController.currentPosition = Duration(seconds: targetPosition);
-                              playerController.seek(playerController.currentPosition);
+                              playerController.currentPosition =
+                                  Duration(seconds: targetPosition);
+                              playerController
+                                  .seek(playerController.currentPosition);
                               playerTimer = getPlayerTimer();
                             } catch (e) {
                               KazumiLogger().log(Level.error, e.toString());
@@ -792,18 +850,21 @@ class _PlayerItemState extends State<PlayerItem>
                             _handleKeyChangingVolume();
                           }
                           // 下方向键被按下
-                          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowDown) {
                             decreaseVolume();
                             _handleKeyChangingVolume();
                           }
                           // Esc键被按下
                           if (event.logicalKey == LogicalKeyboardKey.escape) {
-                            if (videoPageController.androidFullscreen && !Utils.isTablet()) {
+                            if (videoPageController.androidFullscreen &&
+                                !Utils.isTablet()) {
                               try {
                                 danmakuController.onClear();
                               } catch (_) {}
                               Utils.exitFullScreen();
-                              videoPageController.androidFullscreen = !videoPageController.androidFullscreen;
+                              videoPageController.androidFullscreen =
+                                  !videoPageController.androidFullscreen;
                             } else if (!Platform.isMacOS) {
                               windowManager.hide();
                             }
@@ -818,34 +879,40 @@ class _PlayerItemState extends State<PlayerItem>
                           }
                         } else if (event is KeyRepeatEvent) {
                           // 右方向键长按
-                          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowRight) {
                             if (playerController.playerSpeed < 2.0) {
                               setState(() {
                                 showPlaySpeed = true;
                               });
-                              playerController.setPlaybackSpeed(2.0);
+                              _setPlaybackSpeed(2.0);
                             }
                           }
                         } else if (event is KeyUpEvent) {
                           // 右方向键抬起
-                          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                          if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowRight) {
                             if (keyShortPressTimer == null) {
                               setState(() {
                                 showPlaySpeed = false;
                               });
-                              playerController.setPlaybackSpeed(lastPlayerSpeed);
+                              _setPlaybackSpeed(lastPlayerSpeed);
                             } else {
                               keyShortPressTimer = null;
                               try {
                                 if (playerTimer != null) {
                                   playerTimer!.cancel();
                                 }
-                                playerController.currentPosition =
-                                    Duration(seconds: playerController.currentPosition.inSeconds + 10);
-                                playerController.seek(playerController.currentPosition);
+                                playerController.currentPosition = Duration(
+                                    seconds: playerController
+                                            .currentPosition.inSeconds +
+                                        10);
+                                playerController
+                                    .seek(playerController.currentPosition);
                                 playerTimer = getPlayerTimer();
                               } catch (e) {
-                                KazumiLogger().log(Level.error, '播放器内部错误 ${e.toString()}');
+                                KazumiLogger().log(
+                                    Level.error, '播放器内部错误 ${e.toString()}');
                               }
                             }
                           }
@@ -854,11 +921,14 @@ class _PlayerItemState extends State<PlayerItem>
                       child: SizedBox(
                         height: videoPageController.androidFullscreen
                             ? (MediaQuery.of(context).size.height)
-                            : (MediaQuery.of(context).size.width * 9.0 / (16.0)),
+                            : (MediaQuery.of(context).size.width *
+                                9.0 /
+                                (16.0)),
                         width: MediaQuery.of(context).size.width,
                         child: Stack(alignment: Alignment.center, children: [
                           Center(child: playerSurface),
-                          (playerController.isBuffering || videoPageController.loading)
+                          (playerController.isBuffering ||
+                                  videoPageController.loading)
                               ? const Positioned.fill(
                                   child: Center(
                                     child: CircularProgressIndicator(),
@@ -890,7 +960,7 @@ class _PlayerItemState extends State<PlayerItem>
                                 showPlaySpeed = true;
                               });
                               lastPlayerSpeed = playerController.playerSpeed;
-                              playerController.setPlaybackSpeed(2.0);
+                              _setPlaybackSpeed(2.0);
                             },
                             onLongPressEnd: (_) {
                               if (lockPanel) {
@@ -899,7 +969,7 @@ class _PlayerItemState extends State<PlayerItem>
                               setState(() {
                                 showPlaySpeed = false;
                               });
-                              playerController.setPlaybackSpeed(lastPlayerSpeed);
+                              _setPlaybackSpeed(lastPlayerSpeed);
                             },
                             child: Container(
                               color: Colors.transparent,
@@ -970,7 +1040,8 @@ class _PlayerItemState extends State<PlayerItem>
                               bottom: 15,
                               child: (Utils.isDesktop() || lockPanel)
                                   ? Container()
-                                  : GestureDetector(onHorizontalDragUpdate: (DragUpdateDetails details) {
+                                  : GestureDetector(onHorizontalDragUpdate:
+                                      (DragUpdateDetails details) {
                                       setState(() {
                                         showPosition = true;
                                       });
@@ -978,26 +1049,39 @@ class _PlayerItemState extends State<PlayerItem>
                                         playerTimer!.cancel();
                                       }
                                       playerController.pause();
-                                      final double scale = 180000 / MediaQuery.sizeOf(context).width;
-                                      playerController.currentPosition = Duration(
-                                          milliseconds: playerController.currentPosition.inMilliseconds +
-                                              (details.delta.dx * scale).round());
-                                    }, onHorizontalDragEnd: (DragEndDetails details) {
+                                      final double scale = 180000 /
+                                          MediaQuery.sizeOf(context).width;
+                                      playerController.currentPosition =
+                                          Duration(
+                                              milliseconds: playerController
+                                                      .currentPosition
+                                                      .inMilliseconds +
+                                                  (details.delta.dx * scale)
+                                                      .round());
+                                    }, onHorizontalDragEnd:
+                                      (DragEndDetails details) {
                                       playerController.play();
-                                      playerController.seek(playerController.currentPosition);
+                                      playerController.seek(
+                                          playerController.currentPosition);
                                       playerTimer = getPlayerTimer();
                                       setState(() {
                                         showPosition = false;
                                       });
-                                    }, onVerticalDragUpdate: (DragUpdateDetails details) async {
-                                      final double totalWidth = MediaQuery.sizeOf(context).width;
-                                      final double totalHeight = MediaQuery.sizeOf(context).height;
-                                      final double tapPosition = details.localPosition.dx;
-                                      final double sectionWidth = totalWidth / 2;
+                                    }, onVerticalDragUpdate:
+                                      (DragUpdateDetails details) async {
+                                      final double totalWidth =
+                                          MediaQuery.sizeOf(context).width;
+                                      final double totalHeight =
+                                          MediaQuery.sizeOf(context).height;
+                                      final double tapPosition =
+                                          details.localPosition.dx;
+                                      final double sectionWidth =
+                                          totalWidth / 2;
                                       final double delta = details.delta.dy;
 
                                       /// 非全屏时禁用
-                                      if (!videoPageController.androidFullscreen) {
+                                      if (!videoPageController
+                                          .androidFullscreen) {
                                         return;
                                       }
                                       if (tapPosition < sectionWidth) {
@@ -1007,8 +1091,11 @@ class _PlayerItemState extends State<PlayerItem>
                                           showBrightness = true;
                                         });
                                         final double level = (totalHeight) * 2;
-                                        final double brightness = playerController.brightness - delta / level;
-                                        final double result = brightness.clamp(0.0, 1.0);
+                                        final double brightness =
+                                            playerController.brightness -
+                                                delta / level;
+                                        final double result =
+                                            brightness.clamp(0.0, 1.0);
                                         setBrightness(result);
                                         playerController.brightness = result;
                                       } else {
@@ -1018,12 +1105,16 @@ class _PlayerItemState extends State<PlayerItem>
                                           showVolume = true;
                                         });
                                         final double level = (totalHeight) * 3;
-                                        final double volume = playerController.volume - delta / level;
-                                        final double result = volume.clamp(0.0, 1.0);
+                                        final double volume =
+                                            playerController.volume -
+                                                delta / level;
+                                        final double result =
+                                            volume.clamp(0.0, 1.0);
                                         setVolume(result);
                                         playerController.volume = result;
                                       }
-                                    }, onVerticalDragEnd: (DragEndDetails details) {
+                                    }, onVerticalDragEnd:
+                                      (DragEndDetails details) {
                                       if (volumeSeeking) {
                                         volumeSeeking = false;
                                       }
@@ -1045,8 +1136,10 @@ class _PlayerItemState extends State<PlayerItem>
                                         Container(
                                           padding: const EdgeInsets.all(8.0),
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.5),
-                                            borderRadius: BorderRadius.circular(8.0), // 圆角
+                                            color:
+                                                Colors.black.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(
+                                                8.0), // 圆角
                                           ),
                                           child: Text(
                                             playerController.currentPosition
@@ -1072,12 +1165,15 @@ class _PlayerItemState extends State<PlayerItem>
                                         Container(
                                           padding: const EdgeInsets.all(8.0),
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.5),
-                                            borderRadius: BorderRadius.circular(8.0), // 圆角
+                                            color:
+                                                Colors.black.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(
+                                                8.0), // 圆角
                                           ),
                                           child: const Row(
                                             children: <Widget>[
-                                              Icon(Icons.fast_forward, color: Colors.white),
+                                              Icon(Icons.fast_forward,
+                                                  color: Colors.white),
                                               Text(
                                                 ' 倍速播放',
                                                 style: TextStyle(
@@ -1100,12 +1196,16 @@ class _PlayerItemState extends State<PlayerItem>
                                         Container(
                                             padding: const EdgeInsets.all(8.0),
                                             decoration: BoxDecoration(
-                                              color: Colors.black.withOpacity(0.5),
-                                              borderRadius: BorderRadius.circular(8.0), // 圆角
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      8.0), // 圆角
                                             ),
                                             child: Row(
                                               children: <Widget>[
-                                                const Icon(Icons.brightness_7, color: Colors.white),
+                                                const Icon(Icons.brightness_7,
+                                                    color: Colors.white),
                                                 Text(
                                                   ' ${(playerController.brightness * 100).toInt()} %',
                                                   style: const TextStyle(
@@ -1127,12 +1227,16 @@ class _PlayerItemState extends State<PlayerItem>
                                         Container(
                                             padding: const EdgeInsets.all(8.0),
                                             decoration: BoxDecoration(
-                                              color: Colors.black.withOpacity(0.5),
-                                              borderRadius: BorderRadius.circular(8.0), // 圆角
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      8.0), // 圆角
                                             ),
                                             child: Row(
                                               children: <Widget>[
-                                                const Icon(Icons.volume_down, color: Colors.white),
+                                                const Icon(Icons.volume_down,
+                                                    color: Colors.white),
                                                 Text(
                                                   ' ${(playerController.volume * 100).toInt()}%',
                                                   style: const TextStyle(
@@ -1166,7 +1270,8 @@ class _PlayerItemState extends State<PlayerItem>
                                 area: danmakuArea,
                                 opacity: _opacity,
                                 fontSize: _fontSize,
-                                duration: _duration.toInt(),
+                                duration:
+                                    _duration ~/ playerController.playerSpeed,
                                 showStroke: _border,
                                 fontWeight: _danmakuFontWeight,
                                 massiveMode: _massiveMode,
@@ -1175,7 +1280,8 @@ class _PlayerItemState extends State<PlayerItem>
                           ),
 
                           // 右侧锁定按钮
-                          (Utils.isDesktop() || !videoPageController.androidFullscreen)
+                          (Utils.isDesktop() ||
+                                  !videoPageController.androidFullscreen)
                               ? Container()
                               : Positioned(
                                   right: 0,
@@ -1185,7 +1291,9 @@ class _PlayerItemState extends State<PlayerItem>
                                     position: _leftOffsetAnimation,
                                     child: IconButton(
                                       icon: Icon(
-                                        lockPanel ? Icons.lock_outline : Icons.lock_open,
+                                        lockPanel
+                                            ? Icons.lock_outline
+                                            : Icons.lock_open,
                                         color: Colors.white,
                                       ),
                                       onPressed: () {
@@ -1215,21 +1323,27 @@ class _PlayerItemState extends State<PlayerItem>
                                         onBackPressed(context);
                                       },
                                     ),
-                                    (videoPageController.androidFullscreen || Utils.isDesktop())
+                                    (videoPageController.androidFullscreen ||
+                                            Utils.isDesktop())
                                         ? Text(
                                             ' ${videoPageController.title} [${videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode - 1]}]',
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: Theme.of(context).textTheme.titleMedium!.fontSize),
+                                                fontSize: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium!
+                                                    .fontSize),
                                           )
                                         : Container(),
                                     // 拖动条
                                     const Expanded(
-                                      child: dtb.DragToMoveArea(child: SizedBox(height: 40)),
+                                      child: dtb.DragToMoveArea(
+                                          child: SizedBox(height: 40)),
                                     ),
                                     TextButton(
                                       style: ButtonStyle(
-                                        padding: WidgetStateProperty.all(EdgeInsets.zero),
+                                        padding: WidgetStateProperty.all(
+                                            EdgeInsets.zero),
                                       ),
                                       onPressed: () {
                                         // 倍速播放
@@ -1247,23 +1361,56 @@ class _PlayerItemState extends State<PlayerItem>
                                       color: Colors.white,
                                       icon: const Icon(Icons.comment),
                                       onPressed: () {
-                                        bool needRestart = playerController.playing;
+                                        bool needRestart =
+                                            playerController.playing;
                                         playerController.pause();
-                                        episodeNum = Utils.extractEpisodeNumber(videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode - 1]);
-                                        if (episodeNum == 0 || episodeNum > videoPageController.roadList[videoPageController.currentRoad].identifier.length) {
-                                          episodeNum = videoPageController.currentEpisode;
+                                        episodeNum = Utils.extractEpisodeNumber(
+                                            videoPageController
+                                                .roadList[videoPageController
+                                                    .currentRoad]
+                                                .identifier[videoPageController
+                                                    .currentEpisode -
+                                                1]);
+                                        if (episodeNum == 0 ||
+                                            episodeNum >
+                                                videoPageController
+                                                    .roadList[
+                                                        videoPageController
+                                                            .currentRoad]
+                                                    .identifier
+                                                    .length) {
+                                          episodeNum = videoPageController
+                                              .currentEpisode;
                                         }
                                         showModalBottomSheet(
                                             isScrollControlled: true,
                                             constraints: BoxConstraints(
-                                                maxHeight: MediaQuery.of(context).size.height * 3 / 4,
-                                                maxWidth: (MediaQuery.of(context).size.width > MediaQuery.of(context).size.height)
-                                                    ? MediaQuery.of(context).size.width * 9 / 16
-                                                    : MediaQuery.of(context).size.width),
+                                                maxHeight:
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .height *
+                                                        3 /
+                                                        4,
+                                                maxWidth: (MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width >
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .height)
+                                                    ? MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        9 /
+                                                        16
+                                                    : MediaQuery.of(context)
+                                                        .size
+                                                        .width),
                                             clipBehavior: Clip.antiAlias,
                                             context: context,
                                             builder: (context) {
-                                              return EpisodeCommentsSheet(episode: episodeNum);
+                                              return EpisodeCommentsSheet(
+                                                  episode: episodeNum);
                                             }).whenComplete(() {
                                           if (needRestart) {
                                             playerController.play();
@@ -1274,14 +1421,19 @@ class _PlayerItemState extends State<PlayerItem>
                                     ),
                                     // 追番
                                     IconButton(
-                                      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline,
+                                      icon: Icon(
+                                          isFavorite
+                                              ? Icons.favorite
+                                              : Icons.favorite_outline,
                                           color: Colors.white),
                                       onPressed: () async {
                                         if (isFavorite) {
-                                          favoriteController.deleteFavorite(infoController.bangumiItem);
+                                          favoriteController.deleteFavorite(
+                                              infoController.bangumiItem);
                                           SmartDialog.showToast('取消追番成功');
                                         } else {
-                                          favoriteController.addFavorite(infoController.bangumiItem);
+                                          favoriteController.addFavorite(
+                                              infoController.bangumiItem);
                                           SmartDialog.showToast('自己追的番要好好看完哦');
                                         }
                                         setState(() {
@@ -1330,11 +1482,14 @@ class _PlayerItemState extends State<PlayerItem>
                                       onSelected: (value) {
                                         if (value == 0) {
                                           SmartDialog.show(
-                                              animationTime: const Duration(milliseconds: 100),
+                                              animationTime: const Duration(
+                                                  milliseconds: 100),
                                               builder: (context) {
                                                 return SizedBox(
                                                     height: 440,
-                                                    child: DanmakuSettingsWindow(danmakuController: danmakuController));
+                                                    child: DanmakuSettingsWindow(
+                                                        danmakuController:
+                                                            danmakuController));
                                               });
                                         }
                                         if (value == 1) {
@@ -1344,9 +1499,15 @@ class _PlayerItemState extends State<PlayerItem>
                                           showVideoInfo();
                                         }
                                         if (value == 3) {
-                                          bool needRestart = playerController.playing;
+                                          bool needRestart =
+                                              playerController.playing;
                                           playerController.pause();
-                                          RemotePlay().castVideo(context, videoPageController.currentPlugin.referer).whenComplete(() {
+                                          RemotePlay()
+                                              .castVideo(
+                                                  context,
+                                                  videoPageController
+                                                      .currentPlugin.referer)
+                                              .whenComplete(() {
                                             if (needRestart) {
                                               playerController.play();
                                             }
@@ -1372,7 +1533,9 @@ class _PlayerItemState extends State<PlayerItem>
                                   children: [
                                     IconButton(
                                       color: Colors.white,
-                                      icon: Icon(playerController.playing ? Icons.pause : Icons.play_arrow),
+                                      icon: Icon(playerController.playing
+                                          ? Icons.pause
+                                          : Icons.play_arrow),
                                       onPressed: () {
                                         if (playerController.playing) {
                                           playerController.pause();
@@ -1382,7 +1545,9 @@ class _PlayerItemState extends State<PlayerItem>
                                       },
                                     ),
                                     // 更换选集
-                                    (videoPageController.androidFullscreen || Utils.isTablet() || Utils.isDesktop())
+                                    (videoPageController.androidFullscreen ||
+                                            Utils.isTablet() ||
+                                            Utils.isDesktop())
                                         ? IconButton(
                                             color: Colors.white,
                                             icon: const Icon(Icons.skip_next),
@@ -1390,44 +1555,65 @@ class _PlayerItemState extends State<PlayerItem>
                                               if (videoPageController.loading) {
                                                 return;
                                               }
-                                              if (videoPageController.currentEpisode ==
+                                              if (videoPageController
+                                                      .currentEpisode ==
                                                   videoPageController
-                                                      .roadList[videoPageController.currentRoad].data.length) {
-                                                SmartDialog.showToast('已经是最新一集', displayType: SmartToastType.last);
+                                                      .roadList[
+                                                          videoPageController
+                                                              .currentRoad]
+                                                      .data
+                                                      .length) {
+                                                SmartDialog.showToast('已经是最新一集',
+                                                    displayType:
+                                                        SmartToastType.last);
                                                 return;
                                               }
                                               SmartDialog.showToast(
                                                   '正在加载${videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode]}');
-                                              videoPageController.changeEpisode(videoPageController.currentEpisode + 1,
-                                                  currentRoad: videoPageController.currentRoad);
+                                              videoPageController.changeEpisode(
+                                                  videoPageController
+                                                          .currentEpisode +
+                                                      1,
+                                                  currentRoad:
+                                                      videoPageController
+                                                          .currentRoad);
                                             },
                                           )
                                         : Container(),
                                     Expanded(
                                       child: ProgressBar(
-                                        timeLabelLocation: TimeLabelLocation.none,
-                                        progress: playerController.currentPosition,
+                                        timeLabelLocation:
+                                            TimeLabelLocation.none,
+                                        progress:
+                                            playerController.currentPosition,
                                         buffered: playerController.buffer,
                                         total: playerController.duration,
                                         onSeek: (duration) {
                                           if (playerTimer != null) {
                                             playerTimer!.cancel();
                                           }
-                                          playerController.currentPosition = duration;
+                                          playerController.currentPosition =
+                                              duration;
                                           playerController.seek(duration);
-                                          playerTimer = getPlayerTimer(); //Bug_time
+                                          playerTimer =
+                                              getPlayerTimer(); //Bug_time
                                         },
                                       ),
                                     ),
-                                    ((Utils.isCompact()) && !videoPageController.androidFullscreen)
+                                    ((Utils.isCompact()) &&
+                                            !videoPageController
+                                                .androidFullscreen)
                                         ? Container()
                                         : Container(
-                                            padding: const EdgeInsets.only(left: 10.0),
+                                            padding: const EdgeInsets.only(
+                                                left: 10.0),
                                             child: Text(
                                               "${Utils.durationToString(playerController.currentPosition)} / ${Utils.durationToString(playerController.duration)}",
                                               style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: !Utils.isCompact() ? 16.0 : 12.0,
+                                                fontSize: !Utils.isCompact()
+                                                    ? 16.0
+                                                    : 12.0,
                                               ),
                                             ),
                                           ),
@@ -1437,9 +1623,12 @@ class _PlayerItemState extends State<PlayerItem>
                                             color: Colors.white,
                                             icon: const Icon(Icons.notes),
                                             onPressed: () {
-                                              if (playerController.danDanmakus.isEmpty) {
-                                                SmartDialog.showToast('当前剧集不支持弹幕发送的说',
-                                                    displayType: SmartToastType.last);
+                                              if (playerController
+                                                  .danDanmakus.isEmpty) {
+                                                SmartDialog.showToast(
+                                                    '当前剧集不支持弹幕发送的说',
+                                                    displayType:
+                                                        SmartToastType.last);
                                                 return;
                                               }
                                               showShootDanmakuSheet();
@@ -1448,30 +1637,42 @@ class _PlayerItemState extends State<PlayerItem>
                                         : Container(),
                                     IconButton(
                                       color: Colors.white,
-                                      icon: Icon(playerController.danmakuOn ? Icons.subtitles : Icons.subtitles_off),
+                                      icon: Icon(playerController.danmakuOn
+                                          ? Icons.subtitles
+                                          : Icons.subtitles_off),
                                       onPressed: () {
                                         _handleDanmaku();
                                       },
                                     ),
-                                    (!videoPageController.androidFullscreen && !Utils.isTablet() && !Utils.isDesktop())
+                                    (!videoPageController.androidFullscreen &&
+                                            !Utils.isTablet() &&
+                                            !Utils.isDesktop())
                                         ? Container()
                                         : IconButton(
                                             color: Colors.white,
-                                            icon: Icon(videoPageController.showTabBody
-                                                ? Icons.menu_open
-                                                : Icons.menu_open_outlined),
+                                            icon: Icon(
+                                                videoPageController.showTabBody
+                                                    ? Icons.menu_open
+                                                    : Icons.menu_open_outlined),
                                             onPressed: () {
-                                              videoPageController.showTabBody = !videoPageController.showTabBody;
+                                              videoPageController.showTabBody =
+                                                  !videoPageController
+                                                      .showTabBody;
                                               widget.openMenu();
                                             },
                                           ),
                                     (Utils.isTablet() &&
-                                            videoPageController.androidFullscreen &&
-                                            MediaQuery.of(context).size.height < MediaQuery.of(context).size.width)
+                                            videoPageController
+                                                .androidFullscreen &&
+                                            MediaQuery.of(context).size.height <
+                                                MediaQuery.of(context)
+                                                    .size
+                                                    .width)
                                         ? Container()
                                         : IconButton(
                                             color: Colors.white,
-                                            icon: Icon(videoPageController.androidFullscreen
+                                            icon: Icon(videoPageController
+                                                    .androidFullscreen
                                                 ? Icons.fullscreen_exit
                                                 : Icons.fullscreen),
                                             onPressed: () {
