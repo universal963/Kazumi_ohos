@@ -94,7 +94,6 @@ abstract class _PlayerController with Store {
     }
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
-    // 加载弹幕
     loading = false;
   }
 

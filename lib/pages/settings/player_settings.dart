@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:hive/hive.dart';
 import 'package:kazumi/bean/appbar/sys_app_bar.dart';
@@ -125,8 +125,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
             ),
             ListTile(
               onTap: () async {
-                SmartDialog.show(
-                    animationTime: const Duration(milliseconds: 100),
+                KazumiDialog.show(
                     builder: (context) {
                       return AlertDialog(
                         title: const Text('默认倍速'),
@@ -143,7 +142,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                                   FilledButton(
                                     onPressed: () async {
                                       updateDefaultPlaySpeed(i);
-                                      SmartDialog.dismiss();
+                                      KazumiDialog.dismiss();
                                     },
                                     child: Text(i.toString()),
                                   ),
@@ -151,7 +150,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                                   FilledButton.tonal(
                                     onPressed: () async {
                                       updateDefaultPlaySpeed(i);
-                                      SmartDialog.dismiss();
+                                      KazumiDialog.dismiss();
                                     },
                                     child: Text(i.toString()),
                                   ),
@@ -162,7 +161,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                         }),
                         actions: <Widget>[
                           TextButton(
-                            onPressed: () => SmartDialog.dismiss(),
+                            onPressed: () => KazumiDialog.dismiss(),
                             child: Text(
                               '取消',
                               style: TextStyle(
@@ -172,7 +171,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                           TextButton(
                             onPressed: () async {
                               updateDefaultPlaySpeed(1.0);
-                              SmartDialog.dismiss();
+                              KazumiDialog.dismiss();
                             },
                             child: const Text('默认设置'),
                           ),
