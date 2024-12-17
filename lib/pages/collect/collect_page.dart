@@ -58,7 +58,7 @@ class _CollectPageState extends State<CollectPage>
     return OrientationBuilder(builder: (context, orientation) {
       return PopScope(
         canPop: false,
-        onPopInvokedWithResult: (bool didPop, Object? result) {
+        onPopInvoked: (bool didPop) {
           if (didPop) {
             return;
           }
