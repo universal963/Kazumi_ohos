@@ -1,4 +1,4 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
 import 'package:mobx/mobx.dart';
@@ -115,7 +115,7 @@ abstract class _PlayerController with Store {
         httpHeaders: httpHeaders);
     mediaPlayer.addListener(() {
       if (mediaPlayer.value.hasError && mediaPlayer.value.position < mediaPlayer.value.duration) {
-        SmartDialog.showToast('播放器内部错误 ${mediaPlayer.value.errorDescription}');
+        KazumiDialog.showToast(message: '播放器内部错误 ${mediaPlayer.value.errorDescription}');
         KazumiLogger().log(Level.error, 'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
       }
     });
