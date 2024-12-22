@@ -103,7 +103,6 @@ class _PlayerItemState extends State<PlayerItem>
   Timer? hideTimer;
   Timer? playerTimer;
   Timer? mouseScrollerTimer;
-  Timer? keyShortPressTimer;
   Timer? hideVolumeUITimer;
 
   double lastPlayerSpeed = 1.0;
@@ -809,11 +808,6 @@ class _PlayerItemState extends State<PlayerItem>
                                     LogicalKeyboardKey.arrowRight) {
                                   lastPlayerSpeed =
                                       playerController.playerSpeed;
-                                  keyShortPressTimer?.cancel();
-                                  keyShortPressTimer = Timer(
-                                      const Duration(milliseconds: 300), () {
-                                    keyShortPressTimer = null;
-                                  });
                                 }
                                 // 左方向键被按下
                                 if (event.logicalKey ==
@@ -888,13 +882,12 @@ class _PlayerItemState extends State<PlayerItem>
                                 // 右方向键抬起
                                 if (event.logicalKey ==
                                     LogicalKeyboardKey.arrowRight) {
-                                  if (keyShortPressTimer == null) {
+                                  if (showPlaySpeed) {
                                     setState(() {
                                       showPlaySpeed = false;
                                     });
                                     _setPlaybackSpeed(lastPlayerSpeed);
                                   } else {
-                                    keyShortPressTimer = null;
                                     try {
                                       playerTimer?.cancel();
                                       playerController.currentPosition =
