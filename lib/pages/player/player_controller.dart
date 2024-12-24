@@ -62,7 +62,8 @@ abstract class _PlayerController with Store {
   Box setting = GStorage.setting;
   late bool hAenable;
 
-  Future<void> init({int offset = 0}) async {
+  Future<void> init(String url, {int offset = 0}) async {
+    videoUrl = url;
     playing = false;
     loading = true;
     isBuffering = true;
