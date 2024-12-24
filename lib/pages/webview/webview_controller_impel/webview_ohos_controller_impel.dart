@@ -36,7 +36,6 @@ class WebviewOhosItemControllerImpel
           addBlobParser();
           addInviewIframeBridge();
         }
-        // addFullscreenListener();
       }
       bridgeInited = true;
     }));
@@ -109,6 +108,7 @@ class WebviewOhosItemControllerImpel
 
   @override
   void dispose() {
+    bridgeInited = false;
     unloadPage();
   }
 
@@ -136,8 +136,8 @@ class WebviewOhosItemControllerImpel
           debugPrint(
               'Loading video source from iframe src ${Utils.decodeVideoSource(currentUrl)}');
           unloadPage();
-          playerController.videoUrl = Utils.decodeVideoSource(currentUrl);
-          playerController.init(offset: offset);
+          videoParserEventController
+              .add((Utils.decodeVideoSource(currentUrl), offset));
         }
         if (!useNativePlayer) {
           Future.delayed(const Duration(seconds: 2), () {
@@ -160,8 +160,7 @@ class WebviewOhosItemControllerImpel
           videoLoadingEventController.add(false);
           if (useNativePlayer) {
             unloadPage();
-            playerController.videoUrl = message.message;
-            playerController.init(offset: offset);
+            videoParserEventController.add((message.message, offset));
           }
         }
       });
@@ -293,18 +292,4 @@ class WebviewOhosItemControllerImpel
     String desktopUserAgent = Utils.getRandomUA();
     await webviewController!.setUserAgent(desktopUserAgent);
   }
-
-  // 弃用
-  // 全屏监听
-  // Future<void> addFullscreenListener() async {
-  //   await webviewController!.runJavaScript('''
-  //     document.addEventListener('fullscreenchange', () => {
-  //           if (document.fullscreenElement) {
-  //               FullscreenBridgeDebug.postMessage('enteredFullscreen');
-  //           } else {
-  //               FullscreenBridgeDebug.postMessage('exitedFullscreen');
-  //           }
-  //       });
-  //   ''');
-  // }
 }
