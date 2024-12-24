@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
@@ -75,7 +76,9 @@ abstract class _PlayerController with Store {
     KazumiLogger().log(Level.info, 'VideoItem开始初始化');
     int episodeFromTitle = 0;
     try {
-      episodeFromTitle = Utils.extractEpisodeNumber(videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode - 1]);
+      episodeFromTitle = Utils.extractEpisodeNumber(videoPageController
+          .roadList[videoPageController.currentRoad]
+          .identifier[videoPageController.currentEpisode - 1]);
     } catch (e) {
       KazumiLogger().log(Level.error, '从标题解析集数错误 ${e.toString()}');
     }
@@ -188,5 +191,18 @@ abstract class _PlayerController with Store {
       danmakuList.add(element);
       danDanmakus[element.time.toInt()] = danmakuList;
     }
+  }
+
+  Future<void> dispose() async {
+    try {
+      await mediaPlayer.dispose();
+    } catch (_) {}
+  }
+
+  Future<void> stop() async {
+    try {
+      await mediaPlayer.pause();
+      loading = true;
+    } catch (_) {}
   }
 }

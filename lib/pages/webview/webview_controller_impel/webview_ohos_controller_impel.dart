@@ -14,6 +14,7 @@ class WebviewOhosItemControllerImpel
 
   Timer? ifrmaeParserTimer;
   Timer? videoParserTimer;
+  bool bridgeInited = false;
 
   @override
   Future<void> init() async {
@@ -21,37 +22,43 @@ class WebviewOhosItemControllerImpel
     params = const PlatformWebViewControllerCreationParams();
     webviewController = WebViewController.fromPlatformCreationParams(params);
     webviewController!.setJavaScriptMode(JavaScriptMode.unrestricted);
+    bridgeInited = false;
+    initEventController.add(true);
+  }
+
+  Future<void> initBridge(bool useNativePlayer, bool useLegacyParser) async {
     webviewController!
         .setNavigationDelegate(NavigationDelegate(onUrlChange: (url) {
       if (url.url != 'about:blank') {
         debugPrint('Current URL: ${url.url}');
         currentUrl = url.url!;
-        if (videoPageController.currentPlugin.useNativePlayer &&
-            !videoPageController.currentPlugin.useLegacyParser) {
+        if (useNativePlayer && !useLegacyParser) {
           addBlobParser();
           addInviewIframeBridge();
         }
-        addFullscreenListener();
+        // addFullscreenListener();
       }
+      bridgeInited = true;
     }));
-    videoPageController.changeEpisode(videoPageController.currentEpisode,
-        currentRoad: videoPageController.currentRoad,
-        offset: videoPageController.historyOffset);
   }
 
   @override
-  Future<void> loadUrl(String url, {int offset = 0}) async {
+  Future<void> loadUrl(String url, bool useNativePlayer, bool useLegacyParser,
+      {int offset = 0}) async {
     ifrmaeParserTimer?.cancel();
     videoParserTimer?.cancel();
     await unloadPage();
     await setDesktopUserAgent();
+    if (!bridgeInited) {
+      await initBridge(useNativePlayer, useLegacyParser);
+    }
     count = 0;
     currentUrl = '';
     this.offset = offset;
     isIframeLoaded = false;
     isVideoSourceLoaded = false;
-    videoPageController.loading = true;
-    initJSBridge();
+    videoLoadingEventController.add(true);
+    initJSBridge(useNativePlayer, useLegacyParser);
     webviewController!.loadRequest(Uri.parse(url));
 
     ifrmaeParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -62,7 +69,7 @@ class WebviewOhosItemControllerImpel
         parseIframeUrl();
       }
     });
-    if (videoPageController.currentPlugin.useNativePlayer) {
+    if (useNativePlayer) {
       videoParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (isVideoSourceLoaded) {
           timer.cancel();
@@ -70,12 +77,12 @@ class WebviewOhosItemControllerImpel
           if (count >= 15) {
             timer.cancel();
             isIframeLoaded = true;
-            videoPageController.logLines.clear();
-            videoPageController.logLines.add('解析视频资源超时');
-            videoPageController.logLines.add('请切换到其他播放列表或视频源');
-            videoPageController.showDebugLog = true;
+            logEventController.add('clear');
+            logEventController.add('解析视频资源超时');
+            logEventController.add('请切换到其他播放列表或视频源');
+            logEventController.add('showDebug');
           } else {
-            if (!videoPageController.currentPlugin.useLegacyParser) {
+            if (!useLegacyParser) {
               parseVideoSource();
             }
           }
@@ -105,27 +112,26 @@ class WebviewOhosItemControllerImpel
     unloadPage();
   }
 
-  Future<void> initJSBridge() async {
+  Future<void> initJSBridge(bool useNativePlayer, bool useLegacyParser) async {
     webviewController!.addJavaScriptChannel('JSBridgeDebug',
         onMessageReceived: (JavaScriptMessage message) {
       debugPrint('JS Bridge: ${message.message}');
-      videoPageController.logLines.add('Callback received: ${message.message}');
-      videoPageController.logLines.add(
+      logEventController.add('Callback received: ${message.message}');
+      logEventController.add(
           'If there is audio but no video, please report it to the rule developer.');
       if ((message.message.contains('http') ||
               message.message.startsWith('//')) &&
           currentUrl != message.message) {
-        videoPageController.logLines
-            .add('Parsing video source ${message.message}');
+        logEventController.add('Parsing video source ${message.message}');
         currentUrl = Uri.encodeFull(message.message);
         redirctWithReferer(message.message);
         if (Utils.decodeVideoSource(currentUrl) != Uri.encodeFull(currentUrl) &&
-            videoPageController.currentPlugin.useNativePlayer &&
-            videoPageController.currentPlugin.useLegacyParser) {
+            useNativePlayer &&
+            useLegacyParser) {
           isIframeLoaded = true;
           isVideoSourceLoaded = true;
-          videoPageController.loading = false;
-          videoPageController.logLines.add(
+          videoLoadingEventController.add(false);
+          logEventController.add(
               'Loading video source ${Utils.decodeVideoSource(currentUrl)}');
           debugPrint(
               'Loading video source from iframe src ${Utils.decodeVideoSource(currentUrl)}');
@@ -133,28 +139,26 @@ class WebviewOhosItemControllerImpel
           playerController.videoUrl = Utils.decodeVideoSource(currentUrl);
           playerController.init(offset: offset);
         }
-        if (!videoPageController.currentPlugin.useNativePlayer) {
+        if (!useNativePlayer) {
           Future.delayed(const Duration(seconds: 2), () {
             isIframeLoaded = true;
-            videoPageController.loading = false;
+            videoLoadingEventController.add(false);
           });
         }
       }
     });
-    if (!videoPageController.currentPlugin.useLegacyParser) {
+    if (!useLegacyParser) {
       webviewController!.addJavaScriptChannel('VideoBridgeDebug',
           onMessageReceived: (JavaScriptMessage message) {
         debugPrint('VideoJS Bridge: ${message.message}');
-        videoPageController.logLines
-            .add('Callback received: ${message.message}');
+        logEventController.add('Callback received: ${message.message}');
         if (message.message.contains('http') && !isVideoSourceLoaded) {
           debugPrint('Loading video source: ${message.message}');
-          videoPageController.logLines
-              .add('Loading video source: ${message.message}');
+          logEventController.add('Loading video source: ${message.message}');
           isIframeLoaded = true;
           isVideoSourceLoaded = true;
-          videoPageController.loading = false;
-          if (videoPageController.currentPlugin.useNativePlayer) {
+          videoLoadingEventController.add(false);
+          if (useNativePlayer) {
             unloadPage();
             playerController.videoUrl = message.message;
             playerController.init(offset: offset);
@@ -162,18 +166,6 @@ class WebviewOhosItemControllerImpel
         }
       });
     }
-    webviewController!.addJavaScriptChannel('FullscreenBridgeDebug',
-        onMessageReceived: (JavaScriptMessage message) {
-      debugPrint('FullscreenJS桥收到的消息为 ${message.message}');
-      if (message.message == 'enteredFullscreen') {
-        videoPageController.isFullscreen = true;
-        Utils.enterFullScreen();
-      }
-      if (message.message == 'exitedFullscreen') {
-        videoPageController.isFullscreen = false;
-        Utils.exitFullScreen();
-      }
-    });
   }
 
   Future<void> parseIframeUrl() async {
@@ -302,16 +294,17 @@ class WebviewOhosItemControllerImpel
     await webviewController!.setUserAgent(desktopUserAgent);
   }
 
+  // 弃用
   // 全屏监听
-  Future<void> addFullscreenListener() async {
-    await webviewController!.runJavaScript('''
-      document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                FullscreenBridgeDebug.postMessage('enteredFullscreen');
-            } else {
-                FullscreenBridgeDebug.postMessage('exitedFullscreen');
-            }
-        });
-    ''');
-  }
+  // Future<void> addFullscreenListener() async {
+  //   await webviewController!.runJavaScript('''
+  //     document.addEventListener('fullscreenchange', () => {
+  //           if (document.fullscreenElement) {
+  //               FullscreenBridgeDebug.postMessage('enteredFullscreen');
+  //           } else {
+  //               FullscreenBridgeDebug.postMessage('exitedFullscreen');
+  //           }
+  //       });
+  //   ''');
+  // }
 }

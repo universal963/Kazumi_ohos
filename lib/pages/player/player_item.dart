@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:kazumi/utils/logger.dart';
 import 'package:kazumi/utils/remote.dart';
 import 'package:kazumi/utils/utils.dart';
@@ -35,10 +36,15 @@ import 'package:kazumi/bean/widget/collect_button.dart';
 
 class PlayerItem extends StatefulWidget {
   const PlayerItem(
-      {super.key, required this.openMenu, required this.locateEpisode});
+      {super.key,
+      required this.openMenu,
+      required this.locateEpisode,
+      required this.changeEpisode});
 
   final VoidCallback openMenu;
   final VoidCallback locateEpisode;
+  final Future<void> Function(int episode, {int currentRoad, int offset})
+      changeEpisode;
 
   @override
   State<PlayerItem> createState() => _PlayerItemState();
@@ -321,7 +327,7 @@ class _PlayerItemState extends State<PlayerItem>
         try {
           playerTimer!.cancel();
         } catch (_) {}
-        videoPageController.changeEpisode(
+        widget.changeEpisode(
             videoPageController.currentEpisode + 1,
             currentRoad: videoPageController.currentRoad);
       }
@@ -730,6 +736,9 @@ class _PlayerItemState extends State<PlayerItem>
 
   @override
   void dispose() {
+    // Don't dispose player here
+    // We need to reuse the player after episode is changed and player item is disposed
+    // We dispose player after video page disposed
     WidgetsBinding.instance.removeObserver(this);
     windowManager.removeListener(this);
     playerTimer?.cancel();
@@ -1394,7 +1403,9 @@ class _PlayerItemState extends State<PlayerItem>
                                 },
                               ),
                               // 追番
-                              CollectButton(bangumiItem: infoController.bangumiItem, withRounder: false),
+                              CollectButton(
+                                  bangumiItem: infoController.bangumiItem,
+                                  withRounder: false),
                               PopupMenuButton(
                                 tooltip: '',
                                 icon: const Icon(
@@ -1517,7 +1528,7 @@ class _PlayerItemState extends State<PlayerItem>
                                         KazumiDialog.showToast(
                                             message:
                                                 '正在加载${videoPageController.roadList[videoPageController.currentRoad].identifier[videoPageController.currentEpisode]}');
-                                        videoPageController.changeEpisode(
+                                        widget.changeEpisode(
                                             videoPageController.currentEpisode +
                                                 1,
                                             currentRoad: videoPageController
