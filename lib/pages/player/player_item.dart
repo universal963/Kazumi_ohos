@@ -130,15 +130,7 @@ class _PlayerItemState extends State<PlayerItem>
     if (!showPositioned) {
       _animationController.forward();
       hideTimer?.cancel();
-      hideTimer = Timer(const Duration(seconds: 4), () {
-        if (mounted) {
-          setState(() {
-            showPositioned = false;
-          });
-          _animationController.reverse();
-        }
-        hideTimer = null;
-      });
+      startHideTimer();
     } else {
       _animationController.reverse();
       hideTimer?.cancel();
@@ -156,16 +148,7 @@ class _PlayerItemState extends State<PlayerItem>
       showPositioned = true;
     });
     hideTimer?.cancel();
-
-    hideTimer = Timer(const Duration(seconds: 4), () {
-      if (mounted) {
-        setState(() {
-          showPositioned = false;
-        });
-        _animationController.reverse();
-      }
-      hideTimer = null;
-    });
+    startHideTimer();
   }
 
   void _handleMouseScroller() {
@@ -1544,7 +1527,6 @@ class _PlayerItemState extends State<PlayerItem>
                                   total: playerController.duration,
                                   onSeek: (duration) {
                                     playerTimer?.cancel();
-                                    
                                     playerController.currentPosition = duration;
                                     playerController.seek(duration);
                                     playerTimer = getPlayerTimer(); //Bug_time
@@ -1556,16 +1538,7 @@ class _PlayerItemState extends State<PlayerItem>
                                   })},
                                   onDragEnd: () {
                                     playerController.play();
-                                    hideTimer =
-                                        Timer(const Duration(seconds: 4), () {
-                                      if (mounted) {
-                                        setState(() {
-                                          showPositioned = false;
-                                        });
-                                        _animationController.reverse();
-                                      }
-                                      hideTimer = null;
-                                    });
+                                    startHideTimer();
                                   },
                                 ),
                               ),
@@ -1663,5 +1636,17 @@ class _PlayerItemState extends State<PlayerItem>
         child: VideoPlayer(
           playerController.mediaPlayer,
         ));
+  }
+
+  void startHideTimer() {
+    hideTimer = Timer(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() {
+          showPositioned = false;
+        });
+        _animationController.reverse();
+      }
+      hideTimer = null;
+    });
   }
 }
