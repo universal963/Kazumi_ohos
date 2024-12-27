@@ -62,6 +62,8 @@ abstract class _PlayerController with Store {
   Box setting = GStorage.setting;
   late bool hAenable;
 
+  int forwardTime = 80;
+
   Future<void> init(String url, {int offset = 0}) async {
     videoUrl = url;
     playing = false;
@@ -205,5 +207,9 @@ abstract class _PlayerController with Store {
       await mediaPlayer.pause();
       loading = true;
     } catch (_) {}
+  }
+
+  void setForwardTime(int time){
+    forwardTime = time;
   }
 }

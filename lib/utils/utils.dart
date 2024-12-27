@@ -548,8 +548,4 @@ class Utils {
     }
     return 'FFmpeg';
   }
-
-  static bool isInt(String input) {
-    return int.tryParse(input) != null;
-  }
 }
