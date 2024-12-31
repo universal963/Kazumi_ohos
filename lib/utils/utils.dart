@@ -548,4 +548,17 @@ class Utils {
     }
     return 'FFmpeg';
   }
+  
+  static String getSeasonStringByMonth(int month){
+    if (month<=3) {
+      return '冬';
+    }
+    if(month<=6){
+      return '春';
+    }
+    if (month<=9) {
+      return '夏';
+    }
+    return '秋';
+  }
 }
