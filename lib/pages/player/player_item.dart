@@ -32,6 +32,7 @@ import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
 import 'package:kazumi/pages/settings/danmaku/danmaku_settings_window.dart';
 import 'package:kazumi/utils/constants.dart';
 import 'package:kazumi/pages/player/episode_comments_sheet.dart';
+import 'package:mobx/mobx.dart' as mobx;
 import 'package:kazumi/bean/widget/collect_button.dart';
 
 class PlayerItem extends StatefulWidget {
@@ -39,12 +40,14 @@ class PlayerItem extends StatefulWidget {
       {super.key,
       required this.openMenu,
       required this.locateEpisode,
-      required this.changeEpisode});
+      required this.changeEpisode,
+      required this.onBackPressed});
 
   final VoidCallback openMenu;
   final VoidCallback locateEpisode;
   final Future<void> Function(int episode, {int currentRoad, int offset})
       changeEpisode;
+  final void Function(BuildContext) onBackPressed;
 
   @override
   State<PlayerItem> createState() => _PlayerItemState();
@@ -114,6 +117,8 @@ class _PlayerItemState extends State<PlayerItem>
   double lastPlayerSpeed = 1.0;
   List<double> playSpeedList = defaultPlaySpeedList;
   int episodeNum = 0;
+
+  late mobx.ReactionDisposer _fullscreenListener;
 
   /// 处理 Android/iOS 应用后台或熄屏
   @override
@@ -310,29 +315,19 @@ class _PlayerItemState extends State<PlayerItem>
         try {
           playerTimer!.cancel();
         } catch (_) {}
-        widget.changeEpisode(
-            videoPageController.currentEpisode + 1,
+        widget.changeEpisode(videoPageController.currentEpisode + 1,
             currentRoad: videoPageController.currentRoad);
       }
     });
   }
 
-  void onBackPressed(BuildContext context) async {
+  void _handleFullscreenChange(BuildContext context) async {
     if (videoPageController.isFullscreen && !Utils.isTablet()) {
-      widget.locateEpisode();
       setState(() {
         lockPanel = false;
       });
-      try {
-        await Utils.exitFullScreen();
-        videoPageController.isFullscreen = false;
-        danmakuController.clear();
-        return;
-      } catch (e) {
-        KazumiLogger().log(Level.error, '卸载播放器错误 ${e.toString()}');
-      }
     }
-
+    danmakuController.clear();
     if (webDavEnable) {
       try {
         var webDav = WebDav();
@@ -342,24 +337,11 @@ class _PlayerItemState extends State<PlayerItem>
         KazumiLogger().log(Level.error, '同步记录失败 ${e.toString()}');
       }
     }
-    if (mounted) {
-      if (videoPageController.isFullscreen == true) {
-        Utils.exitFullScreen();
-        videoPageController.isFullscreen = false;
-      }
-      Navigator.of(context).pop();
-    }
-    // Navigator.of(context).pop();
   }
 
   void _handleFullscreen() {
+    _handleFullscreenChange(context);
     if (videoPageController.isFullscreen) {
-      try {
-        danmakuController.onClear();
-      } catch (_) {}
-      setState(() {
-        lockPanel = false;
-      });
       Utils.exitFullScreen();
       widget.locateEpisode();
     } else {
@@ -655,6 +637,12 @@ class _PlayerItemState extends State<PlayerItem>
   @override
   void initState() {
     super.initState();
+    _fullscreenListener = mobx.reaction<bool>(
+      (_) => videoPageController.isFullscreen,
+      (_) {
+        _handleFullscreenChange(context);
+      },
+    );
     // workaround for #214
     if (Platform.isIOS) {
       FlutterVolumeController.setIOSAudioSessionCategory(
@@ -722,6 +710,7 @@ class _PlayerItemState extends State<PlayerItem>
     // Don't dispose player here
     // We need to reuse the player after episode is changed and player item is disposed
     // We dispose player after video page disposed
+    _fullscreenListener();
     WidgetsBinding.instance.removeObserver(this);
     windowManager.removeListener(this);
     playerTimer?.cancel();
@@ -735,16 +724,8 @@ class _PlayerItemState extends State<PlayerItem>
   Widget build(BuildContext context) {
     collectType = collectController.getCollectType(infoController.bangumiItem);
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) {
-        debugPrint("checkPoint: didPop: $didPop");
-        if (didPop) {
-          return;
-        }
-        onBackPressed(context);
-      },
-      child: Observer(builder: (context) {
+    return Observer(
+      builder: (context) {
         return ClipRect(
           child: Container(
             color: Colors.black,
@@ -1290,7 +1271,7 @@ class _PlayerItemState extends State<PlayerItem>
                                 color: Colors.white,
                                 icon: const Icon(Icons.arrow_back),
                                 onPressed: () {
-                                  onBackPressed(context);
+                                  widget.onBackPressed(context);
                                 },
                               ),
                               (videoPageController.isFullscreen ||
@@ -1519,7 +1500,7 @@ class _PlayerItemState extends State<PlayerItem>
                                       },
                                     )
                                   : Container(),
-                                  forwardIcon(),
+                              forwardIcon(),
                               Expanded(
                                 child: ProgressBar(
                                   timeLabelLocation: TimeLabelLocation.none,
@@ -1539,7 +1520,9 @@ class _PlayerItemState extends State<PlayerItem>
                                     });
                                   },
                                   onDragUpdate: (details) => {
-                                    playerController.currentPosition = details.timeStamp},
+                                    playerController.currentPosition =
+                                        details.timeStamp
+                                  },
                                   onDragEnd: () {
                                     playerController.play();
                                     startHideTimer();
@@ -1631,7 +1614,7 @@ class _PlayerItemState extends State<PlayerItem>
         )
             // SizedBox(child: Text("${videoController.androidFullscreen}")),
             ;
-      }),
+      },
     );
   }
 
@@ -1655,7 +1638,6 @@ class _PlayerItemState extends State<PlayerItem>
     });
   }
 
-  
   Widget forwardIcon() {
     return Tooltip(
       message: '长按修改时间',
