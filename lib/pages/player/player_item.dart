@@ -181,6 +181,8 @@ class _PlayerItemState extends State<PlayerItem>
     if (!showVideoController) {
       displayVideoController();
     }
+    hideTimer?.cancel();
+    startHideTimer();
   }
 
   void _handleMouseScroller() {
