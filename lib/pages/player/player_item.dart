@@ -11,13 +11,13 @@ import 'package:flutter/gestures.dart';
 import 'package:kazumi/pages/player/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:kazumi/pages/video/video_controller.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:canvas_danmaku/canvas_danmaku.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
-import 'package:screen_brightness/screen_brightness.dart';
+import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/pages/history/history_controller.dart';
@@ -31,7 +31,7 @@ import 'package:kazumi/modules/danmaku/danmaku_episode_response.dart';
 import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
 import 'package:kazumi/pages/settings/danmaku/danmaku_settings_window.dart';
 import 'package:kazumi/utils/constants.dart';
-import 'package:kazumi/pages/player/episode_comments_sheet.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 import 'package:mobx/mobx.dart' as mobx;
 import 'package:kazumi/bean/widget/collect_button.dart';
 
@@ -126,7 +126,7 @@ class _PlayerItemState extends State<PlayerItem>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     try {
-      if (playerController.mediaPlayer.value.isPlaying) {
+      if (playerController.mediaPlayer.state.playing) {
         danmakuController.resume();
       }
     } catch (_) {}
@@ -247,22 +247,17 @@ class _PlayerItemState extends State<PlayerItem>
 
   Timer getPlayerTimer() {
     return Timer.periodic(const Duration(seconds: 1), (timer) {
-      playerController.playing = playerController.mediaPlayer.value.isPlaying;
+      playerController.playing = playerController.mediaPlayer.state.playing;
       playerController.isBuffering =
-          playerController.mediaPlayer.value.isBuffering;
+          playerController.mediaPlayer.state.buffering;
       playerController.currentPosition =
-          playerController.mediaPlayer.value.position;
-      playerController.buffer =
-          playerController.mediaPlayer.value.buffered.isEmpty
-              ? Duration.zero
-              : playerController.mediaPlayer.value.buffered[0].end;
-      playerController.duration = playerController.mediaPlayer.value.duration;
-      playerController.completed =
-          playerController.mediaPlayer.value.position >=
-              playerController.mediaPlayer.value.duration;
+          playerController.mediaPlayer.state.position;
+      playerController.buffer = playerController.mediaPlayer.state.buffer;
+      playerController.duration = playerController.mediaPlayer.state.duration;
+      playerController.completed = playerController.mediaPlayer.state.completed;
       // 弹幕相关
       if (playerController.currentPosition.inMicroseconds != 0 &&
-          playerController.mediaPlayer.value.isPlaying == true &&
+          playerController.mediaPlayer.state.playing == true &&
           playerController.danmakuOn == true) {
         playerController.danDanmakus[playerController.currentPosition.inSeconds]
             ?.asMap()
@@ -290,8 +285,8 @@ class _PlayerItemState extends State<PlayerItem>
                               playerController.currentPosition.inSeconds]!
                           .length),
               () => mounted &&
-                      playerController.mediaPlayer.value.isPlaying &&
-                      !playerController.mediaPlayer.value.isBuffering &&
+                      playerController.mediaPlayer.state.playing &&
+                      !playerController.mediaPlayer.state.buffering &&
                       playerController.danmakuOn
                   ? danmakuController.addDanmaku(DanmakuContentItem(
                       danmaku.message,
@@ -306,28 +301,33 @@ class _PlayerItemState extends State<PlayerItem>
       }
       // 音量相关
       if (!volumeSeeking) {
-        FlutterVolumeController.getVolume().then((value) {
-          playerController.volume = value ?? 0.0;
-        });
+        if (Utils.isDesktop()) {
+          playerController.volume = playerController.mediaPlayer.state.volume;
+        } else {
+          FlutterVolumeController.getVolume().then((value) {
+            final volume = value ?? 0.0;
+            playerController.volume = volume * 100;
+          });
+        }
       }
       // 亮度相关
       if (!Platform.isWindows &&
           !Platform.isMacOS &&
           !Platform.isLinux &&
           !brightnessSeeking) {
-        ScreenBrightness().current.then((value) {
+        ScreenBrightnessPlatform.instance.application.then((value) {
           playerController.brightness = value;
         });
       }
       // 历史记录相关
-      if (playerController.mediaPlayer.value.isPlaying &&
+      if (playerController.mediaPlayer.state.playing &&
           !videoPageController.loading) {
         historyController.updateHistory(
             videoPageController.currentEpisode,
             videoPageController.currentRoad,
             videoPageController.currentPlugin.name,
             infoController.bangumiItem,
-            playerController.mediaPlayer.value.position,
+            playerController.mediaPlayer.state.position,
             videoPageController.src,
             videoPageController.roadList[videoPageController.currentRoad]
                 .identifier[videoPageController.currentEpisode - 1]);
@@ -372,7 +372,10 @@ class _PlayerItemState extends State<PlayerItem>
     _handleFullscreenChange(context);
     if (videoPageController.isFullscreen) {
       Utils.exitFullScreen();
-      widget.locateEpisode();
+      if (!Utils.isDesktop()) {
+        widget.locateEpisode();
+        videoPageController.showTabBody = true;
+      }
     } else {
       Utils.enterFullScreen();
       videoPageController.showTabBody = false;
@@ -627,35 +630,56 @@ class _PlayerItemState extends State<PlayerItem>
 
   Future<void> setVolume(double value) async {
     try {
-      FlutterVolumeController.updateShowSystemUI(false);
-      await FlutterVolumeController.setVolume(value);
+      if (Utils.isDesktop()) {
+        await playerController.mediaPlayer.setVolume(value);
+      } else {
+        await FlutterVolumeController.updateShowSystemUI(false);
+        await FlutterVolumeController.setVolume(value / 100);
+      }
     } catch (_) {}
   }
 
   Future<void> increaseVolume() async {
-    // macOS system volume stepping is 1 / 16, or 0.0625, needs to be set manually,
-    // although it looks bad in percentage view
-    // Windows use system volume stepping without setting
-    // Linux stepping is set to 0.15 by plugin
-    final step = (Platform.isMacOS) ? 0.0625 : null;
+    double volume =
+        playerController.volume + 10 > 100 ? 100 : playerController.volume + 10;
     try {
-      await FlutterVolumeController.raiseVolume(step);
-      playerController.volume = (await FlutterVolumeController.getVolume())!;
+      await playerController.mediaPlayer.setVolume(volume);
+      playerController.volume = volume;
     } catch (_) {}
   }
 
   Future<void> decreaseVolume() async {
-    final step = (Platform.isMacOS) ? 0.0625 : null;
+    double volume =
+        playerController.volume - 10 < 0 ? 0 : playerController.volume - 10;
     try {
-      await FlutterVolumeController.lowerVolume(step);
-      playerController.volume = (await FlutterVolumeController.getVolume())!;
+      await playerController.mediaPlayer.setVolume(volume);
+      playerController.volume = volume;
     } catch (_) {}
   }
 
   Future<void> setBrightness(double value) async {
     try {
-      await ScreenBrightness().setScreenBrightness(value);
+      await ScreenBrightnessPlatform.instance
+          .setApplicationScreenBrightness(value);
     } catch (_) {}
+  }
+
+  Future<void> _handleScreenshot() async {
+    KazumiDialog.showToast(message: '截图中...');
+
+    try {
+      Uint8List? screenshot =
+          await playerController.mediaPlayer.screenshot(format: 'image/png');
+      final result = await SaverGallery.saveImage(screenshot!,
+          fileName: DateTime.timestamp().toString(), skipIfExists: false);
+      if (result.isSuccess) {
+        KazumiDialog.showToast(message: '截图保存到相簿成功');
+      } else {
+        KazumiDialog.showToast(message: '截图保存失败：${result.errorMessage}');
+      }
+    } catch (e) {
+      KazumiDialog.showToast(message: '截图失败：$e');
+    }
   }
 
   @override
@@ -1066,10 +1090,11 @@ class _PlayerItemState extends State<PlayerItem>
                                   setState(() {
                                     showVolume = true;
                                   });
-                                  final double level = (totalHeight) * 3;
+                                  final double level = (totalHeight) * 0.03;
                                   final double volume =
                                       playerController.volume - delta / level;
-                                  final double result = volume.clamp(0.0, 1.0);
+                                  final double result =
+                                      volume.clamp(0.0, 100.0);
                                   setVolume(result);
                                   playerController.volume = result;
                                 }
@@ -1108,11 +1133,11 @@ class _PlayerItemState extends State<PlayerItem>
                                       playerController.currentPosition
                                                   .compareTo(playerController
                                                       .mediaPlayer
-                                                      .value
+                                                      .state
                                                       .position) >
                                               0
-                                          ? '快进 ${playerController.currentPosition.inSeconds - playerController.mediaPlayer.value.position.inSeconds} 秒'
-                                          : '快退 ${playerController.mediaPlayer.value.position.inSeconds - playerController.currentPosition.inSeconds} 秒',
+                                          ? '快进 ${playerController.currentPosition.inSeconds - playerController.mediaPlayer.state.position.inSeconds} 秒'
+                                          : '快退 ${playerController.mediaPlayer.state.position.inSeconds - playerController.currentPosition.inSeconds} 秒',
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
@@ -1199,7 +1224,7 @@ class _PlayerItemState extends State<PlayerItem>
                                           const Icon(Icons.volume_down,
                                               color: Colors.white),
                                           Text(
-                                            ' ${(playerController.volume * 100).toInt()}%',
+                                            ' ${playerController.volume.toInt()}%',
                                             style: const TextStyle(
                                               color: Colors.white,
                                             ),
@@ -1248,19 +1273,34 @@ class _PlayerItemState extends State<PlayerItem>
                             bottom: 0,
                             child: SlideTransition(
                               position: _leftOffsetAnimation,
-                              child: IconButton(
-                                icon: Icon(
-                                  lockPanel
-                                      ? Icons.lock_outline
-                                      : Icons.lock_open,
-                                  color: Colors.white,
+                              child: Column(children: [
+                                const Spacer(),
+                                (lockPanel)
+                                    ? Container()
+                                    : IconButton(
+                                        icon: const Icon(
+                                          Icons.photo_camera_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          _handleScreenshot();
+                                        },
+                                      ),
+                                IconButton(
+                                  icon: Icon(
+                                    lockPanel
+                                        ? Icons.lock_outline
+                                        : Icons.lock_open,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      lockPanel = !lockPanel;
+                                    });
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    lockPanel = !lockPanel;
-                                  });
-                                },
-                              ),
+                                const Spacer(),
+                              ]),
                             ),
                           ),
 
@@ -1299,6 +1339,47 @@ class _PlayerItemState extends State<PlayerItem>
                                 child: dtb.DragToMoveArea(
                                     child: SizedBox(height: 40)),
                               ),
+                              PopupMenuButton(
+                                tooltip: '',
+                                child: Text(
+                                    playerController.aspectRatioType == 1
+                                        ? 'AUTO'
+                                        : playerController.aspectRatioType == 2
+                                            ? 'COVER'
+                                            : 'FILL',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold)),
+                                itemBuilder: (context) {
+                                  return const [
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [Text("AUTO")],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 2,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [Text("COVER")],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 3,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [Text("FILL")],
+                                      ),
+                                    ),
+                                  ];
+                                },
+                                onSelected: (value) {
+                                  playerController.aspectRatioType = value;
+                                },
+                              ),
                               TextButton(
                                 style: ButtonStyle(
                                   padding:
@@ -1316,64 +1397,7 @@ class _PlayerItemState extends State<PlayerItem>
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              IconButton(
-                                color: Colors.white,
-                                icon: const Icon(Icons.comment),
-                                onPressed: () {
-                                  bool needRestart = playerController.playing;
-                                  playerController.pause();
-                                  episodeNum = Utils.extractEpisodeNumber(
-                                      videoPageController
-                                              .roadList[videoPageController
-                                                  .currentRoad]
-                                              .identifier[
-                                          videoPageController.currentEpisode -
-                                              1]);
-                                  if (episodeNum == 0 ||
-                                      episodeNum >
-                                          videoPageController
-                                              .roadList[videoPageController
-                                                  .currentRoad]
-                                              .identifier
-                                              .length) {
-                                    episodeNum =
-                                        videoPageController.currentEpisode;
-                                  }
-                                  showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      constraints: BoxConstraints(
-                                          maxHeight: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              3 /
-                                              4,
-                                          maxWidth: (MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  MediaQuery.of(context)
-                                                      .size
-                                                      .height)
-                                              ? MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  9 /
-                                                  16
-                                              : MediaQuery.of(context)
-                                                  .size
-                                                  .width),
-                                      clipBehavior: Clip.antiAlias,
-                                      context: context,
-                                      builder: (context) {
-                                        return EpisodeCommentsSheet(
-                                            episode: episodeNum);
-                                      }).whenComplete(() {
-                                    if (needRestart) {
-                                      playerController.play();
-                                    }
-                                    _focusNode.requestFocus();
-                                  });
-                                },
-                              ),
+                              forwardIcon(),
                               // 追番
                               CollectButton(
                                   bangumiItem: infoController.bangumiItem),
@@ -1503,7 +1527,6 @@ class _PlayerItemState extends State<PlayerItem>
                                       },
                                     )
                                   : Container(),
-                              forwardIcon(),
                               Expanded(
                                 child: ProgressBar(
                                   timeLabelLocation: TimeLabelLocation.none,
@@ -1621,11 +1644,40 @@ class _PlayerItemState extends State<PlayerItem>
   }
 
   Widget get playerSurface {
-    return AspectRatio(
-        aspectRatio: playerController.mediaPlayer.value.aspectRatio,
-        child: VideoPlayer(
-          playerController.mediaPlayer,
-        ));
+    return Observer(builder: (context) {
+      return Video(
+        controller: playerController.videoController,
+        controls: NoVideoControls,
+        fit: playerController.aspectRatioType == 1
+            ? BoxFit.contain
+            : playerController.aspectRatioType == 2
+                ? BoxFit.cover
+                : BoxFit.fill,
+        subtitleViewConfiguration: SubtitleViewConfiguration(
+          style: TextStyle(
+            color: Colors.pink,
+            fontSize: 48.0,
+            background: Paint()..color = Colors.transparent,
+            decoration: TextDecoration.none,
+            fontWeight: FontWeight.bold,
+            shadows: const [
+              Shadow(
+                offset: Offset(1.0, 1.0),
+                blurRadius: 3.0,
+                color: Color.fromARGB(255, 255, 255, 255),
+              ),
+              Shadow(
+                offset: Offset(-1.0, -1.0),
+                blurRadius: 3.0,
+                color: Color.fromARGB(125, 255, 255, 255),
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+          padding: const EdgeInsets.all(24.0),
+        ),
+      );
+    });
   }
 
   void startHideTimer() {
