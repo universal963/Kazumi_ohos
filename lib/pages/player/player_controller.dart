@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
 import 'package:mobx/mobx.dart';
 import 'package:canvas_danmaku/canvas_danmaku.dart';
@@ -65,8 +64,7 @@ abstract class _PlayerController with Store {
   // DanDanPlay 弹幕ID
   int bangumiID = 0;
   // 播放器实体
-  late Player mediaPlayer;
-  late VideoController videoController;
+  late VideoPlayerController mediaPlayer;
 
   // 播放器面板状态
   @observable
@@ -94,13 +92,16 @@ abstract class _PlayerController with Store {
   int forwardTime = 80;
 
   // 播放器实时状态
-  bool get playerPlaying => mediaPlayer.state.playing;
-  bool get playerBuffering => mediaPlayer.state.buffering;
-  bool get playerCompleted => mediaPlayer.state.completed;
-  double get playerVolume => mediaPlayer.state.volume;
-  Duration get playerPosition => mediaPlayer.state.position;
-  Duration get playerBuffer => mediaPlayer.state.buffer;
-  Duration get playerDuration => mediaPlayer.state.duration;
+  bool get playerPlaying => mediaPlayer.value.isPlaying;
+  bool get playerBuffering => mediaPlayer.value.isBuffering;
+  bool get playerCompleted =>
+      mediaPlayer.value.position >= mediaPlayer.value.duration;
+  double get playerVolume => mediaPlayer.value.volume;
+  Duration get playerPosition => mediaPlayer.value.position;
+  Duration get playerBuffer => mediaPlayer.value.buffered.isNotEmpty
+      ? Duration.zero
+      : mediaPlayer.value.buffered[0].end;
+  Duration get playerDuration => mediaPlayer.value.duration;
 
   Future<void> init(String url, {int offset = 0}) async {
     videoUrl = url;
@@ -114,6 +115,7 @@ abstract class _PlayerController with Store {
     try {
       mediaPlayer.dispose();
     } catch (_) {}
+    KazumiLogger().log(Level.info, 'VideoItem开始初始化');
     int episodeFromTitle = 0;
     try {
       episodeFromTitle = Utils.extractEpisodeNumber(videoPageController
@@ -126,24 +128,22 @@ abstract class _PlayerController with Store {
       episodeFromTitle = videoPageController.currentEpisode;
     }
     getDanDanmaku(videoPageController.title, episodeFromTitle);
-    mediaPlayer = await createVideoController(offset: offset);
-    playerSpeed =
-        setting.get(SettingBoxKey.defaultPlaySpeed, defaultValue: 1.0);
+    mediaPlayer = await createVideoController();
+    bool autoPlay = setting.get(SettingBoxKey.autoPlay, defaultValue: true);
+    playerSpeed = setting.get(SettingBoxKey.defaultPlaySpeed, defaultValue: 1.0);
+    if (offset != 0) {
+      await mediaPlayer.seekTo(Duration(seconds: offset));
+    }
+    if (autoPlay) {
+      await mediaPlayer.play();
+    }
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
     loading = false;
   }
 
-  Future<Player> createVideoController({int offset = 0}) async {
+  Future<VideoPlayerController> createVideoController({int offset = 0}) async {
     String userAgent = '';
-    hAenable = setting.get(SettingBoxKey.hAenable, defaultValue: true);
-    hardwareDecoder =
-        setting.get(SettingBoxKey.hardwareDecoder, defaultValue: 'auto-safe');
-    autoPlay = setting.get(SettingBoxKey.autoPlay, defaultValue: true);
-    lowMemoryMode =
-        setting.get(SettingBoxKey.lowMemoryMode, defaultValue: false);
-    KazumiLogger().log(
-        Level.info, 'media_kit decoder: 硬件解码: $hAenable 解码器: $hardwareDecoder');
     if (videoPageController.currentPlugin.userAgent == '') {
       userAgent = Utils.getRandomUA();
     } else {
@@ -156,68 +156,34 @@ abstract class _PlayerController with Store {
       'user-agent': userAgent,
       if (referer.isNotEmpty) 'referer': referer,
     };
-
-    mediaPlayer = Player(
-      configuration: PlayerConfiguration(
-        bufferSize: lowMemoryMode ? 15 * 1024 * 1024 : 1500 * 1024 * 1024,
-      ),
-    );
-
-    var pp = mediaPlayer.platform as NativePlayer;
-    await pp.setProperty("af", "scaletempo2=max-speed=8");
-    if (Platform.isAndroid) {
-      await pp.setProperty("volume-max", "100");
-      await pp.setProperty("ao", "opensles");
-    }
-
-    await mediaPlayer.setAudioTrack(
-      AudioTrack.auto(),
-    );
-
-    videoController = VideoController(
-      mediaPlayer,
-      configuration: VideoControllerConfiguration(
-        enableHardwareAcceleration: hAenable,
-        hwdec: hAenable ? hardwareDecoder : 'no',
-        androidAttachSurfaceAfterVideoParameters: false,
-      ),
-    );
-    mediaPlayer.setPlaylistMode(PlaylistMode.none);
-
-    // error handle
-    mediaPlayer.stream.error.listen((event) {
-      KazumiDialog.showToast(
-          message: '播放器内部错误 ${event.toString()} $videoUrl',
-          duration: const Duration(seconds: 5),
-          showUndoButton: true);
-      KazumiLogger().log(
-          Level.error, 'Player intent error: ${event.toString()} $videoUrl');
+    mediaPlayer = VideoPlayerController.networkUrl(Uri.parse(videoUrl),
+        httpHeaders: httpHeaders);
+    mediaPlayer.addListener(() {
+      if (mediaPlayer.value.hasError && mediaPlayer.value.position < mediaPlayer.value.duration) {
+        KazumiDialog.showToast(message: '播放器内部错误 ${mediaPlayer.value.errorDescription}');
+        KazumiLogger().log(Level.error, 'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
+      }
     });
-
-    await mediaPlayer.open(
-      Media(videoUrl,
-          start: Duration(seconds: offset), httpHeaders: httpHeaders),
-      play: autoPlay,
-    );
-
+    await mediaPlayer.initialize();
+    KazumiLogger().log(Level.info, 'videoController 配置成功 $videoUrl');
     return mediaPlayer;
   }
 
   Future<void> setPlaybackSpeed(double playerSpeed) async {
     this.playerSpeed = playerSpeed;
     try {
-      mediaPlayer.setRate(playerSpeed);
+      mediaPlayer.setPlaybackSpeed(playerSpeed);
     } catch (e) {
       KazumiLogger().log(Level.error, '设置播放速度失败 ${e.toString()}');
     }
   }
 
   Future<void> setVolume(double value) async {
-    await mediaPlayer.setVolume(value);
+    await mediaPlayer.setVolume(value / 100);
   }
 
   Future<void> playOrPause() async {
-    if (mediaPlayer.state.playing) {
+    if (mediaPlayer.value.isPlaying) {
       await pause();
     } else {
       await play();
@@ -227,7 +193,7 @@ abstract class _PlayerController with Store {
   Future<void> seek(Duration duration) async {
     currentPosition = duration;
     danmakuController.clear();
-    await mediaPlayer.seek(duration);
+    await mediaPlayer.seekTo(duration);
   }
 
   Future<void> pause() async {
@@ -250,14 +216,14 @@ abstract class _PlayerController with Store {
 
   Future<void> stop() async {
     try {
-      await mediaPlayer.stop();
+      await mediaPlayer.pause();
       loading = true;
     } catch (_) {}
   }
 
-  Future<Uint8List?> screenshot({String format = 'image/jpeg'}) async {
-    return await mediaPlayer.screenshot(format: format);
-  }
+  // Future<Uint8List?> screenshot({String format = 'image/jpeg'}) async {
+  //   return await mediaPlayer.screenshot(format: format);
+  // }
 
   void setForwardTime(int time) {
     forwardTime = time;

@@ -5,7 +5,7 @@ import 'package:kazumi/utils/utils.dart';
 import 'package:kazumi/pages/video/video_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:kazumi/pages/player/player_controller.dart';
-import 'package:saver_gallery/saver_gallery.dart';
+// import 'package:saver_gallery/saver_gallery.dart';
 import 'package:flutter/services.dart';
 import 'package:kazumi/utils/remote.dart';
 import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
@@ -58,20 +58,21 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
   final PlayerController playerController = Modular.get<PlayerController>();
 
   Future<void> _handleScreenshot() async {
-    KazumiDialog.showToast(message: '截图中...');
-    try {
-      Uint8List? screenshot =
-          await playerController.screenshot(format: 'image/png');
-      final result = await SaverGallery.saveImage(screenshot!,
-          fileName: DateTime.timestamp().toString(), skipIfExists: false);
-      if (result.isSuccess) {
-        KazumiDialog.showToast(message: '截图保存到相簿成功');
-      } else {
-        KazumiDialog.showToast(message: '截图保存失败：${result.errorMessage}');
-      }
-    } catch (e) {
-      KazumiDialog.showToast(message: '截图失败：$e');
-    }
+    KazumiDialog.showToast(message: '暂不支持');
+    // KazumiDialog.showToast(message: '截图中...');
+    // try {
+    //   Uint8List? screenshot =
+    //       await playerController.screenshot(format: 'image/png');
+    //   final result = await SaverGallery.saveImage(screenshot!,
+    //       fileName: DateTime.timestamp().toString(), skipIfExists: false);
+    //   if (result.isSuccess) {
+    //     KazumiDialog.showToast(message: '截图保存到相簿成功');
+    //   } else {
+    //     KazumiDialog.showToast(message: '截图保存失败：${result.errorMessage}');
+    //   }
+    // } catch (e) {
+    //   KazumiDialog.showToast(message: '截图失败：$e');
+    // }
   }
 
   void _handleDanmaku() {
@@ -555,47 +556,47 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                     const Expanded(
                       child: dtb.DragToMoveArea(child: SizedBox(height: 40)),
                     ),
-                    PopupMenuButton(
-                      tooltip: '',
-                      child: Text(
-                          playerController.aspectRatioType == 1
-                              ? 'AUTO'
-                              : playerController.aspectRatioType == 2
-                                  ? 'COVER'
-                                  : 'FILL',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)),
-                      itemBuilder: (context) {
-                        return const [
-                          PopupMenuItem(
-                            value: 1,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [Text("AUTO")],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 2,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [Text("COVER")],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 3,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [Text("FILL")],
-                            ),
-                          ),
-                        ];
-                      },
-                      onSelected: (value) {
-                        playerController.aspectRatioType = value;
-                      },
-                    ),
+                    // PopupMenuButton(
+                    //   tooltip: '',
+                    //   child: Text(
+                    //       playerController.aspectRatioType == 1
+                    //           ? 'AUTO'
+                    //           : playerController.aspectRatioType == 2
+                    //               ? 'COVER'
+                    //               : 'FILL',
+                    //       style: const TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 12,
+                    //           fontWeight: FontWeight.bold)),
+                    //   itemBuilder: (context) {
+                    //     return const [
+                    //       PopupMenuItem(
+                    //         value: 1,
+                    //         child: Row(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: [Text("AUTO")],
+                    //         ),
+                    //       ),
+                    //       PopupMenuItem(
+                    //         value: 2,
+                    //         child: Row(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: [Text("COVER")],
+                    //         ),
+                    //       ),
+                    //       PopupMenuItem(
+                    //         value: 3,
+                    //         child: Row(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: [Text("FILL")],
+                    //         ),
+                    //       ),
+                    //     ];
+                    //   },
+                    //   onSelected: (value) {
+                    //     playerController.aspectRatioType = value;
+                    //   },
+                    // ),
                     TextButton(
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all(EdgeInsets.zero),
