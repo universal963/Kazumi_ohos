@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
@@ -179,7 +181,16 @@ abstract class _PlayerController with Store {
   }
 
   Future<void> setVolume(double value) async {
-    await mediaPlayer.setVolume(value / 100);
+    value = value.clamp(0.0, 100.0);
+    volume = value;
+    try {
+      if (Utils.isDesktop()) {
+        await mediaPlayer.setVolume(value);
+      } else {
+        await FlutterVolumeController.updateShowSystemUI(false);
+        await FlutterVolumeController.setVolume(value / 100);
+      }
+    } catch (_) {}
   }
 
   Future<void> playOrPause() async {
