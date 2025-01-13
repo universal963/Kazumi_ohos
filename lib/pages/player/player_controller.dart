@@ -39,11 +39,9 @@ abstract class _PlayerController with Store {
 
   // 视频音量/亮度
   @observable
-  double volume = 0;
+  double volume = -1;
   @observable
   double brightness = 0;
-  @observable
-  double? curVolume = null;
 
   // 播放器界面控制
   @observable
@@ -141,6 +139,14 @@ abstract class _PlayerController with Store {
     if (autoPlay) {
       await mediaPlayer.play();
     }
+    if (Utils.isDesktop()) {
+      volume = volume != -1 ? volume : playerVolume;
+    } else {
+      FlutterVolumeController.getVolume().then((value) {
+        volume = (value ?? 0.0) * 100;
+      });
+    }
+    await setVolume(volume);
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
     loading = false;
@@ -193,7 +199,6 @@ abstract class _PlayerController with Store {
         await FlutterVolumeController.setVolume(value / 100);
       }
     } catch (_) {}
-    curVolume = value;
   }
 
   Future<void> playOrPause() async {
