@@ -140,7 +140,7 @@ abstract class _PlayerController with Store {
       await mediaPlayer.play();
     }
     if (Utils.isDesktop()) {
-      volume = volume != -1 ? volume : playerVolume;
+      volume = volume != -1 ? volume : 100;
     } else {
       FlutterVolumeController.getVolume().then((value) {
         volume = (value ?? 0.0) * 100;
