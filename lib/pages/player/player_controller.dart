@@ -42,6 +42,8 @@ abstract class _PlayerController with Store {
   double volume = 0;
   @observable
   double brightness = 0;
+  @observable
+  double? curVolume = null;
 
   // 播放器界面控制
   @observable
@@ -191,6 +193,7 @@ abstract class _PlayerController with Store {
         await FlutterVolumeController.setVolume(value / 100);
       }
     } catch (_) {}
+    curVolume = value;
   }
 
   Future<void> playOrPause() async {
