@@ -132,5 +132,6 @@ class SettingBoxKey {
       webDavURL = 'webDavURL',
       webDavUsername = 'webDavUsername',
       webDavPassword = 'webDavPasswd',
-      lowMemoryMode = 'lowMemoryMode';
+      lowMemoryMode = 'lowMemoryMode',
+      useDynamicColor = 'useDynamicColor';
 }
