@@ -277,7 +277,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       title: const Text('配色方案'),
                     ),
                     SettingsTile.switchTile(
-                      enabled: !Platform.isIOS,
+                      enabled: !Platform.isIOS && !Platform.isOhos,
                       onToggle: (value) async {
                         useDynamicColor = value ?? !useDynamicColor;
                         await setting.put(
