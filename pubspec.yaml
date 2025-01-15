@@ -130,7 +130,7 @@ dependency_overrides:
   mobx_codegen: ^2.3.0
   hive_generator: ^2.0.0
   flutter_launcher_icons: "^0.13.1"
-  flutter_native_splash: ^2.4.3
+  flutter_native_splash: ^2.4.1
   msix: ^3.16.8
   
 
