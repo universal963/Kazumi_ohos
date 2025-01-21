@@ -9,24 +9,8 @@ part of 'player_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PlayerController on _PlayerController, Store {
-  late final _$loadingAtom =
-      Atom(name: '_PlayerController.loading', context: context);
-
-  @override
-  bool get loading {
-    _$loadingAtom.reportRead();
-    return super.loading;
-  }
-
-  @override
-  set loading(bool value) {
-    _$loadingAtom.reportWrite(value, super.loading, () {
-      super.loading = value;
-    });
-  }
-
   late final _$danDanmakusAtom =
-      Atom(name: '_PlayerController.danDanmakus', context: context);
+  Atom(name: '_PlayerController.danDanmakus', context: context);
 
   @override
   Map<int, List<Danmaku>> get danDanmakus {
@@ -41,104 +25,8 @@ mixin _$PlayerController on _PlayerController, Store {
     });
   }
 
-  late final _$playingAtom =
-      Atom(name: '_PlayerController.playing', context: context);
-
-  @override
-  bool get playing {
-    _$playingAtom.reportRead();
-    return super.playing;
-  }
-
-  @override
-  set playing(bool value) {
-    _$playingAtom.reportWrite(value, super.playing, () {
-      super.playing = value;
-    });
-  }
-
-  late final _$isBufferingAtom =
-      Atom(name: '_PlayerController.isBuffering', context: context);
-
-  @override
-  bool get isBuffering {
-    _$isBufferingAtom.reportRead();
-    return super.isBuffering;
-  }
-
-  @override
-  set isBuffering(bool value) {
-    _$isBufferingAtom.reportWrite(value, super.isBuffering, () {
-      super.isBuffering = value;
-    });
-  }
-
-  late final _$completedAtom =
-      Atom(name: '_PlayerController.completed', context: context);
-
-  @override
-  bool get completed {
-    _$completedAtom.reportRead();
-    return super.completed;
-  }
-
-  @override
-  set completed(bool value) {
-    _$completedAtom.reportWrite(value, super.completed, () {
-      super.completed = value;
-    });
-  }
-
-  late final _$currentPositionAtom =
-      Atom(name: '_PlayerController.currentPosition', context: context);
-
-  @override
-  Duration get currentPosition {
-    _$currentPositionAtom.reportRead();
-    return super.currentPosition;
-  }
-
-  @override
-  set currentPosition(Duration value) {
-    _$currentPositionAtom.reportWrite(value, super.currentPosition, () {
-      super.currentPosition = value;
-    });
-  }
-
-  late final _$bufferAtom =
-      Atom(name: '_PlayerController.buffer', context: context);
-
-  @override
-  Duration get buffer {
-    _$bufferAtom.reportRead();
-    return super.buffer;
-  }
-
-  @override
-  set buffer(Duration value) {
-    _$bufferAtom.reportWrite(value, super.buffer, () {
-      super.buffer = value;
-    });
-  }
-
-  late final _$durationAtom =
-      Atom(name: '_PlayerController.duration', context: context);
-
-  @override
-  Duration get duration {
-    _$durationAtom.reportRead();
-    return super.duration;
-  }
-
-  @override
-  set duration(Duration value) {
-    _$durationAtom.reportWrite(value, super.duration, () {
-      super.duration = value;
-    });
-  }
-
   late final _$danmakuOnAtom =
-      Atom(name: '_PlayerController.danmakuOn', context: context);
+  Atom(name: '_PlayerController.danmakuOn', context: context);
 
   @override
   bool get danmakuOn {
@@ -154,7 +42,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$volumeAtom =
-      Atom(name: '_PlayerController.volume', context: context);
+  Atom(name: '_PlayerController.volume', context: context);
 
   @override
   double get volume {
@@ -170,7 +58,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$brightnessAtom =
-      Atom(name: '_PlayerController.brightness', context: context);
+  Atom(name: '_PlayerController.brightness', context: context);
 
   @override
   double get brightness {
@@ -185,24 +73,8 @@ mixin _$PlayerController on _PlayerController, Store {
     });
   }
 
-  late final _$playerSpeedAtom =
-      Atom(name: '_PlayerController.playerSpeed', context: context);
-
-  @override
-  double get playerSpeed {
-    _$playerSpeedAtom.reportRead();
-    return super.playerSpeed;
-  }
-
-  @override
-  set playerSpeed(double value) {
-    _$playerSpeedAtom.reportWrite(value, super.playerSpeed, () {
-      super.playerSpeed = value;
-    });
-  }
-
   late final _$lockPanelAtom =
-      Atom(name: '_PlayerController.lockPanel', context: context);
+  Atom(name: '_PlayerController.lockPanel', context: context);
 
   @override
   bool get lockPanel {
@@ -218,7 +90,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$showVideoControllerAtom =
-      Atom(name: '_PlayerController.showVideoController', context: context);
+  Atom(name: '_PlayerController.showVideoController', context: context);
 
   @override
   bool get showVideoController {
@@ -234,7 +106,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$showSeekTimeAtom =
-      Atom(name: '_PlayerController.showSeekTime', context: context);
+  Atom(name: '_PlayerController.showSeekTime', context: context);
 
   @override
   bool get showSeekTime {
@@ -250,7 +122,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$showBrightnessAtom =
-      Atom(name: '_PlayerController.showBrightness', context: context);
+  Atom(name: '_PlayerController.showBrightness', context: context);
 
   @override
   bool get showBrightness {
@@ -266,7 +138,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$showVolumeAtom =
-      Atom(name: '_PlayerController.showVolume', context: context);
+  Atom(name: '_PlayerController.showVolume', context: context);
 
   @override
   bool get showVolume {
@@ -282,7 +154,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$showPlaySpeedAtom =
-      Atom(name: '_PlayerController.showPlaySpeed', context: context);
+  Atom(name: '_PlayerController.showPlaySpeed', context: context);
 
   @override
   bool get showPlaySpeed {
@@ -298,7 +170,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$brightnessSeekingAtom =
-      Atom(name: '_PlayerController.brightnessSeeking', context: context);
+  Atom(name: '_PlayerController.brightnessSeeking', context: context);
 
   @override
   bool get brightnessSeeking {
@@ -314,7 +186,7 @@ mixin _$PlayerController on _PlayerController, Store {
   }
 
   late final _$volumeSeekingAtom =
-      Atom(name: '_PlayerController.volumeSeeking', context: context);
+  Atom(name: '_PlayerController.volumeSeeking', context: context);
 
   @override
   bool get volumeSeeking {
@@ -329,21 +201,157 @@ mixin _$PlayerController on _PlayerController, Store {
     });
   }
 
+  late final _$canHidePlayerPanelAtom =
+  Atom(name: '_PlayerController.canHidePlayerPanel', context: context);
+
+  @override
+  bool get canHidePlayerPanel {
+    _$canHidePlayerPanelAtom.reportRead();
+    return super.canHidePlayerPanel;
+  }
+
+  @override
+  set canHidePlayerPanel(bool value) {
+    _$canHidePlayerPanelAtom.reportWrite(value, super.canHidePlayerPanel, () {
+      super.canHidePlayerPanel = value;
+    });
+  }
+
+  late final _$loadingAtom =
+  Atom(name: '_PlayerController.loading', context: context);
+
+  @override
+  bool get loading {
+    _$loadingAtom.reportRead();
+    return super.loading;
+  }
+
+  @override
+  set loading(bool value) {
+    _$loadingAtom.reportWrite(value, super.loading, () {
+      super.loading = value;
+    });
+  }
+
+  late final _$playingAtom =
+  Atom(name: '_PlayerController.playing', context: context);
+
+  @override
+  bool get playing {
+    _$playingAtom.reportRead();
+    return super.playing;
+  }
+
+  @override
+  set playing(bool value) {
+    _$playingAtom.reportWrite(value, super.playing, () {
+      super.playing = value;
+    });
+  }
+
+  late final _$isBufferingAtom =
+  Atom(name: '_PlayerController.isBuffering', context: context);
+
+  @override
+  bool get isBuffering {
+    _$isBufferingAtom.reportRead();
+    return super.isBuffering;
+  }
+
+  @override
+  set isBuffering(bool value) {
+    _$isBufferingAtom.reportWrite(value, super.isBuffering, () {
+      super.isBuffering = value;
+    });
+  }
+
+  late final _$completedAtom =
+  Atom(name: '_PlayerController.completed', context: context);
+
+  @override
+  bool get completed {
+    _$completedAtom.reportRead();
+    return super.completed;
+  }
+
+  @override
+  set completed(bool value) {
+    _$completedAtom.reportWrite(value, super.completed, () {
+      super.completed = value;
+    });
+  }
+
+  late final _$currentPositionAtom =
+  Atom(name: '_PlayerController.currentPosition', context: context);
+
+  @override
+  Duration get currentPosition {
+    _$currentPositionAtom.reportRead();
+    return super.currentPosition;
+  }
+
+  @override
+  set currentPosition(Duration value) {
+    _$currentPositionAtom.reportWrite(value, super.currentPosition, () {
+      super.currentPosition = value;
+    });
+  }
+
+  late final _$bufferAtom =
+  Atom(name: '_PlayerController.buffer', context: context);
+
+  @override
+  Duration get buffer {
+    _$bufferAtom.reportRead();
+    return super.buffer;
+  }
+
+  @override
+  set buffer(Duration value) {
+    _$bufferAtom.reportWrite(value, super.buffer, () {
+      super.buffer = value;
+    });
+  }
+
+  late final _$durationAtom =
+  Atom(name: '_PlayerController.duration', context: context);
+
+  @override
+  Duration get duration {
+    _$durationAtom.reportRead();
+    return super.duration;
+  }
+
+  @override
+  set duration(Duration value) {
+    _$durationAtom.reportWrite(value, super.duration, () {
+      super.duration = value;
+    });
+  }
+
+  late final _$playerSpeedAtom =
+  Atom(name: '_PlayerController.playerSpeed', context: context);
+
+  @override
+  double get playerSpeed {
+    _$playerSpeedAtom.reportRead();
+    return super.playerSpeed;
+  }
+
+  @override
+  set playerSpeed(double value) {
+    _$playerSpeedAtom.reportWrite(value, super.playerSpeed, () {
+      super.playerSpeed = value;
+    });
+  }
+
   @override
   String toString() {
     return '''
-loading: ${loading},
 danDanmakus: ${danDanmakus},
-playing: ${playing},
-isBuffering: ${isBuffering},
-completed: ${completed},
-currentPosition: ${currentPosition},
-buffer: ${buffer},
-duration: ${duration},
 danmakuOn: ${danmakuOn},
 volume: ${volume},
 brightness: ${brightness},
-playerSpeed: ${playerSpeed},
 lockPanel: ${lockPanel},
 showVideoController: ${showVideoController},
 showSeekTime: ${showSeekTime},
@@ -351,7 +359,16 @@ showBrightness: ${showBrightness},
 showVolume: ${showVolume},
 showPlaySpeed: ${showPlaySpeed},
 brightnessSeeking: ${brightnessSeeking},
-volumeSeeking: ${volumeSeeking}
+volumeSeeking: ${volumeSeeking},
+canHidePlayerPanel: ${canHidePlayerPanel},
+loading: ${loading},
+playing: ${playing},
+isBuffering: ${isBuffering},
+completed: ${completed},
+currentPosition: ${currentPosition},
+buffer: ${buffer},
+duration: ${duration},
+playerSpeed: ${playerSpeed}
     ''';
   }
 }

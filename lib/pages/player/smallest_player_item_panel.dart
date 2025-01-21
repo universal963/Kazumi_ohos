@@ -436,37 +436,6 @@ class _SmallestPlayerItemPanelState extends State<SmallestPlayerItemPanel> {
                       },
                       menuChildren: [
                         SubmenuButton(
-                          menuChildren: List<MenuItemButton>.generate(
-                            3,
-                            (int index) => MenuItemButton(
-                              onPressed: () =>
-                                  playerController.aspectRatioType = index + 1,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                                child: Text(
-                                  index + 1 == 1
-                                      ? '自动'
-                                      : index + 1 == 2
-                                          ? '裁切填充'
-                                          : '拉伸填充',
-                                  style: TextStyle(
-                                      color: index + 1 ==
-                                              playerController.aspectRatioType
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : null),
-                                ),
-                              ),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                            child: Text("视频比例"),
-                          ),
-                        ),
-                        SubmenuButton(
                           menuChildren: [
                             for (final double i
                                 in defaultPlaySpeedList) ...<MenuItemButton>[
@@ -493,37 +462,6 @@ class _SmallestPlayerItemPanelState extends State<SmallestPlayerItemPanel> {
                           child: const Padding(
                             padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
                             child: Text("倍速"),
-                          ),
-                        ),
-                        SubmenuButton(
-                          menuChildren: List<MenuItemButton>.generate(
-                            3,
-                            (int index) => MenuItemButton(
-                              onPressed: () =>
-                                  playerController.setShader(index + 1),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 10, 10, 10),
-                                child: Text(
-                                  index + 1 == 1
-                                      ? '关闭'
-                                      : index + 1 == 2
-                                          ? '效率档'
-                                          : '质量档',
-                                  style: TextStyle(
-                                    color: playerController
-                                                .superResolutionType ==
-                                            index + 1
-                                        ? Theme.of(context).colorScheme.primary
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                            child: Text("超分辨率"),
                           ),
                         ),
                         MenuItemButton(
