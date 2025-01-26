@@ -109,6 +109,13 @@ dependencies:
       url: https://github.com/Predidit/linux_webview_window.git
       ref: no_texture
 
+  path_provider: any
+  html: any
+  material_color_utilities: any
+  crypto: any
+  path: any
+  screen_brightness_platform_interface: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
