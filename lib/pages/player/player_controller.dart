@@ -136,15 +136,10 @@ abstract class _PlayerController with Store {
     if (offset != 0) {
       await mediaPlayer.seekTo(Duration(seconds: offset));
     }
-    if (autoPlay) {
-      await mediaPlayer.play();
-    }
     if (Utils.isDesktop()) {
       volume = volume != -1 ? volume : 100;
     } else {
-      // await FlutterVolumeController.getVolume().then((value) {
-      //   volume = (value ?? 0.0) * 100;
-      // });
+      volume = volume != -1 ? volume : 100;
     }
     await setVolume(volume);
     if (Platform.isIOS) {
@@ -153,6 +148,9 @@ abstract class _PlayerController with Store {
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
     loading = false;
+    if (autoPlay) {
+      await mediaPlayer.play();
+    }
   }
 
   Future<VideoPlayerController> createVideoController({int offset = 0}) async {
@@ -198,8 +196,7 @@ abstract class _PlayerController with Store {
       if (Utils.isDesktop()) {
         await mediaPlayer.setVolume(value);
       } else {
-        await FlutterVolumeController.updateShowSystemUI(false);
-        await FlutterVolumeController.setVolume(value / 100);
+        await mediaPlayer.setVolume(volume / 100);
       }
     } catch (_) {}
   }
