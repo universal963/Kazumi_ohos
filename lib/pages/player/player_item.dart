@@ -799,7 +799,7 @@ class _PlayerItemState extends State<PlayerItem>
                       ),
                     ),
                     // 播放器控制面板
-                    (Utils.isDesktop() ||
+                    ((Utils.isDesktop() && !videoPageController.isPip) ||
                             Utils.isTablet() ||
                             videoPageController.isFullscreen)
                         ? PlayerItemPanel(
