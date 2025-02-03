@@ -1,4 +1,4 @@
-name: Bug 反馈
+name: Bug 反馈(ohos)
 description: 提交一个 Bug 反馈。
 title: "[Bug]: "
 labels: ["bug"]
@@ -14,30 +14,13 @@ body:
       description: 并且，还请写出您是如何触发这个 Bug 的。
     validations:
       required: true
-  - type: dropdown
-    id: os
-    attributes:
-      label: 您在使用哪个操作系统？
-      multiple: false
-      options:
-        - Android
-        - Windows
-        - macOS / iOS
-        - Linux
-    validations:
-      required: true
   - type: textarea
     id: osver
     attributes:
       label: 请具体提供设备、版本号等信息。
-      description: 例如，“Redmi K40S，Android 13”、“Windows 10 22H2” 等。
+      description: 例如 “华为mate70”，“HarmonyOS NEXT 5.0.0.123SP19” 等。
     validations:
       required: true
-  - type: textarea
-    id: hardware
-    attributes:
-      label: （选填）一些与 Bug 相关的硬件信息。
-      description: （选填）例如，有视频播放问题，可以填写“显卡型号”、“显卡驱动版本”等。
   - type: textarea
     id: logs
     attributes:
