@@ -596,14 +596,14 @@ class _VideoPageState extends State<VideoPage>
         /// The webview_windows component cannot be removed from the widget tree; otherwise, it can never be reinitialized.
         Positioned(
             child: SizedBox(
-                height: (videoPageController.loading ||
+                height: (videoPageController.loading &&
                         videoPageController.currentPlugin.useNativePlayer)
                     ? 1
-                    : null,
-                width: (videoPageController.loading ||
+                    : 0,
+                width: (videoPageController.loading &&
                         videoPageController.currentPlugin.useNativePlayer)
                     ? 1
-                    : null,
+                    : 0,
                 child: const WebviewItem()))
       ],
     );
