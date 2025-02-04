@@ -171,15 +171,19 @@ abstract class _PlayerController with Store {
         httpHeaders: httpHeaders);
     // error handle
     bool showPlayerError =
-    setting.get(SettingBoxKey.showPlayerError, defaultValue: true);
+        setting.get(SettingBoxKey.showPlayerError, defaultValue: true);
     mediaPlayer.addListener(() {
-      if (mediaPlayer.value.hasError && mediaPlayer.value.position < mediaPlayer.value.duration) {      if (showPlayerError) {
-        KazumiDialog.showToast(
-            message: '播放器内部错误 ${event.toString()} $videoUrl',
-            duration: const Duration(seconds: 5),
-            showUndoButton: true);
-      }
-        KazumiLogger().log(Level.error, 'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
+      if (mediaPlayer.value.hasError &&
+          mediaPlayer.value.position < mediaPlayer.value.duration) {
+        if (showPlayerError) {
+          KazumiDialog.showToast(
+              message:
+                  '播放器内部错误 ${mediaPlayer.value.errorDescription} $videoUrl',
+              duration: const Duration(seconds: 5),
+              showUndoButton: true);
+        }
+        KazumiLogger().log(Level.error,
+            'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
       }
     });
     await mediaPlayer.initialize();
