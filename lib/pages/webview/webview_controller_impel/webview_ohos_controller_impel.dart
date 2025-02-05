@@ -75,6 +75,7 @@ class WebviewOhosItemControllerImpel
         } else {
           if (count >= 15) {
             timer.cancel();
+            unloadPage();
             isIframeLoaded = true;
             logEventController.add('clear');
             logEventController.add('解析视频资源超时');
