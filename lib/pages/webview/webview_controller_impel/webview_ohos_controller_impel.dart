@@ -27,18 +27,21 @@ class WebviewOhosItemControllerImpel
   }
 
   Future<void> initBridge(bool useNativePlayer, bool useLegacyParser) async {
-    webviewController!
-        .setNavigationDelegate(NavigationDelegate(onUrlChange: (url) {
-      if (url.url != 'about:blank') {
-        debugPrint('Current URL: ${url.url}');
-        currentUrl = url.url!;
-        if (useNativePlayer && !useLegacyParser) {
-          addBlobParser();
-          addInviewIframeBridge();
-        }
-      }
-      bridgeInited = true;
-    }));
+    webviewController!.setNavigationDelegate(
+      NavigationDelegate(
+        onPageFinished: (url) {
+          if (url != 'about:blank') {
+            debugPrint('Current URL: $url');
+            currentUrl = url;
+            if (useNativePlayer && !useLegacyParser) {
+              addBlobParser();
+              addInviewIframeBridge();
+            }
+          }
+          bridgeInited = true;
+        },
+      ),
+    );
   }
 
   @override
@@ -102,6 +105,7 @@ class WebviewOhosItemControllerImpel
     await webviewController!
         .removeJavaScriptChannel('FullscreenBridgeDebug')
         .catchError((_) {});
+    webviewController?.reload();
     await webviewController!.loadRequest(Uri.parse('about:blank'));
     ifrmaeParserTimer?.cancel();
     videoParserTimer?.cancel();
@@ -166,6 +170,7 @@ class WebviewOhosItemControllerImpel
         }
       });
     }
+    webviewController?.reload();
   }
 
   Future<void> parseIframeUrl() async {
