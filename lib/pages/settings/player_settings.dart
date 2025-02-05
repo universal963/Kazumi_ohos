@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:hive/hive.dart';
@@ -66,6 +67,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                 SettingsSection(
                   tiles: [
                     SettingsTile.switchTile(
+                      enabled: !Platform.isOhos,
                       onToggle: (value) async {
                         hAenable = value ?? !hAenable;
                         await setting.put(SettingBoxKey.hAenable, hAenable);
@@ -73,6 +75,17 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                       },
                       title: const Text('硬件解码'),
                       initialValue: hAenable,
+                    ),
+                    SettingsTile.switchTile(
+                      enabled: !Platform.isOhos,
+                      onToggle: (value) async {
+                        lowMemoryMode = value ?? !lowMemoryMode;
+                        await setting.put(
+                            SettingBoxKey.lowMemoryMode, lowMemoryMode);
+                        setState(() {});
+                      },
+                      title: const Text('低内存模式'),
+                      initialValue: lowMemoryMode,
                     ),
                   ],
                 ),
