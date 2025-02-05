@@ -589,16 +589,17 @@ class _SmallestPlayerItemPanelState extends State<SmallestPlayerItemPanel> {
                         ],
                       ),
                     ),
-                    if (!videoPageController.isPip)
-                      IconButton(
-                        color: Colors.white,
-                        icon: Icon(videoPageController.isFullscreen
-                            ? Icons.fullscreen_exit_rounded
-                            : Icons.fullscreen_rounded),
-                        onPressed: () {
-                          widget.handleFullscreen();
-                        },
-                      ),
+                    (!videoPageController.isPip)
+                        ? IconButton(
+                            color: Colors.white,
+                            icon: Icon(videoPageController.isFullscreen
+                                ? Icons.fullscreen_exit_rounded
+                                : Icons.fullscreen_rounded),
+                            onPressed: () {
+                              widget.handleFullscreen();
+                            },
+                          )
+                        : const Text('    '),
                   ],
                 ),
               ),
