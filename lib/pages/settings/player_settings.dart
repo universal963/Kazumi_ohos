@@ -74,17 +74,6 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                       title: const Text('硬件解码'),
                       initialValue: hAenable,
                     ),
-                    SettingsTile.switchTile(
-                      onToggle: (value) async {
-                        lowMemoryMode = value ?? !lowMemoryMode;
-                        await setting.put(
-                            SettingBoxKey.lowMemoryMode, lowMemoryMode);
-                        setState(() {});
-                      },
-                      title: const Text('低内存模式'),
-                      description: const Text('禁用高级缓存以减少内存占用'),
-                      initialValue: lowMemoryMode,
-                    ),
                   ],
                 ),
                 SettingsSection(
