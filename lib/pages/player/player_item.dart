@@ -332,9 +332,9 @@ class _PlayerItemState extends State<PlayerItem>
           !Platform.isMacOS &&
           !Platform.isLinux &&
           !playerController.brightnessSeeking) {
-        ScreenBrightnessPlatform.instance.application.then((value) {
-          playerController.brightness = value;
-        });
+        // ScreenBrightnessPlatform.instance.application.then((value) {
+        //   playerController.brightness = value;
+        // });
       }
       // 历史记录相关
       if (playerController.playerPlaying && !videoPageController.loading) {

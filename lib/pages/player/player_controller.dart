@@ -100,7 +100,7 @@ abstract class _PlayerController with Store {
       mediaPlayer.value.position >= mediaPlayer.value.duration;
   double get playerVolume => mediaPlayer.value.volume;
   Duration get playerPosition => mediaPlayer.value.position;
-  Duration get playerBuffer => mediaPlayer.value.buffered.isNotEmpty
+  Duration get playerBuffer => mediaPlayer.value.buffered.isEmpty
       ? Duration.zero
       : mediaPlayer.value.buffered[0].end;
   Duration get playerDuration => mediaPlayer.value.duration;
