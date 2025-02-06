@@ -8,7 +8,7 @@ import 'package:kazumi/pages/player/player_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:kazumi/utils/remote.dart';
 import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
-import 'package:kazumi/pages/settings/danmaku/danmaku_settings_window.dart';
+import 'package:kazumi/pages/settings/danmaku/danmaku_settings_sheet.dart';
 import 'package:kazumi/bean/widget/collect_button.dart';
 import 'package:kazumi/pages/info/info_controller.dart';
 import 'package:kazumi/utils/constants.dart';
@@ -595,7 +595,8 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                       ),
                       // 跳过
                       forwardIcon(),
-                      if (Utils.isDesktop() && !videoPageController.isFullscreen)
+                      if (Utils.isDesktop() &&
+                          !videoPageController.isFullscreen)
                         IconButton(
                             onPressed: () {
                               if (videoPageController.isPip) {
@@ -603,9 +604,11 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                               } else {
                                 Utils.enterDesktopPIPWindow();
                               }
-                              videoPageController.isPip = !videoPageController.isPip;
+                              videoPageController.isPip =
+                                  !videoPageController.isPip;
                             },
-                            icon: const Icon(Icons.picture_in_picture, color: Colors.white)),
+                            icon: const Icon(Icons.picture_in_picture,
+                                color: Colors.white)),
                       // 追番
                       CollectButton(
                         bangumiItem: infoController.bangumiItem,
@@ -858,13 +861,33 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                               onPressed: () {
                                                 widget.keyboardFocus
                                                     .requestFocus();
-                                                KazumiDialog.show(
+                                                showModalBottomSheet(
+                                                    isScrollControlled: true,
+                                                    constraints: BoxConstraints(
+                                                        maxHeight: 280,
+                                                        maxWidth: (Utils
+                                                                    .isDesktop() ||
+                                                                Utils
+                                                                    .isTablet())
+                                                            ? MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                9 /
+                                                                16
+                                                            : MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width),
+                                                    clipBehavior:
+                                                        Clip.antiAlias,
+                                                    context: context,
                                                     builder: (context) {
-                                                  return DanmakuSettingsWindow(
-                                                      danmakuController:
-                                                          playerController
-                                                              .danmakuController);
-                                                });
+                                                      return DanmakuSettingsSheet(
+                                                          danmakuController:
+                                                              playerController
+                                                                  .danmakuController);
+                                                    });
                                               },
                                               color: Colors.white,
                                               icon: const Icon(
@@ -895,11 +918,28 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                   IconButton(
                                     tooltip: '弹幕设置',
                                     onPressed: () {
-                                      KazumiDialog.show(builder: (context) {
-                                        return DanmakuSettingsWindow(
-                                            danmakuController: playerController
-                                                .danmakuController);
-                                      });
+                                      showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          constraints: BoxConstraints(
+                                              maxHeight: 280,
+                                              maxWidth: (Utils.isDesktop() ||
+                                                      Utils.isTablet())
+                                                  ? MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      9 /
+                                                      16
+                                                  : MediaQuery.of(context)
+                                                      .size
+                                                      .width),
+                                          clipBehavior: Clip.antiAlias,
+                                          context: context,
+                                          builder: (context) {
+                                            return DanmakuSettingsSheet(
+                                                danmakuController:
+                                                    playerController
+                                                        .danmakuController);
+                                          });
                                     },
                                     color: Colors.white,
                                     icon: const Icon(Icons.tune_rounded),
