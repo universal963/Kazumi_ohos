@@ -60,6 +60,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
       lastWindow.enableLandscapeMultiWindow();
       if (needSet) {
         lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_LANDSCAPE);
+      } else {
+        lastWindow.setPreferredOrientation(window.Orientation.AUTO_ROTATION_UNSPECIFIED);
       }
       lastWindow.setWindowSystemBarEnable([]);
     })

@@ -34,7 +34,7 @@
         "startWindowIcon": "$media:logo_rounded",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
-        "orientation": "auto_rotation_restricted",
+        "orientation": "auto_rotation_unspecified",
         "preferMultiWindowOrientation": "landscape_auto",
         "skills": [
           {
