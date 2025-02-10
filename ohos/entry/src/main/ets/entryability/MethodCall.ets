@@ -7,7 +7,7 @@ import {
 } from "@ohos/flutter_ohos";
 import { common, Want } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
-import { window } from "@kit.ArkUI";
+import { display, window } from "@kit.ArkUI";
 
 export default class MethodCallPlugin implements FlutterPlugin {
   private channel?: MethodChannel;
@@ -57,7 +57,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
       lastWindow.enableLandscapeMultiWindow();
-      lastWindow.setPreferredOrientation(window.Orientation.LANDSCAPE);
+      lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_LANDSCAPE);
       lastWindow.setWindowSystemBarEnable([]);
     })
   }
@@ -66,7 +66,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
       lastWindow.disableLandscapeMultiWindow();
-      lastWindow.setPreferredOrientation(window.Orientation.PORTRAIT);
+      lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_PORTRAIT);
+      lastWindow.setWindowSystemBarEnable(['status']);
     })
   }
 

@@ -395,6 +395,7 @@ class Utils {
   static Future<void> exitFullScreen({bool lockOrientation = true}) async {
     if (Platform.isWindows || Platform.isOhos) {
       await exitWindowsFullscreen();
+      return;
     }
     if (Platform.isLinux || Platform.isMacOS) {
       await windowManager.setFullScreen(false);
