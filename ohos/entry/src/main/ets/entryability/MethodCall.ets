@@ -24,7 +24,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
             result.success("");
             break;
           case "enterFullscreen":
-            this.enterFullScreen();
+            let needSet = Boolean(call.argument("needSet"));
+            this.enterFullScreen(needSet);
             result.success("");
             break;
           case "exitFullscreen":
@@ -53,11 +54,13 @@ export default class MethodCallPlugin implements FlutterPlugin {
     });
   }
 
-  private enterFullScreen(): void {
+  private enterFullScreen(needSet: boolean): void {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
       lastWindow.enableLandscapeMultiWindow();
-      lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_LANDSCAPE);
+      if (needSet) {
+        lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_LANDSCAPE);
+      }
       lastWindow.setWindowSystemBarEnable([]);
     })
   }

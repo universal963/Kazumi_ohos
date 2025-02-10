@@ -348,10 +348,11 @@ class Utils {
     return false;
   }
 
-  static Future<void> enterWindowsFullscreen() async {
+  static Future<void> enterWindowsFullscreen(bool needSet) async {
     const platform = MethodChannel('com.predidit.kazumi/intent');
     try {
-      await platform.invokeMethod('enterFullscreen');
+      await platform
+          .invokeMethod('enterFullscreen', <String, bool>{'needSet': needSet});
     } on PlatformException catch (e) {
       print("Failed to enter native window mode: '${e.message}'.");
     }
@@ -369,7 +370,8 @@ class Utils {
   // 进入全屏显示
   static Future<void> enterFullScreen({bool lockOrientation = true}) async {
     if (Platform.isWindows || Platform.isOhos) {
-      await enterWindowsFullscreen();
+      // A little bit hack to solve landscape right issue
+      await enterWindowsFullscreen(lockOrientation);
       return;
     }
     if (Platform.isLinux || Platform.isMacOS) {
