@@ -1,7 +1,12 @@
-import { FlutterPlugin, FlutterPluginBinding, MethodCall, MethodChannel, MethodResult } from "@ohos/flutter_ohos";
+import {
+  FlutterPlugin,
+  FlutterPluginBinding,
+  MethodCall,
+  MethodChannel,
+  MethodResult
+} from "@ohos/flutter_ohos";
 import { common, Want } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
-import uri from "@ohos.uri";
 import { window } from "@kit.ArkUI";
 
 export default class MethodCallPlugin implements FlutterPlugin {
@@ -10,7 +15,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.predidit.kazumi/intent");
     this.channel.setMethodCallHandler({
-      onMethodCall : (call: MethodCall, result: MethodResult) => {
+      onMethodCall: (call: MethodCall, result: MethodResult) => {
         switch (call.method) {
           case "openWithMime":
             let url = String(call.argument("url"));
@@ -50,7 +55,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
 
   private enterFullScreen(): void {
     let context = getContext(this) as common.UIAbilityContext;
-    window.getLastWindow(context).then((lastWindow)=> {
+    window.getLastWindow(context).then((lastWindow) => {
+      lastWindow.enableLandscapeMultiWindow();
       lastWindow.setPreferredOrientation(window.Orientation.LANDSCAPE);
       lastWindow.setWindowSystemBarEnable([]);
     })
@@ -58,7 +64,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
 
   private exitFullScreen(): void {
     let context = getContext(this) as common.UIAbilityContext;
-    window.getLastWindow(context).then((lastWindow)=> {
+    window.getLastWindow(context).then((lastWindow) => {
+      lastWindow.disableLandscapeMultiWindow();
       lastWindow.setPreferredOrientation(window.Orientation.PORTRAIT);
     })
   }
