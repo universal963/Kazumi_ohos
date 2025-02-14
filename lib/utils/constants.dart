@@ -15,7 +15,7 @@ const ProgressIndicatorThemeData progressIndicatorTheme2024 =
   // This flag is deprecated since 3.29 but not default to false yet. Keep
   // it to false so we have the latest M3 style process indicator.
   // ignore: deprecated_member_use
-  year2023: false,
+  // year2023: false,
 );
 
 // 随机UA列表
