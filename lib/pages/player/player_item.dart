@@ -65,7 +65,6 @@ class _PlayerItemState extends State<PlayerItem>
   final HistoryController historyController = Modular.get<HistoryController>();
   final InfoController infoController = Modular.get<InfoController>();
   final CollectController collectController = Modular.get<CollectController>();
-  late DanmakuController danmakuController;
 
   // 1. 在看
   // 2. 想看
@@ -112,7 +111,7 @@ class _PlayerItemState extends State<PlayerItem>
     super.didChangeAppLifecycleState(state);
     try {
       if (playerController.playerPlaying) {
-        danmakuController.resume();
+        playerController.danmakuController.resume();
       }
     } catch (_) {}
   }
@@ -167,23 +166,14 @@ class _PlayerItemState extends State<PlayerItem>
     });
   }
 
-  void handleDanmaku() {
-    danmakuController.clear();
-    // if true, turn off danmaku.
-    if (playerController.danmakuOn) {
-      setState(() {
-        playerController.danmakuOn = false;
-      });
-      return;
-    }
-    // if false and empty, show dialog.
+  void _handleDanmaku() {
     if (playerController.danDanmakus.isEmpty) {
       showDanmakuSwitch();
       return;
     }
-    // turn on danmaku.
+    playerController.danmakuController.clear();
     setState(() {
-      playerController.danmakuOn = true;
+      playerController.danmakuOn = !playerController.danmakuOn;
     });
   }
 
@@ -191,7 +181,7 @@ class _PlayerItemState extends State<PlayerItem>
     if (videoPageController.isFullscreen && !Utils.isTablet()) {
       playerController.lockPanel = false;
     }
-    danmakuController.clear();
+    playerController.danmakuController.clear();
     if (webDavEnable && webDavEnableHistory) {
       var webDav = WebDav();
       webDav.updateHistory();
@@ -241,8 +231,8 @@ class _PlayerItemState extends State<PlayerItem>
 
   Future<void> setPlaybackSpeed(double speed) async {
     await playerController.setPlaybackSpeed(speed);
-    danmakuController.updateOption(
-      danmakuController.option.copyWith(duration: _duration ~/ speed),
+    playerController.danmakuController.updateOption(
+      playerController.danmakuController.option.copyWith(duration: _duration ~/ speed),
     );
   }
 
@@ -317,7 +307,7 @@ class _PlayerItemState extends State<PlayerItem>
                       playerController.playerPlaying &&
                       !playerController.playerBuffering &&
                       playerController.danmakuOn
-                  ? danmakuController.addDanmaku(DanmakuContentItem(
+                  ? playerController.danmakuController.addDanmaku(DanmakuContentItem(
                       danmaku.message,
                       color: danmaku.color,
                       type: danmaku.type == 4
@@ -333,7 +323,10 @@ class _PlayerItemState extends State<PlayerItem>
         if (Utils.isDesktop()) {
           playerController.volume = playerController.playerVolume;
         } else {
-          playerController.volume = playerController.playerVolume * 100;
+          FlutterVolumeController.getVolume().then((value) {
+            final volume = value ?? 0.0;
+            playerController.volume = volume * 100;
+          });
         }
       }
       // 亮度相关
@@ -341,9 +334,9 @@ class _PlayerItemState extends State<PlayerItem>
           !Platform.isMacOS &&
           !Platform.isLinux &&
           !playerController.brightnessSeeking) {
-        // ScreenBrightnessPlatform.instance.application.then((value) {
-        //   playerController.brightness = value;
-        // });
+        ScreenBrightnessPlatform.instance.application.then((value) {
+          playerController.brightness = value;
+        });
       }
       // 历史记录相关
       if (playerController.playerPlaying && !videoPageController.loading) {
@@ -488,7 +481,7 @@ class _PlayerItemState extends State<PlayerItem>
 
   @override
   void onWindowRestore() {
-    danmakuController.onClear();
+    playerController.danmakuController.onClear();
   }
 
   @override
@@ -678,7 +671,7 @@ class _PlayerItemState extends State<PlayerItem>
                                   if (videoPageController.isFullscreen &&
                                       !Utils.isTablet()) {
                                     try {
-                                      danmakuController.onClear();
+                                      playerController.danmakuController.onClear();
                                     } catch (_) {}
                                     Utils.exitFullScreen();
                                     videoPageController.isFullscreen =
@@ -698,7 +691,7 @@ class _PlayerItemState extends State<PlayerItem>
                                 // D键盘被按下
                                 if (event.logicalKey ==
                                     LogicalKeyboardKey.keyD) {
-                                  handleDanmaku();
+                                  _handleDanmaku();
                                 }
                               } else if (event is KeyRepeatEvent) {
                                 // 右方向键长按
@@ -787,7 +780,6 @@ class _PlayerItemState extends State<PlayerItem>
                       child: DanmakuScreen(
                         key: _danmuKey,
                         createdController: (DanmakuController e) {
-                          danmakuController = e;
                           playerController.danmakuController = e;
                         },
                         option: DanmakuOption(
@@ -821,7 +813,6 @@ class _PlayerItemState extends State<PlayerItem>
                             sendDanmaku: widget.sendDanmaku,
                             startHideTimer: startHideTimer,
                             cancelHideTimer: cancelHideTimer,
-                            handleDanmaku: handleDanmaku,
                           )
                         : SmallestPlayerItemPanel(
                             onBackPressed: widget.onBackPressed,
@@ -836,7 +827,6 @@ class _PlayerItemState extends State<PlayerItem>
                             handleHove: _handleHove,
                             startHideTimer: startHideTimer,
                             cancelHideTimer: cancelHideTimer,
-                            handleDanmaku: handleDanmaku,
                           ),
                     // 播放器手势控制
                     Positioned.fill(
