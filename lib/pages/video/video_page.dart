@@ -157,6 +157,7 @@ class _VideoPageState extends State<VideoPage>
     infoController.episodeInfo.reset();
     infoController.episodeCommentsList.clear();
     Utils.unlockScreenRotation();
+    tabController.dispose();
     super.dispose();
   }
 
