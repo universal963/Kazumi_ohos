@@ -8,6 +8,7 @@ import {
 import { common, Want } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { display, window } from "@kit.ArkUI";
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class MethodCallPlugin implements FlutterPlugin {
   private channel?: MethodChannel;
@@ -71,7 +72,9 @@ export default class MethodCallPlugin implements FlutterPlugin {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
       lastWindow.disableLandscapeMultiWindow();
-      lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_PORTRAIT);
+      if (!display.isFoldable() && deviceInfo.deviceType == 'phone') {
+        lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_PORTRAIT);
+      }
       lastWindow.setWindowSystemBarEnable(['status']);
     })
   }
