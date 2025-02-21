@@ -43,7 +43,7 @@ class _VideoPageState extends State<VideoPage>
       Modular.get<WebviewItemController>();
   late bool playResume;
   bool showDebugLog = false;
-  List<String> logLines = [];
+  List<String> webviewLogLines = [];
   final FocusNode keyboardFocus = FocusNode();
 
   ScrollController scrollController = ScrollController();
@@ -130,7 +130,7 @@ class _VideoPageState extends State<VideoPage>
     _logSubscription = webviewItemController.onLog.listen((event) {
       debugPrint('Kazumi Webview log: $event');
       if (event == 'clear') {
-        clearLogs();
+        clearWebviewLog();
         return;
       }
       if (event == 'showDebug') {
@@ -138,7 +138,7 @@ class _VideoPageState extends State<VideoPage>
         return;
       }
       setState(() {
-        logLines.add(event);
+        webviewLogLines.add(event);
       });
     });
   }
@@ -190,15 +190,15 @@ class _VideoPageState extends State<VideoPage>
     });
   }
 
-  void clearLog() {
+  void clearWebviewLog() {
     setState(() {
-      logLines.clear();
+      webviewLogLines.clear();
     });
   }
 
   Future<void> changeEpisode(int episode,
       {int currentRoad = 0, int offset = 0}) async {
-    clearLogs();
+    clearWebviewLog();
     hideDebugConsole();
     videoPageController.loading = true;
     infoController.episodeInfo.reset();
@@ -446,7 +446,7 @@ class _VideoPageState extends State<VideoPage>
   Widget get playerBody {
     return Stack(
       children: [
-        // 日志组件
+        // webview log component (not player log, used for video parsing)
         Positioned.fill(
           child: Stack(
             children: [
@@ -506,10 +506,10 @@ class _VideoPageState extends State<VideoPage>
                     alignment: Alignment.center,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: logLines.length,
+                      itemCount: webviewLogLines.length,
                       itemBuilder: (context, index) {
                         return Text(
-                          logLines.isEmpty ? '' : logLines[index],
+                          webviewLogLines.isEmpty ? '' : webviewLogLines[index],
                           style: const TextStyle(
                             color: Colors.white,
                           ),

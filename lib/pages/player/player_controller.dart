@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:video_player/video_player.dart';
@@ -91,6 +93,7 @@ abstract class _PlayerController with Store {
   late String hardwareDecoder;
   bool lowMemoryMode = false;
   bool autoPlay = true;
+  bool playerDebugMode = false;
   int forwardTime = 80;
 
   // 播放器实时状态
@@ -105,6 +108,11 @@ abstract class _PlayerController with Store {
       : mediaPlayer.value.buffered[0].end;
   Duration get playerDuration => mediaPlayer.value.duration;
 
+  // 播放器内部日志
+  List<String> playerLog = [];
+  // 播放器日志订阅
+  StreamSubscription<PlayerLog>? playerLogSubscription;
+
   Future<void> init(String url, {int offset = 0}) async {
     videoUrl = url;
     playing = false;
@@ -115,9 +123,8 @@ abstract class _PlayerController with Store {
     duration = Duration.zero;
     completed = false;
     try {
-      mediaPlayer.dispose();
+      await dispose();
     } catch (_) {}
-    KazumiLogger().log(Level.info, 'VideoItem开始初始化');
     int episodeFromTitle = 0;
     try {
       episodeFromTitle = Utils.extractEpisodeNumber(videoPageController
@@ -155,14 +162,13 @@ abstract class _PlayerController with Store {
 
   Future<VideoPlayerController> createVideoController({int offset = 0}) async {
     String userAgent = '';
+    playerDebugMode = setting.get(SettingBoxKey.playerDebugMode, defaultValue: false);
     if (videoPageController.currentPlugin.userAgent == '') {
       userAgent = Utils.getRandomUA();
     } else {
       userAgent = videoPageController.currentPlugin.userAgent;
     }
-    KazumiLogger().log(Level.info, 'media_kit UA: $userAgent');
     String referer = videoPageController.currentPlugin.referer;
-    KazumiLogger().log(Level.info, 'media_kit Referer: $referer');
     var httpHeaders = {
       'user-agent': userAgent,
       if (referer.isNotEmpty) 'referer': referer,
@@ -239,6 +245,9 @@ abstract class _PlayerController with Store {
   }
 
   Future<void> dispose() async {
+    try {
+      await playerLogSubscription?.cancel();
+    } catch (_) {}
     try {
       await mediaPlayer.dispose();
     } catch (_) {}
