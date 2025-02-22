@@ -29,12 +29,18 @@ abstract class _PlayerController with Store {
   @observable
   bool danmakuOn = false;
 
-  // 视频比例类型
-  // 1. AUTO
-  // 2. COVER
-  // 3. FILL
+  /// 视频比例类型
+  /// 1. AUTO
+  /// 2. COVER
+  /// 3. FILL
   @observable
   int aspectRatioType = 1;
+
+  /// 视频超分
+  /// 1. OFF
+  /// 2. Anime4K
+  @observable
+  int superResolutionType = 1;
 
   // 视频音量/亮度
   @observable
@@ -64,8 +70,10 @@ abstract class _PlayerController with Store {
 
   // 视频地址
   String videoUrl = '';
+
   // DanDanPlay 弹幕ID
   int bangumiID = 0;
+
   // 播放器实体
   late VideoPlayerController mediaPlayer;
 
@@ -97,17 +105,23 @@ abstract class _PlayerController with Store {
 
   // 播放器实时状态
   bool get playerPlaying => mediaPlayer.value.isPlaying;
+
   bool get playerBuffering => mediaPlayer.value.isBuffering;
+
   bool get playerCompleted =>
       mediaPlayer.value.position >= mediaPlayer.value.duration;
+
   double get playerVolume => mediaPlayer.value.volume;
+
   Duration get playerPosition => mediaPlayer.value.position;
+
   Duration get playerBuffer => mediaPlayer.value.buffered.isEmpty
       ? Duration.zero
       : mediaPlayer.value.buffered[0].end;
+
   Duration get playerDuration => mediaPlayer.value.duration;
 
-  // 播放器内部日志
+  /// 播放器内部日志
   List<String> playerLog = ['暂不支持'];
 
   Future<void> init(String url, {int offset = 0}) async {
@@ -149,9 +163,6 @@ abstract class _PlayerController with Store {
       volume = volume != -1 ? volume : 100;
     }
     await setVolume(volume);
-    if (Platform.isIOS) {
-      FlutterVolumeController.updateShowSystemUI(true);
-    }
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
     loading = false;
@@ -159,7 +170,8 @@ abstract class _PlayerController with Store {
 
   Future<VideoPlayerController> createVideoController({int offset = 0}) async {
     String userAgent = '';
-    playerDebugMode = setting.get(SettingBoxKey.playerDebugMode, defaultValue: false);
+    playerDebugMode =
+        setting.get(SettingBoxKey.playerDebugMode, defaultValue: false);
     if (videoPageController.currentPlugin.userAgent == '') {
       userAgent = Utils.getRandomUA();
     } else {
