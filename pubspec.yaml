@@ -50,7 +50,7 @@ dependencies:
       path: packages/connectivity_plus/connectivity_plus
       ref: a1347adcca3a46346a6ddd127cebcec9970cad6c
 
-
+  path_provider: ^2.1.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   cached_network_image: ^3.4.1
@@ -114,14 +114,6 @@ dependencies:
       url: https://github.com/Predidit/linux_webview_window.git
       ref: no_texture
 
-  path_provider: any
-  html: any
-  material_color_utilities: any
-  crypto: any
-  path: any
-  screen_brightness_platform_interface: any
-  antlr4: ^4.13.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -138,12 +130,12 @@ dependency_overrides:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.0
   build_runner: ^2.4.6
   mobx_codegen: ^2.3.0
   hive_generator: ^2.0.0
   flutter_launcher_icons: ^0.14.3
-  flutter_native_splash: ^2.4.3
+  flutter_native_splash: ^2.4.1
   msix: ^3.16.8
   
 
