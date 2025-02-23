@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:video_player/video_player.dart';
@@ -109,9 +108,7 @@ abstract class _PlayerController with Store {
   Duration get playerDuration => mediaPlayer.value.duration;
 
   // 播放器内部日志
-  List<String> playerLog = [];
-  // 播放器日志订阅
-  StreamSubscription<PlayerLog>? playerLogSubscription;
+  List<String> playerLog = ['暂不支持'];
 
   Future<void> init(String url, {int offset = 0}) async {
     videoUrl = url;
@@ -193,7 +190,6 @@ abstract class _PlayerController with Store {
       }
     });
     await mediaPlayer.initialize();
-    KazumiLogger().log(Level.info, 'videoController 配置成功 $videoUrl');
     return mediaPlayer;
   }
 
@@ -245,9 +241,6 @@ abstract class _PlayerController with Store {
   }
 
   Future<void> dispose() async {
-    try {
-      await playerLogSubscription?.cancel();
-    } catch (_) {}
     try {
       await mediaPlayer.dispose();
     } catch (_) {}
