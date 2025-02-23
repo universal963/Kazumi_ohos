@@ -22,6 +22,7 @@ class PlayerController = _PlayerController with _$PlayerController;
 abstract class _PlayerController with Store {
   final VideoPageController videoPageController =
       Modular.get<VideoPageController>();
+
   // 弹幕控制
   late DanmakuController danmakuController;
   @observable
@@ -150,7 +151,8 @@ abstract class _PlayerController with Store {
     getDanDanmaku(videoPageController.title, episodeFromTitle);
     mediaPlayer = await createVideoController();
     bool autoPlay = setting.get(SettingBoxKey.autoPlay, defaultValue: true);
-    playerSpeed = setting.get(SettingBoxKey.defaultPlaySpeed, defaultValue: 1.0);
+    playerSpeed =
+        setting.get(SettingBoxKey.defaultPlaySpeed, defaultValue: 1.0);
     if (offset != 0) {
       await mediaPlayer.seekTo(Duration(seconds: offset));
     }
