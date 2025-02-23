@@ -155,32 +155,60 @@ class _AboutPageState extends State<AboutPage> {
                   tiles: [
                     SettingsTile.navigation(
                       onPressed: (_) {
-                        launchUrl(Uri.parse(Api.sourceUrl),
-                            mode: LaunchMode.externalApplication);
+                        launchUrl(
+                          Uri.parse(Api.sourceUrl),
+                          mode: LaunchMode.externalApplication,
+                          webViewConfiguration: const WebViewConfiguration(
+                            headers: <String, String>{
+                              'harmony_browser_page': 'pages/LaunchInAppPage'
+                            },
+                          ),
+                        );
                       },
                       title: const Text('项目主页'),
                       value: const Text('Github'),
                     ),
                     SettingsTile.navigation(
                       onPressed: (_) {
-                        launchUrl(Uri.parse(Api.iconUrl),
-                            mode: LaunchMode.externalApplication);
+                        launchUrl(
+                          Uri.parse(Api.iconUrl),
+                          mode: LaunchMode.externalApplication,
+                          webViewConfiguration: const WebViewConfiguration(
+                            headers: <String, String>{
+                              'harmony_browser_page': 'pages/LaunchInAppPage'
+                            },
+                          ),
+                        );
                       },
                       title: const Text('图标创作'),
                       value: const Text('Pixiv'),
                     ),
                     SettingsTile.navigation(
                       onPressed: (_) {
-                        launchUrl(Uri.parse(Api.bangumiIndex),
-                            mode: LaunchMode.externalApplication);
+                        launchUrl(
+                          Uri.parse(Api.bangumiIndex),
+                          mode: LaunchMode.externalApplication,
+                          webViewConfiguration: const WebViewConfiguration(
+                            headers: <String, String>{
+                              'harmony_browser_page': 'pages/LaunchInAppPage'
+                            },
+                          ),
+                        );
                       },
                       title: const Text('番剧索引'),
                       value: const Text('Bangumi'),
                     ),
                     SettingsTile.navigation(
                       onPressed: (_) {
-                        launchUrl(Uri.parse(Api.dandanIndex),
-                            mode: LaunchMode.externalApplication);
+                        launchUrl(
+                          Uri.parse(Api.dandanIndex),
+                          mode: LaunchMode.externalApplication,
+                          webViewConfiguration: const WebViewConfiguration(
+                            headers: <String, String>{
+                              'harmony_browser_page': 'pages/LaunchInAppPage'
+                            },
+                          ),
+                        );
                       },
                       title: const Text('弹幕来源'),
                       description: Text('ID: ${mortis['id']}'),

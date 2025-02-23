@@ -81,7 +81,16 @@ class _BBCodeWidgetState extends State<BBCodeWidget> {
                     ..onTap = (e.link != null || e.masked)
                         ? () {
                             if (_isVisible && e.link != null) {
-                              launchUrl(Uri.parse(e.link!));
+                              launchUrl(
+                                Uri.parse(e.link!),
+                                webViewConfiguration:
+                                    const WebViewConfiguration(
+                                  headers: <String, String>{
+                                    'harmony_browser_page':
+                                        'pages/LaunchInAppPage'
+                                  },
+                                ),
+                              );
                             } else if (e.masked) {
                               setState(() {
                                 _isVisible = !_isVisible;

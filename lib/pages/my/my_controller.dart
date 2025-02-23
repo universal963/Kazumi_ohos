@@ -11,7 +11,7 @@ class MyController {
     Utils.latest().then((value) {
       if (Api.version == value) {
         if (type == 'manual') {
-          KazumiDialog.showToast(message:  '当前已经是最新版本！');
+          KazumiDialog.showToast(message: '当前已经是最新版本！');
         }
       } else {
         KazumiDialog.show(
@@ -28,8 +28,14 @@ class MyController {
                   ),
                 ),
                 TextButton(
-                  onPressed: () =>
-                      launchUrl(Uri.parse("${Api.sourceUrl}/releases/latest")),
+                  onPressed: () => launchUrl(
+                    Uri.parse("${Api.sourceUrl}/releases/latest"),
+                    webViewConfiguration: const WebViewConfiguration(
+                      headers: <String, String>{
+                        'harmony_browser_page': 'pages/LaunchInAppPage'
+                      },
+                    ),
+                  ),
                   child: const Text('Github'),
                 ),
               ],

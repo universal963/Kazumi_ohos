@@ -243,8 +243,17 @@ class _InfoPageState extends State<InfoPage>
                             TextButton(
                                 onPressed: () {
                                   KazumiDialog.dismiss();
-                                  launchUrl(Uri.parse(pluginsController
-                                      .pluginList[currentIndex].baseUrl));
+                                  launchUrl(
+                                    Uri.parse(pluginsController
+                                        .pluginList[currentIndex].baseUrl),
+                                    webViewConfiguration:
+                                        const WebViewConfiguration(
+                                      headers: <String, String>{
+                                        'harmony_browser_page':
+                                            'pages/LaunchInAppPage'
+                                      },
+                                    ),
+                                  );
                                 },
                                 child: const Text('确认')),
                           ],
