@@ -15,7 +15,7 @@ const ProgressIndicatorThemeData progressIndicatorTheme2024 =
   // This flag is deprecated since 3.29 but not default to false yet. Keep
   // it to false so we have the latest M3 style process indicator.
   // ignore: deprecated_member_use
-  // year2023: false,
+  year2023: false,
 );
 
 /// The page transition method defined here is managed by flutter, and the native transition method of flutter is set here.
@@ -23,12 +23,11 @@ const ProgressIndicatorThemeData progressIndicatorTheme2024 =
 /// the native transition method from failing
 const PageTransitionsTheme pageTransitionsTheme2024 = PageTransitionsTheme(
   builders: {
-    TargetPlatform.android: ZoomPageTransitionsBuilder(),
+    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
     TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-    TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-    TargetPlatform.ohos: CupertinoPageTransitionsBuilder(),
+    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
   },
 );
 
@@ -70,6 +69,55 @@ Map<String, String> bangumiHTTPHeader = {
       'Predidit/Kazumi/${Api.version} (Android) (https://github.com/Predidit/Kazumi)',
   'referer': '',
 };
+
+// 可选硬件解码器
+const Map<String, String> hardwareDecodersList = {
+  'auto': '启用任意可用解码器',
+  'auto-safe': '启用最佳解码器',
+  'auto-copy': '启用带拷贝功能的最佳解码器',
+  'd3d11va': 'DirectX11 (windows8 及以上)',
+  'd3d11va-copy': 'DirectX11 (windows8 及以上) (非直通)',
+  'videotoolbox': 'VideoToolbox (macOS / iOS)',
+  'videotoolbox-copy': 'VideoToolbox (macOS / iOS) (非直通)',
+  'vaapi': 'VAAPI (Linux)',
+  'vaapi-copy': 'VAAPI (Linux) (非直通)',
+  'nvdec': 'NVDEC (NVIDIA独占)',
+  'nvdec-copy': 'NVDEC (NVIDIA独占) (非直通)',
+  'drm': 'DRM (Linux)',
+  'drm-copy': 'DRM (Linux) (非直通)',
+  'vulkan': 'Vulkan (全平台) (实验性)',
+  'vulkan-copy': 'Vulkan (全平台) (实验性) (非直通)',
+  'dxva2': 'DXVA2 (Windows7 及以上)',
+  'dxva2-copy': 'DXVA2 (Windows7 及以上) (非直通)',
+  'vdpau': 'VDPAU (Linux)',
+  'vdpau-copy': 'VDPAU (Linux) (非直通)',
+  'mediacodec': 'MediaCodec (Android)',
+  'cuda': 'CUDA (NVIDIA独占) (过时)',
+  'cuda-copy': 'CUDA (NVIDIA独占) (过时) (非直通)',
+  'crystalhd': 'CrystalHD (全平台) (过时)',
+  'rkmpp': 'Rockchip MPP (仅部分Rockchip芯片)',
+};
+
+// 超分辨率滤镜
+const List<String> mpvAnime4KShaders = [
+  'Anime4K_Clamp_Highlights.glsl',
+  'Anime4K_Restore_CNN_VL.glsl',
+  'Anime4K_Upscale_CNN_x2_VL.glsl',
+  'Anime4K_AutoDownscalePre_x2.glsl',
+  'Anime4K_AutoDownscalePre_x4.glsl',
+  'Anime4K_Upscale_CNN_x2_M.glsl'
+];
+
+// 超分辨率滤镜 (轻量)
+const List<String> mpvAnime4KShadersLite = [
+  'Anime4K_Clamp_Highlights.glsl',
+  'Anime4K_Restore_CNN_M.glsl',
+  'Anime4K_Restore_CNN_S.glsl',
+  'Anime4K_Upscale_CNN_x2_M.glsl',
+  'Anime4K_AutoDownscalePre_x2.glsl',
+  'Anime4K_AutoDownscalePre_x4.glsl',
+  'Anime4K_Upscale_CNN_x2_S.glsl'
+];
 
 // 可选播放倍速
 const List<double> defaultPlaySpeedList = [

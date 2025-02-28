@@ -47,7 +47,7 @@ class IndexModule extends Module {
         transition: TransitionType.noTransition);
     r.child("/tab", child: (_) {
       return const IndexPage();
-    }, children: menu.routes);
+    }, children: menu.routes, transition: TransitionType.noTransition);
     r.module("/video", module: VideoModule());
     r.module("/info", module: InfoModule());
     r.module("/settings", module: SettingsModule());
