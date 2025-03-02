@@ -312,7 +312,7 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
         Theme.of(context)
             .colorScheme
             .primary
-            .toARGB32()
+            .value
             .toRadixString(16)
             .substring(2));
     return Observer(builder: (context) {
