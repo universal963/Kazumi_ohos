@@ -28,6 +28,7 @@ const PageTransitionsTheme pageTransitionsTheme2024 = PageTransitionsTheme(
     TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
     TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
     TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+    TargetPlatform.ohos: CupertinoPageTransitionsBuilder(),
   },
 );
 
