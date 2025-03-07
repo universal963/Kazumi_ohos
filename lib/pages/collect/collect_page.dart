@@ -115,7 +115,7 @@ class _CollectPageState extends State<CollectPage>
             },
             child: syncCollectiblesing
                 ? const SizedBox(
-                    width: 32, height: 32, child: CircularProgressIndicator())
+                    width: 24, height: 24, child: CircularProgressIndicator())
                 : const Icon(Icons.cloud_sync),
           ),
           body: Observer(builder: (context) {
