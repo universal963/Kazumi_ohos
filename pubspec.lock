@@ -1374,7 +1374,7 @@ packages:
     description:
       path: "packages/video_player/video_player"
       ref: HEAD
-      resolved-ref: "306b96d078c70a430ba588af1f345a82f1ba347b"
+      resolved-ref: c199e1745f242a0ca2d789dadee63b9953a4d27f
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
     version: "2.7.1"
@@ -1399,7 +1399,7 @@ packages:
     description:
       path: "packages/video_player/video_player_ohos"
       ref: HEAD
-      resolved-ref: "306b96d078c70a430ba588af1f345a82f1ba347b"
+      resolved-ref: c199e1745f242a0ca2d789dadee63b9953a4d27f
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
     version: "1.0.0+1"
