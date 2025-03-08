@@ -36,9 +36,9 @@ class RemotePlay {
           actions: [
             TextButton(
               onPressed: () async {
-                if (Platform.isAndroid ||
+                if ((Platform.isAndroid ||
                     Platform.isWindows ||
-                    Platform.isOhos && referer.isEmpty) {
+                    Platform.isOhos) && referer.isEmpty) {
                   if (await _launchURLWithMIME(video, 'video/mp4')) {
                     KazumiDialog.dismiss();
                     KazumiDialog.showToast(
