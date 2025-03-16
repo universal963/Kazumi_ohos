@@ -3,10 +3,11 @@ import { InAppBrowser } from 'url_launcher_ohos/src/main/ets/components/plugin/I
 @Entry
 @Component
 struct LaunchInAppPage {
-
   build() {
-    Row() {
+    Column() {
       InAppBrowser()
     }
+    // temporary solution
+    .padding({ top: 40 })
   }
 }
