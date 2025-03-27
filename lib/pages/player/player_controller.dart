@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
+import 'package:kazumi/pages/info/info_controller.dart';
 import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
 import 'package:mobx/mobx.dart';
@@ -14,6 +16,11 @@ import 'package:kazumi/utils/storage.dart';
 import 'package:logger/logger.dart';
 import 'package:kazumi/utils/logger.dart';
 import 'package:kazumi/utils/utils.dart';
+import 'package:flutter/services.dart';
+import 'package:kazumi/utils/constants.dart';
+import 'package:kazumi/utils/syncplay.dart';
+import 'package:kazumi/utils/external_player.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 part 'player_controller.g.dart';
 
@@ -22,6 +29,8 @@ class PlayerController = _PlayerController with _$PlayerController;
 abstract class _PlayerController with Store {
   final VideoPageController videoPageController =
       Modular.get<VideoPageController>();
+  final InfoController infoController = Modular.get<InfoController>();
+  final ShadersController shadersController = Modular.get<ShadersController>();
 
   // 弹幕控制
   late DanmakuController danmakuController;
@@ -29,6 +38,13 @@ abstract class _PlayerController with Store {
   Map<int, List<Danmaku>> danDanmakus = {};
   @observable
   bool danmakuOn = false;
+
+  // 一起看控制器
+  SyncplayClient? syncplayController;
+  @observable
+  String syncplayRoom = '';
+  @observable
+  int syncplayClientRtt = 0;
 
   /// 视频比例类型
   /// 1. AUTO
@@ -135,7 +151,7 @@ abstract class _PlayerController with Store {
     duration = Duration.zero;
     completed = false;
     try {
-      await dispose();
+      await dispose(disposeSyncPlayController: false);
     } catch (_) {}
     int episodeFromTitle = 0;
     try {
@@ -168,6 +184,13 @@ abstract class _PlayerController with Store {
     setPlaybackSpeed(playerSpeed);
     KazumiLogger().log(Level.info, 'VideoURL初始化完成');
     loading = false;
+    if (syncplayController?.isConnected ?? false) {
+      if (syncplayController!.currentFileName !=
+          "${infoController.bangumiItem.id}[${videoPageController.currentEpisode}]") {
+        setSyncPlayPlayingBangumi(
+            forceSyncPlaying: true, forceSyncPosition: 0.0);
+      }
+    }
   }
 
   Future<VideoPlayerController> createVideoController({int offset = 0}) async {
@@ -197,7 +220,7 @@ abstract class _PlayerController with Store {
               message:
                   '播放器内部错误 ${mediaPlayer.value.errorDescription} $videoUrl',
               duration: const Duration(seconds: 5),
-              showUndoButton: true);
+              showActionButton: true);
         }
         KazumiLogger().log(Level.error,
             'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
@@ -236,25 +259,51 @@ abstract class _PlayerController with Store {
     }
   }
 
-  Future<void> seek(Duration duration) async {
+  Future<void> seek(Duration duration, {bool enableSync = true}) async {
     currentPosition = duration;
     danmakuController.clear();
     await mediaPlayer.seekTo(duration);
+    if (syncplayController != null) {
+      setSyncPlayCurrentPosition();
+      if (enableSync) {
+        await requestSyncPlaySync(doSeek: true);
+      }
+    }
   }
 
-  Future<void> pause() async {
+  Future<void> pause({bool enableSync = true}) async {
     danmakuController.pause();
     await mediaPlayer.pause();
     playing = false;
+    if (syncplayController != null) {
+      setSyncPlayCurrentPosition();
+      if (enableSync) {
+        await requestSyncPlaySync();
+      }
+    }
   }
 
-  Future<void> play() async {
+  Future<void> play({bool enableSync = true}) async {
     danmakuController.resume();
     await mediaPlayer.play();
     playing = true;
+    if (syncplayController != null) {
+      setSyncPlayCurrentPosition();
+      if (enableSync) {
+        await requestSyncPlaySync();
+      }
+    }
   }
 
-  Future<void> dispose() async {
+  Future<void> dispose({bool disposeSyncPlayController = true}) async {
+    if (disposeSyncPlayController) {
+      try {
+        syncplayRoom = '';
+        syncplayClientRtt = 0;
+        await syncplayController?.disconnect();
+        syncplayController = null;
+      } catch (_) {}
+    }
     try {
       await mediaPlayer.dispose();
     } catch (_) {}
@@ -305,5 +354,212 @@ abstract class _PlayerController with Store {
       danmakuList.add(element);
       danDanmakus[element.time.toInt()] = danmakuList;
     }
+  }
+
+  void lanunchExternalPlayer() async {
+    String referer = videoPageController.currentPlugin.referer;
+    if ((Platform.isAndroid || Platform.isWindows) && referer.isEmpty) {
+      if (await ExternalPlayer.launchURLWithMIME(videoUrl, 'video/mp4')) {
+        KazumiDialog.dismiss();
+        KazumiDialog.showToast(
+          message: '尝试唤起外部播放器',
+        );
+      } else {
+        KazumiDialog.showToast(
+          message: '唤起外部播放器失败',
+        );
+      }
+    } else if (Platform.isMacOS || Platform.isIOS) {
+      if (await ExternalPlayer.launchURLWithReferer(videoUrl, referer)) {
+        KazumiDialog.dismiss();
+        KazumiDialog.showToast(
+          message: '尝试唤起外部播放器',
+        );
+      } else {
+        KazumiDialog.showToast(
+          message: '唤起外部播放器失败',
+        );
+      }
+    } else if (Platform.isLinux && referer.isEmpty) {
+      KazumiDialog.dismiss();
+      if (await canLaunchUrlString(videoUrl)) {
+        launchUrlString(videoUrl);
+        KazumiDialog.showToast(
+          message: '尝试唤起外部播放器',
+        );
+      } else {
+        KazumiDialog.showToast(
+          message: '无法使用外部播放器',
+        );
+      }
+    } else {
+      if (referer.isEmpty) {
+        KazumiDialog.showToast(
+          message: '暂不支持该设备',
+        );
+      } else {
+        KazumiDialog.showToast(
+          message: '暂不支持该规则',
+        );
+      }
+    }
+  }
+
+  Future<void> createSyncPlayRoom(
+      String room, String username, Function changeEpisode) async {
+    await syncplayController?.disconnect();
+    syncplayController = SyncplayClient(host: 'syncplay.pl', port: 8995);
+    try {
+      await syncplayController!.connect();
+      syncplayController!.onGeneralMessage.listen(
+        (message) {
+          print('SyncPlay: general message: ${message.toString()}');
+        },
+        onError: (error) {
+          print('SyncPlay: error: ${error.message}');
+          if (error is SyncplayConnectionException) {
+            exitSyncPlayRoom();
+            KazumiDialog.showToast(
+              message: 'SyncPlay: 同步中断 ${error.message}',
+              duration: const Duration(seconds: 5),
+              showActionButton: true,
+              actionLabel: '重新连接',
+              onActionPressed: () =>
+                  createSyncPlayRoom(room, username, changeEpisode),
+            );
+          }
+        },
+      );
+      syncplayController!.onRoomMessage.listen(
+        (message) {
+          if (message['type'] == 'init') {
+            if (message['username'] == '') {
+              KazumiDialog.showToast(
+                  message: 'SyncPlay: 您是当前房间中的唯一用户',
+                  duration: const Duration(seconds: 5));
+              setSyncPlayPlayingBangumi();
+            } else {
+              KazumiDialog.showToast(
+                  message: 'SyncPlay: 您不是当前房间中的唯一用户, 当前以用户 ${message['username']} 进度为准');
+            }
+          }
+          if (message['type'] == 'left') {
+            KazumiDialog.showToast(
+                message: 'SyncPlay: ${message['username']} 离开了房间',
+                duration: const Duration(seconds: 5));
+          }
+          if (message['type'] == 'joined') {
+            KazumiDialog.showToast(
+                message: 'SyncPlay: ${message['username']} 加入了房间',
+                duration: const Duration(seconds: 5));
+          }
+        },
+      );
+      syncplayController!.onFileChangedMessage.listen(
+        (message) {
+          print(
+              'SyncPlay: file changed by ${message['setBy']}: ${message['name']}');
+          RegExp regExp = RegExp(r'(\d+)\[(\d+)\]');
+          Match? match = regExp.firstMatch(message['name']);
+          if (match != null) {
+            int bangumiID = int.tryParse(match.group(1) ?? '0') ?? 0;
+            int episode = int.tryParse(match.group(2) ?? '0') ?? 0;
+            if (bangumiID != 0 &&
+                episode != 0 &&
+                episode != videoPageController.currentEpisode) {
+              KazumiDialog.showToast(
+                  message:
+                      'SyncPlay: ${message['setBy'] ?? 'unknown'} 切换到第 $episode 话',
+                  duration: const Duration(seconds: 3));
+              changeEpisode(episode,
+                  currentRoad: videoPageController.currentRoad);
+            }
+          }
+        },
+      );
+      syncplayController!.onPositionChangedMessage.listen(
+        (message) {
+          syncplayClientRtt = (message['clientRtt'].toDouble() * 1000).toInt();
+          print(
+              'SyncPlay: position changed by ${message['setBy']}: [${DateTime.now().millisecondsSinceEpoch / 1000.0}] calculatedPosition ${message['calculatedPositon']} position: ${message['position']} doSeek: ${message['doSeek']} paused: ${message['paused']} clientRtt: ${message['clientRtt']} serverRtt: ${message['serverRtt']} fd: ${message['fd']}');
+          if (message['paused'] != !playing) {
+            if (message['paused']) {
+              if (message['position'] != 0) {
+                KazumiDialog.showToast(
+                    message: 'SyncPlay: ${message['setBy'] ?? 'unknown'} 暂停了播放',
+                    duration: const Duration(seconds: 3));
+                pause(enableSync: false);
+              }
+            } else {
+              if (message['position'] != 0) {
+                KazumiDialog.showToast(
+                    message: 'SyncPlay: ${message['setBy'] ?? 'unknown'} 开始了播放',
+                    duration: const Duration(seconds: 3));
+                play(enableSync: false);
+              }
+            }
+          }
+          if ((((playerPosition.inMilliseconds -
+                              (message['calculatedPositon'].toDouble() * 1000)
+                                  .toInt())
+                          .abs() >
+                      1000) ||
+                  message['doSeek']) &&
+              duration.inMilliseconds > 0) {
+            seek(
+                Duration(
+                    milliseconds:
+                        (message['calculatedPositon'].toDouble() * 1000)
+                            .toInt()),
+                enableSync: false);
+          }
+        },
+      );
+      await syncplayController!.joinRoom(room, username);
+      syncplayRoom = room;
+    } catch (e) {
+      print('SyncPlay: error: $e');
+    }
+  }
+
+  void setSyncPlayCurrentPosition(
+      {bool? forceSyncPlaying, double? forceSyncPosition}) {
+    if (syncplayController == null) {
+      return;
+    }
+    forceSyncPlaying ??= playing;
+    syncplayController!.setPaused(!forceSyncPlaying);
+    syncplayController!.setPosition((forceSyncPosition ??
+        (((currentPosition.inMilliseconds - playerPosition.inMilliseconds)
+                    .abs() >
+                2000)
+            ? currentPosition.inMilliseconds.toDouble() / 1000
+            : playerPosition.inMilliseconds.toDouble() / 1000)));
+  }
+
+  Future<void> setSyncPlayPlayingBangumi(
+      {bool? forceSyncPlaying, double? forceSyncPosition}) async {
+    await syncplayController!.setSyncPlayPlaying(
+        "${infoController.bangumiItem.id}[${videoPageController.currentEpisode}]",
+        10800,
+        220514438);
+    setSyncPlayCurrentPosition(
+        forceSyncPlaying: forceSyncPlaying,
+        forceSyncPosition: forceSyncPosition);
+    await requestSyncPlaySync();
+  }
+
+  Future<void> requestSyncPlaySync({bool? doSeek}) async {
+    await syncplayController!.sendSyncPlaySyncRequest(doSeek: doSeek);
+  }
+
+  Future<void> exitSyncPlayRoom() async {
+    if (syncplayController == null) {
+      return;
+    }
+    await syncplayController!.disconnect();
+    syncplayController = null;
+    syncplayRoom = '';
+    syncplayClientRtt = 0;
   }
 }

@@ -204,13 +204,13 @@ class _PlayerItemState extends State<PlayerItem>
 
   void handleProgressBarDragStart(ThumbDragDetails details) {
     playerTimer?.cancel();
-    playerController.pause();
+    playerController.pause(enableSync: false);
     hideTimer?.cancel();
     playerController.showVideoController = true;
   }
 
   void handleProgressBarDragEnd() {
-    playerController.play();
+    playerController.play(enableSync: false);
     startHideTimer();
     playerTimer = getPlayerTimer();
   }
@@ -377,6 +377,8 @@ class _PlayerItemState extends State<PlayerItem>
         widget.changeEpisode(videoPageController.currentEpisode + 1,
             currentRoad: videoPageController.currentRoad);
       }
+      // 一起去看相关
+      playerController.setSyncPlayCurrentPosition();
     });
   }
 
@@ -532,13 +534,87 @@ class _PlayerItemState extends State<PlayerItem>
             width: 400,
             child: TextDisplayWidget(logLines: playerController.playerLog)),
         actions: [
-          TextButton(onPressed: () {
-            Clipboard.setData(ClipboardData(text: playerController.playerLog.toString()));
-            KazumiDialog.showToast(message: '已复制到剪贴板');
-          }, child: const Text('复制到剪贴板')),
+          TextButton(
+              onPressed: () {
+                Clipboard.setData(
+                    ClipboardData(text: playerController.playerLog.toString()));
+                KazumiDialog.showToast(message: '已复制到剪贴板');
+              },
+              child: const Text('复制到剪贴板')),
           TextButton(
             onPressed: KazumiDialog.dismiss,
             child: const Text('取消'),
+          ),
+        ],
+      );
+    });
+  }
+
+  void showSyncPlayRoomCreateDialog() {
+    final formKey = GlobalKey<FormState>();
+    final TextEditingController roomController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
+    KazumiDialog.show(builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('创建房间'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: roomController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: '房间号',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入房间号';
+                  }
+                  final regex = RegExp(r'^[0-9]{6,10}$');
+                  if (!regex.hasMatch(value)) {
+                    return '房间号需要6到10位数字';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  labelText: '用户名',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入用户名';
+                  }
+                  final regex = RegExp(r'^[a-zA-Z]{4,12}$');
+                  if (!regex.hasMatch(value)) {
+                    return '用户名必须为4到12位英文字符';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              KazumiDialog.dismiss();
+            },
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                KazumiDialog.dismiss();
+                playerController.createSyncPlayRoom(roomController.text,
+                    usernameController.text, widget.changeEpisode);
+              }
+            },
+            child: const Text('确定'),
           ),
         ],
       );
@@ -902,6 +978,8 @@ class _PlayerItemState extends State<PlayerItem>
                             cancelHideTimer: cancelHideTimer,
                             handleDanmaku: handleDanmaku,
                             showVideoInfo: showVideoInfo,
+                            showSyncPlayRoomCreateDialog:
+                                showSyncPlayRoomCreateDialog,
                           )
                         : SmallestPlayerItemPanel(
                             onBackPressed: widget.onBackPressed,
@@ -918,6 +996,8 @@ class _PlayerItemState extends State<PlayerItem>
                             cancelHideTimer: cancelHideTimer,
                             handleDanmaku: handleDanmaku,
                             showVideoInfo: showVideoInfo,
+                            showSyncPlayRoomCreateDialog:
+                                showSyncPlayRoomCreateDialog,
                           ),
                     // 播放器手势控制
                     Positioned.fill(
@@ -938,7 +1018,7 @@ class _PlayerItemState extends State<PlayerItem>
                                   (DragUpdateDetails details) {
                                 playerController.showSeekTime = true;
                                 playerTimer?.cancel();
-                                playerController.pause();
+                                playerController.pause(enableSync: false);
                                 final double scale =
                                     180000 / MediaQuery.sizeOf(context).width;
                                 int ms = (playerController
@@ -952,7 +1032,7 @@ class _PlayerItemState extends State<PlayerItem>
                                     Duration(milliseconds: ms);
                               },
                               onHorizontalDragEnd: (_) {
-                                playerController.play();
+                                playerController.play(enableSync: false);
                                 playerController
                                     .seek(playerController.currentPosition);
                                 playerController.canHidePlayerPanel = true;
