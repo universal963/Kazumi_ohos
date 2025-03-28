@@ -30,6 +30,7 @@ class MyController {
                 TextButton(
                   onPressed: () => launchUrl(
                     Uri.parse("${Api.sourceUrl}/releases/latest"),
+                    mode: LaunchMode.externalApplication,
                     webViewConfiguration: const WebViewConfiguration(
                       headers: <String, String>{
                         'harmony_browser_page': 'pages/LaunchInAppPage'
