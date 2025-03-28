@@ -96,13 +96,7 @@ class _BBCodeWidgetState extends State<BBCodeWidget> {
                             if ((!e.masked || _isVisible) && e.link != null) {
                               launchUrl(
                                 Uri.parse(e.link!),
-                                webViewConfiguration:
-                                    const WebViewConfiguration(
-                                  headers: <String, String>{
-                                    'harmony_browser_page':
-                                        'pages/LaunchInAppPage'
-                                  },
-                                ),
+                                mode: LaunchMode.externalApplication,
                               );
                             } else if (e.masked) {
                               setState(() {

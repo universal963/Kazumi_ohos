@@ -157,11 +157,6 @@ class _AboutPageState extends State<AboutPage> {
                         launchUrl(
                           Uri.parse(Api.sourceUrl),
                           mode: LaunchMode.externalApplication,
-                          webViewConfiguration: const WebViewConfiguration(
-                            headers: <String, String>{
-                              'harmony_browser_page': 'pages/LaunchInAppPage'
-                            },
-                          ),
                         );
                       },
                       title: const Text('项目主页'),
@@ -172,11 +167,6 @@ class _AboutPageState extends State<AboutPage> {
                         launchUrl(
                           Uri.parse(Api.iconUrl),
                           mode: LaunchMode.externalApplication,
-                          webViewConfiguration: const WebViewConfiguration(
-                            headers: <String, String>{
-                              'harmony_browser_page': 'pages/LaunchInAppPage'
-                            },
-                          ),
                         );
                       },
                       title: const Text('图标创作'),
@@ -187,11 +177,6 @@ class _AboutPageState extends State<AboutPage> {
                         launchUrl(
                           Uri.parse(Api.bangumiIndex),
                           mode: LaunchMode.externalApplication,
-                          webViewConfiguration: const WebViewConfiguration(
-                            headers: <String, String>{
-                              'harmony_browser_page': 'pages/LaunchInAppPage'
-                            },
-                          ),
                         );
                       },
                       title: const Text('番剧索引'),
@@ -202,11 +187,6 @@ class _AboutPageState extends State<AboutPage> {
                         launchUrl(
                           Uri.parse(Api.dandanIndex),
                           mode: LaunchMode.externalApplication,
-                          webViewConfiguration: const WebViewConfiguration(
-                            headers: <String, String>{
-                              'harmony_browser_page': 'pages/LaunchInAppPage'
-                            },
-                          ),
                         );
                       },
                       title: const Text('弹幕来源'),

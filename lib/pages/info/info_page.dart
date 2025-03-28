@@ -249,13 +249,7 @@ class _InfoPageState extends State<InfoPage>
                                   launchUrl(
                                     Uri.parse(pluginsController
                                         .pluginList[currentIndex].baseUrl),
-                                    webViewConfiguration:
-                                        const WebViewConfiguration(
-                                      headers: <String, String>{
-                                        'harmony_browser_page':
-                                            'pages/LaunchInAppPage'
-                                      },
-                                    ),
+                                    mode: LaunchMode.externalApplication,
                                   );
                                 },
                                 child: const Text('确认')),
