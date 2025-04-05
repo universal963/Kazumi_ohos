@@ -14,9 +14,6 @@ import 'package:kazumi/modules/staff/staff_item.dart';
 class InfoTabView extends StatefulWidget {
   const InfoTabView({
     super.key,
-    required this.commentsIsLoading,
-    required this.charactersIsLoading,
-    required this.staffIsLoading,
     required this.commentsQueryTimeout,
     required this.charactersQueryTimeout,
     required this.staffQueryTimeout,
@@ -31,9 +28,6 @@ class InfoTabView extends StatefulWidget {
     required this.isLoading,
   });
 
-  final bool commentsIsLoading;
-  final bool charactersIsLoading;
-  final bool staffIsLoading;
   final bool commentsQueryTimeout;
   final bool charactersQueryTimeout;
   final bool staffQueryTimeout;
@@ -225,21 +219,44 @@ class _InfoTabViewState extends State<InfoTabView>
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
               ),
               SliverLayoutBuilder(builder: (context, _) {
-                if (widget.commentsList.isEmpty && widget.commentsIsLoading) {
-                  return SliverList.builder(
-                    itemCount: 4,
-                    itemBuilder: (context, _) {
+                if (widget.commentsList.isNotEmpty) {
+                  return SliverList.separated(
+                    addAutomaticKeepAlives: false,
+                    itemCount: widget.commentsList.length,
+                    itemBuilder: (context, index) {
                       return SafeArea(
                         top: false,
                         bottom: false,
                         child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
                             child: SizedBox(
                               width: MediaQuery.sizeOf(context).width > maxWidth
                                   ? maxWidth
                                   : MediaQuery.sizeOf(context).width - 32,
-                              child: CommentsCard.bone(),
+                              child: CommentsCard(
+                                commentItem: widget.commentsList[index],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return SafeArea(
+                        top: false,
+                        bottom: false,
+                        child: Center(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: SizedBox(
+                              width: MediaQuery.sizeOf(context).width > maxWidth
+                                  ? maxWidth
+                                  : MediaQuery.sizeOf(context).width - 32,
+                              child: Divider(
+                                  thickness: 0.5, indent: 10, endIndent: 10),
                             ),
                           ),
                         ),
@@ -263,41 +280,20 @@ class _InfoTabViewState extends State<InfoTabView>
                     ),
                   );
                 }
-                return SliverList.separated(
-                  addAutomaticKeepAlives: false,
-                  itemCount: widget.commentsList.length,
-                  itemBuilder: (context, index) {
+                return SliverList.builder(
+                  itemCount: 4,
+                  itemBuilder: (context, _) {
                     return SafeArea(
                       top: false,
                       bottom: false,
                       child: Center(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: const EdgeInsets.all(16),
                           child: SizedBox(
                             width: MediaQuery.sizeOf(context).width > maxWidth
                                 ? maxWidth
                                 : MediaQuery.sizeOf(context).width - 32,
-                            child: CommentsCard(
-                              commentItem: widget.commentsList[index],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SafeArea(
-                      top: false,
-                      bottom: false,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width > maxWidth
-                                ? maxWidth
-                                : MediaQuery.sizeOf(context).width - 32,
-                            child: Divider(
-                                thickness: 0.5, indent: 10, endIndent: 10),
+                            child: CommentsCard.bone(),
                           ),
                         ),
                       ),
@@ -325,21 +321,19 @@ class _InfoTabViewState extends State<InfoTabView>
               handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
             ),
             SliverLayoutBuilder(builder: (context, _) {
-              if (widget.staffList.isEmpty && widget.staffIsLoading) {
+              if (widget.staffList.isNotEmpty) {
                 return SliverList.builder(
-                  itemCount: 8,
-                  itemBuilder: (context, _) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width > maxWidth
-                            ? maxWidth
-                            : MediaQuery.sizeOf(context).width - 32,
-                        child: Skeletonizer.zone(
-                          child: ListTile(
-                            leading: Bone.circle(size: 36),
-                            title: Bone.text(width: 100),
-                            subtitle: Bone.text(width: 80),
+                  itemCount: widget.staffList.length,
+                  itemBuilder: (context, index) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width > maxWidth
+                              ? maxWidth
+                              : MediaQuery.sizeOf(context).width - 32,
+                          child: StaffCard(
+                            staffFullItem: widget.staffList[index],
                           ),
                         ),
                       ),
@@ -363,17 +357,19 @@ class _InfoTabViewState extends State<InfoTabView>
                 );
               }
               return SliverList.builder(
-                itemCount: widget.staffList.length,
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width > maxWidth
-                            ? maxWidth
-                            : MediaQuery.sizeOf(context).width - 32,
-                        child: StaffCard(
-                          staffFullItem: widget.staffList[index],
+                itemCount: 8,
+                itemBuilder: (context, _) {
+                  return Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: MediaQuery.sizeOf(context).width > maxWidth
+                          ? maxWidth
+                          : MediaQuery.sizeOf(context).width - 32,
+                      child: Skeletonizer.zone(
+                        child: ListTile(
+                          leading: Bone.circle(size: 36),
+                          title: Bone.text(width: 100),
+                          subtitle: Bone.text(width: 80),
                         ),
                       ),
                     ),
@@ -400,21 +396,19 @@ class _InfoTabViewState extends State<InfoTabView>
               handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
             ),
             SliverLayoutBuilder(builder: (context, _) {
-              if (widget.characterList.isEmpty && widget.charactersIsLoading) {
+              if (widget.characterList.isNotEmpty) {
                 return SliverList.builder(
-                  itemCount: 4,
-                  itemBuilder: (context, _) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width > maxWidth
-                            ? maxWidth
-                            : MediaQuery.sizeOf(context).width - 32,
-                        child: Skeletonizer.zone(
-                          child: ListTile(
-                            leading: Bone.circle(size: 36),
-                            title: Bone.text(width: 100),
-                            subtitle: Bone.text(width: 80),
+                  itemCount: widget.characterList.length,
+                  itemBuilder: (context, index) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: SizedBox(
+                          width: MediaQuery.sizeOf(context).width > maxWidth
+                              ? maxWidth
+                              : MediaQuery.sizeOf(context).width - 32,
+                          child: CharacterCard(
+                            characterItem: widget.characterList[index],
                           ),
                         ),
                       ),
@@ -438,17 +432,19 @@ class _InfoTabViewState extends State<InfoTabView>
                 );
               }
               return SliverList.builder(
-                itemCount: widget.characterList.length,
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: SizedBox(
-                        width: MediaQuery.sizeOf(context).width > maxWidth
-                            ? maxWidth
-                            : MediaQuery.sizeOf(context).width - 32,
-                        child: CharacterCard(
-                          characterItem: widget.characterList[index],
+                itemCount: 4,
+                itemBuilder: (context, _) {
+                  return Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: MediaQuery.sizeOf(context).width > maxWidth
+                          ? maxWidth
+                          : MediaQuery.sizeOf(context).width - 32,
+                      child: Skeletonizer.zone(
+                        child: ListTile(
+                          leading: Bone.circle(size: 36),
+                          title: Bone.text(width: 100),
+                          subtitle: Bone.text(width: 80),
                         ),
                       ),
                     ),
