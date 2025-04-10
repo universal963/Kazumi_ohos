@@ -14,6 +14,8 @@ import 'package:kazumi/pages/history/history_controller.dart';
 import 'package:kazumi/pages/video/video_module.dart';
 import 'package:kazumi/pages/info/info_module.dart';
 import 'package:kazumi/pages/settings/settings_module.dart';
+import 'package:kazumi/pages/search/search_page.dart';
+import 'package:kazumi/pages/search/search_controller.dart';
 
 class IndexModule extends Module {
   @override
@@ -29,6 +31,7 @@ class IndexModule extends Module {
     i.addSingleton(CollectController.new);
     i.addSingleton(HistoryController.new);
     i.addSingleton(MyController.new);
+    i.addSingleton(SearchPageController.new);
   }
 
   @override
@@ -57,5 +60,8 @@ class IndexModule extends Module {
     r.module("/video", module: VideoModule());
     r.module("/info", module: InfoModule());
     r.module("/settings", module: SettingsModule());
+    r.child("/search/:tag", child: (_) {
+      return SearchPage(inputTag: r.args.params['tag']);
+    });
   }
 }
