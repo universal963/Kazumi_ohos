@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
-import 'package:kazumi/pages/info/info_controller.dart';
 import 'package:video_player/video_player.dart';
 import 'package:kazumi/modules/danmaku/danmaku_module.dart';
 import 'package:mobx/mobx.dart';
@@ -14,6 +15,8 @@ import 'package:kazumi/utils/storage.dart';
 import 'package:logger/logger.dart';
 import 'package:kazumi/utils/logger.dart';
 import 'package:kazumi/utils/utils.dart';
+import 'package:flutter/services.dart';
+import 'package:kazumi/utils/constants.dart';
 import 'package:kazumi/utils/syncplay.dart';
 import 'package:kazumi/utils/external_player.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -25,7 +28,6 @@ class PlayerController = _PlayerController with _$PlayerController;
 abstract class _PlayerController with Store {
   final VideoPageController videoPageController =
       Modular.get<VideoPageController>();
-  final InfoController infoController = Modular.get<InfoController>();
 
   // 弹幕控制
   late DanmakuController danmakuController;
@@ -181,7 +183,7 @@ abstract class _PlayerController with Store {
     loading = false;
     if (syncplayController?.isConnected ?? false) {
       if (syncplayController!.currentFileName !=
-          "${infoController.bangumiItem.id}[${videoPageController.currentEpisode}]") {
+          "${videoPageController.bangumiItem.id}[${videoPageController.currentEpisode}]") {
         setSyncPlayPlayingBangumi(
             forceSyncPlaying: true, forceSyncPosition: 0.0);
       }
@@ -544,7 +546,7 @@ abstract class _PlayerController with Store {
   Future<void> setSyncPlayPlayingBangumi(
       {bool? forceSyncPlaying, double? forceSyncPosition}) async {
     await syncplayController!.setSyncPlayPlaying(
-        "${infoController.bangumiItem.id}[${videoPageController.currentEpisode}]",
+        "${videoPageController.bangumiItem.id}[${videoPageController.currentEpisode}]",
         10800,
         220514438);
     setSyncPlayCurrentPosition(
