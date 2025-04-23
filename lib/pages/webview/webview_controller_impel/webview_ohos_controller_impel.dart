@@ -105,6 +105,9 @@ class WebviewOhosItemControllerImpel
     await webviewController!
         .removeJavaScriptChannel('FullscreenBridgeDebug')
         .catchError((_) {});
+    await webviewController!
+        .removeJavaScriptChannel('IframeRedirectBridge')
+        .catchError((_) {});
     webviewController?.reload();
     await webviewController!.loadRequest(Uri.parse('about:blank'));
     ifrmaeParserTimer?.cancel();
@@ -126,10 +129,15 @@ class WebviewOhosItemControllerImpel
           'If there is audio but no video, please report it to the rule developer.');
       if ((message.message.contains('http') ||
               message.message.startsWith('//')) &&
+          !message.message.contains('googleads') &&
+          !message.message.contains('googlesyndication.com') &&
+          !message.message.contains('prestrain.html') &&
+          !message.message.contains('prestrain%2Ehtml') &&
+          !message.message.contains('adtrafficquality') &&
           currentUrl != message.message) {
         logEventController.add('Parsing video source ${message.message}');
         currentUrl = Uri.encodeFull(message.message);
-        redirctWithReferer(message.message);
+        redirectWithReferer(message.message);
         if (Utils.decodeVideoSource(currentUrl) != Uri.encodeFull(currentUrl) &&
             useNativePlayer &&
             useLegacyParser) {
@@ -144,12 +152,16 @@ class WebviewOhosItemControllerImpel
           videoParserEventController
               .add((Utils.decodeVideoSource(currentUrl), offset));
         }
-        if (!useNativePlayer) {
-          Future.delayed(const Duration(seconds: 2), () {
-            isIframeLoaded = true;
-            videoLoadingEventController.add(false);
-          });
-        }
+      }
+    });
+    await webviewController!.addJavaScriptChannel('IframeRedirectBridge',
+        onMessageReceived: (JavaScriptMessage message) {
+      logEventController.add('Redict to: ${message.message}');
+      if (!useNativePlayer) {
+        Future.delayed(const Duration(seconds: 2), () {
+          isIframeLoaded = true;
+          videoLoadingEventController.add(false);
+        });
       }
     });
     if (!useLegacyParser) {
@@ -180,16 +192,17 @@ class WebviewOhosItemControllerImpel
       for (var i = 0; i < iframes.length; i++) {
           var iframe = iframes[i];
           var src = iframe.getAttribute('src');
+          JSBridgeDebug.postMessage(src);
 
-          if (src && src.trim() !== '' && (src.startsWith('http') || src.startsWith('//')) && !src.includes('googleads') && !src.includes('googlesyndication.com') && !src.includes('google.com') && !src.includes('prestrain.html') && !src.includes('prestrain%2Ehtml')) {
-              JSBridgeDebug.postMessage(src);
+          if (src && src.trim() !== '' && (src.startsWith('http') || src.startsWith('//')) && !src.includes('googleads') && !src.includes('adtrafficquality') && !src.includes('googlesyndication.com') && !src.includes('google.com') && !src.includes('prestrain.html') && !src.includes('prestrain%2Ehtml')) {
+              IframeRedirectBridge.postMessage(src);
               break; 
           }
       }
   ''');
   }
 
-  Future<void> redirctWithReferer(String src) async {
+  Future<void> redirectWithReferer(String src) async {
     await webviewController!.runJavaScript('window.location.href = "$src";');
   }
 
@@ -250,34 +263,75 @@ class WebviewOhosItemControllerImpel
           return _open.apply(this, args);
       }
       
-      document.querySelectorAll('iframe').forEach((iframe) => {
+      function injectIntoIframe(iframe) {
         try {
-            const _r_text = iframe.contentWindow.Response.prototype.text;
-            iframe.contentWindow.Response.prototype.text = function () {
-                return new Promise((resolve, reject) => {
-                    _r_text.call(this).then((text) => {
-                        resolve(text);
-                        if (text.trim().startsWith("#EXTM3U")) {
-                            iframe.contentWindow.parent.postMessage({ message: 'videoMessage:' + this.url }, "*");
-                        }
-                    }).catch(reject);
-                });
+          const iframeWindow = iframe.contentWindow;
+          if (!iframeWindow) return;
+          
+          const iframe_r_text = iframeWindow.Response.prototype.text;
+          iframeWindow.Response.prototype.text = function () {
+            return new Promise((resolve, reject) => {
+              iframe_r_text.call(this).then((text) => {
+                resolve(text);
+                if (text.trim().startsWith("#EXTM3U")) {
+                  console.log(this.url);
+                  VideoBridgeDebug.postMessage(this.url);
+                }
+              }).catch(reject);
+            });
+          }
+          
+          const iframe_open = iframeWindow.XMLHttpRequest.prototype.open;
+          iframeWindow.XMLHttpRequest.prototype.open = function (...args) {
+            this.addEventListener("load", () => {
+              try {
+                let content = this.responseText;
+                if (content.trim().startsWith("#EXTM3U")) {
+                  console.log(args[1]);
+                  VideoBridgeDebug.postMessage(args[1]);
+                };
+              } catch { }
+            });
+            return iframe_open.apply(this, args);
+          }
+        } catch (e) {
+          console.error('iframe inject failed:', e);
+        }
+      }
+
+      function setupIframeListeners() {
+        document.querySelectorAll('iframe').forEach(iframe => {
+          if (iframe.contentDocument) {
+            injectIntoIframe(iframe);
+          }
+          iframe.addEventListener('load', () => injectIntoIframe(iframe));
+        });
+        
+        const observer = new MutationObserver(mutations => {
+          mutations.forEach(mutation => {
+            if (mutation.type === 'childList') {
+              mutation.addedNodes.forEach(node => {
+                if (node.nodeName === 'IFRAME') {
+                  node.addEventListener('load', () => injectIntoIframe(node));
+                }
+                if (node.querySelectorAll) {
+                  node.querySelectorAll('iframe').forEach(iframe => {
+                    iframe.addEventListener('load', () => injectIntoIframe(iframe));
+                  });
+                }
+              });
             }
-      
-            const _open = iframe.contentWindow.XMLHttpRequest.prototype.open;
-            iframe.contentWindow.XMLHttpRequest.prototype.open = function (...args) {
-                this.addEventListener("load", () => {
-                    try {
-                        let content = this.responseText;
-                        if (content.trim().startsWith("#EXTM3U")) {
-                            iframe.contentWindow.parent.postMessage({ message: 'videoMessage:' + args[1] }, "*");
-                        };
-                    } catch { }
-                });
-                return _open.apply(this, args);
-            } 
-        } catch { }
-      });   
+          });
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupIframeListeners);
+      } else {
+        setupIframeListeners();
+      }   
     ''');
   }
 
