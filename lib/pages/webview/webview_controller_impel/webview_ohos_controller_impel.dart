@@ -192,7 +192,9 @@ class WebviewOhosItemControllerImpel
       for (var i = 0; i < iframes.length; i++) {
           var iframe = iframes[i];
           var src = iframe.getAttribute('src');
-          JSBridgeDebug.postMessage(src);
+          if (src) {
+              JSBridgeDebug.postMessage(src);
+          }
 
           if (src && src.trim() !== '' && (src.startsWith('http') || src.startsWith('//')) && !src.includes('googleads') && !src.includes('adtrafficquality') && !src.includes('googlesyndication.com') && !src.includes('google.com') && !src.includes('prestrain.html') && !src.includes('prestrain%2Ehtml')) {
               IframeRedirectBridge.postMessage(src);
