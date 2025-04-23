@@ -1407,11 +1407,11 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/video_player/video_player"
-      ref: HEAD
-      resolved-ref: c199e1745f242a0ca2d789dadee63b9953a4d27f
+      ref: "br_video_player-v2.9.2_ohos"
+      resolved-ref: b374a932443e0b581d305e616d9d032a610b0f92
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
-    version: "2.7.1"
+    version: "2.9.2"
   video_player_android:
     dependency: transitive
     description:
@@ -1429,11 +1429,11 @@ packages:
     source: hosted
     version: "2.6.3"
   video_player_ohos:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "packages/video_player/video_player_ohos"
-      ref: HEAD
-      resolved-ref: c199e1745f242a0ca2d789dadee63b9953a4d27f
+      ref: "br_video_player-v2.9.2_ohos"
+      resolved-ref: b374a932443e0b581d305e616d9d032a610b0f92
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
     version: "1.0.0+1"
@@ -1521,47 +1521,45 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/webview_flutter/webview_flutter"
-      ref: HEAD
-      resolved-ref: "306b96d078c70a430ba588af1f345a82f1ba347b"
+      ref: "br_webview_flutter-v4.8.0_ohos"
+      resolved-ref: b7110f6e8e76431d5fe623f806a4355f57130309
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
-    version: "4.6.0"
+    version: "4.8.0"
   webview_flutter_android:
     dependency: transitive
     description:
-      path: "packages/webview_flutter/webview_flutter_android"
-      ref: HEAD
-      resolved-ref: "72e309033f1171689521227f8580c3bfac97a588"
-      url: "https://gitee.com/openharmony-sig/flutter_packages.git"
-    source: git
-    version: "3.15.0"
+      name: webview_flutter_android
+      sha256: ed021f27ae621bc97a6019fb601ab16331a3db4bf8afa305e9f6689bdb3edced
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.16.8"
   webview_flutter_ohos:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       path: "packages/webview_flutter/webview_flutter_ohos"
-      ref: HEAD
-      resolved-ref: "306b96d078c70a430ba588af1f345a82f1ba347b"
+      ref: "br_webview_flutter-v4.8.0_ohos"
+      resolved-ref: b7110f6e8e76431d5fe623f806a4355f57130309
       url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
-    version: "3.15.0"
+    version: "3.16.2"
   webview_flutter_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "packages/webview_flutter/webview_flutter_platform_interface"
-      ref: HEAD
-      resolved-ref: "72e309033f1171689521227f8580c3bfac97a588"
-      url: "https://gitee.com/openharmony-sig/flutter_packages.git"
+      ref: "br_webview_flutter-v4.8.0_ohos"
+      resolved-ref: b7110f6e8e76431d5fe623f806a4355f57130309
+      url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
     version: "2.10.0"
   webview_flutter_wkwebview:
     dependency: transitive
     description:
-      path: "packages/webview_flutter/webview_flutter_wkwebview"
-      ref: HEAD
-      resolved-ref: "72e309033f1171689521227f8580c3bfac97a588"
-      url: "https://gitee.com/openharmony-sig/flutter_packages.git"
-    source: git
-    version: "3.12.0"
+      name: webview_flutter_wkwebview
+      sha256: "9c62cc46fa4f2d41e10ab81014c1de470a6c6f26051a2de32111b2ee55287feb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.14.0"
   webview_windows:
     dependency: "direct main"
     description:
