@@ -40,6 +40,7 @@ jobs:
           flutter doctor -v
           flutter pub get
           flutter build hap --release
+        shell: bash
       - name: Package ohos build output
         run: cp ./ohos/entry/build/default/outputs/entry-default-unsigned.hap Kazumi_ohos_canary.hap
         shell: bash
