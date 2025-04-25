@@ -17,11 +17,11 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'   
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl xz-utils zip libglu1-mesa
+        shell: bash 
       - name: Build Flutter for ohos
         run: |
           git clone https://gitcode.com/openharmony-sig/flutter_flutter.git $GITHUB_WORKSPACE/flutter
