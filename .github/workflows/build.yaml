@@ -34,7 +34,7 @@ jobs:
           git switch 3.22.0-ohos
           git pull origin
           
-          export PATH=~/flutter_flutter/bin:$PATH
+          export PATH=~/flutter/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/ohpm/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/hvigor/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/node/bin:$PATH
