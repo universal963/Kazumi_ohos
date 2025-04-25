@@ -1,6 +1,17 @@
 name: build
 
 on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths-ignore:
+      - 'static/**'
+      - '**.md'
+      - '.gitignore'
+      - '.github/ISSUE_TEMPLATE/**'
   workflow_dispatch:
     inputs:
       logLevel:
