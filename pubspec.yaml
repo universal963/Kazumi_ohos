@@ -70,8 +70,7 @@ dependencies:
   flutter_volume_controller: ^1.3.2
   screen_brightness:
     git:
-      url: https://github.com/ErBWs/screen_brightness.git
-      ref: feat-ohos
+      url: https://github.com/aaassseee/screen_brightness.git
       path: screen_brightness
   wakelock_plus: ^1.2.7
   audio_video_progress_bar: ^2.0.2

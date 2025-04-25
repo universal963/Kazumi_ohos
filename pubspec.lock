@@ -1006,9 +1006,9 @@ packages:
     dependency: "direct main"
     description:
       path: screen_brightness
-      ref: feat-ohos
-      resolved-ref: e4edc4016fd9863f9ad4247442cbad2cd17fe109
-      url: "https://github.com/ErBWs/screen_brightness.git"
+      ref: HEAD
+      resolved-ref: "0d34e00c8d794c0a52eccceb26d29cf9d5d52291"
+      url: "https://github.com/aaassseee/screen_brightness.git"
     source: git
     version: "2.1.2"
   screen_brightness_android:
@@ -1039,9 +1039,9 @@ packages:
     dependency: transitive
     description:
       path: screen_brightness_ohos
-      ref: feat-ohos
-      resolved-ref: e4edc4016fd9863f9ad4247442cbad2cd17fe109
-      url: "https://github.com/ErBWs/screen_brightness.git"
+      ref: HEAD
+      resolved-ref: "0d34e00c8d794c0a52eccceb26d29cf9d5d52291"
+      url: "https://github.com/aaassseee/screen_brightness.git"
     source: git
     version: "2.1.0"
   screen_brightness_platform_interface:
