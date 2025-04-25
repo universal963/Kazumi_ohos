@@ -27,21 +27,23 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'   
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: master
-          flutter-version: 3.22.0-ohos
-          git-source: https://gitcode.com/openharmony-sig/flutter_flutter.git
-      - name: Get Flutter dependencies
-        run: flutter pub get
-        shell: bash
-      - name: Print Flutter version
-        run: flutter doctor -v
-        shell: bash
       - name: Build Flutter for ohos
-        run: flutter build hap --release
-        shell: bash
+        run: |
+          git clone https://gitcode.com/openharmony-sig/flutter_flutter.git ~/flutter
+          cd ~/flutter
+          git switch 3.22.0-ohos
+          git pull origin
+          
+          export PATH=~/flutter_flutter/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/ohpm/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/hvigor/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/node/bin:$PATH
+          export PATH=/opt/harmonyos-tools/command-line-tools/bin:$PATH
+          export OHOS_NDK_HOME=/opt/harmonyos-tools/command-line-tools/sdk/default/openharmony
+
+          flutter doctor -v
+          flutter pub get
+          flutter build hap --release
       - name: Package ohos build output
         run: cp ./ohos/entry/build/default/outputs/entry-default-unsigned.hap Kazumi_ohos_canary.hap
         shell: bash
