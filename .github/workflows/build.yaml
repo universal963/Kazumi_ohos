@@ -1,0 +1,42 @@
+name: build
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+
+jobs:
+  flutter_build_ohos:
+    name: Release for ohos
+    runs-on: ubuntu-latest
+    permissions: write-all
+    container: ghcr.io/sanchuanhehe/harmony-next-pipeline-docker/harmonyos-ci-image:latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: master
+          flutter-version: 3.22.0-ohos
+          git-source: https://gitcode.com/openharmony-sig/flutter_flutter.git
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        shell: bash
+      - name: Print Flutter version
+        run: flutter doctor -v
+        shell: bash
+      - name: Build Flutter for ohos
+        run: flutter build hap --release
+        shell: bash
+      - name: Package android build output
+        run: cp ./ohos/entry/build/default/outputs/entry-default-unsigned.hap Kazumi_ohos_canary.hap
+        shell: bash
+      - name: Upload ohos outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohos_outputs
+          path: Kazumi_ohos_*.hap
