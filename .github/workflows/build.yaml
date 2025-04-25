@@ -24,13 +24,13 @@ jobs:
           distribution: 'temurin'   
       - name: Build Flutter for ohos
         run: |
-          git clone https://gitcode.com/openharmony-sig/flutter_flutter.git ~/flutter
-          pushd ~/flutter
+          git clone https://gitcode.com/openharmony-sig/flutter_flutter.git $GITHUB_WORKSPACE
+          pushd $GITHUB_WORKSPACE/flutter_flutter
           git switch 3.22.0-ohos
           git pull origin
           popd
           
-          alias flutter="/github/home/flutter/bin/flutter"
+          export PATH=$GITHUB_WORKSPACE/flutter_flutter/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/ohpm/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/hvigor/bin:$PATH
           export PATH=/opt/harmonyos-tools/command-line-tools/tool/node/bin:$PATH
