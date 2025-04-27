@@ -1,10 +1,10 @@
 name: release
 
 on:
+  push:
+    tags:
+      - "*"
   workflow_dispatch:
-    push:
-      tags:
-        - "*"
     inputs:
       logLevel:
         description: 'Log level'
