@@ -58,11 +58,11 @@ jobs:
           flutter build hap --release
         shell: bash
       - name: Package ohos build output
-        run: cp ./ohos/entry/build/default/outputs/default/entry-default-unsigned.hap Kazumi_ohos_${env:tag}.hap
+        run: cp ./ohos/entry/build/default/outputs/default/entry-default-unsigned.hap Kazumi_ohos_${{ env.tag }}_unsigned.hap
         shell: bash
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${env:tag}-ohos
+          name: ${{ env.tag }}-ohos
           draft: ${{ inputs.draft }}
           files: Kazumi_ohos_*.hap
