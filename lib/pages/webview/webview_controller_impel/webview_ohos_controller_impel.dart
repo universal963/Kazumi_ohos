@@ -18,9 +18,7 @@ class WebviewOhosItemControllerImpel
 
   @override
   Future<void> init() async {
-    late final PlatformWebViewControllerCreationParams params;
-    params = const PlatformWebViewControllerCreationParams();
-    webviewController = WebViewController.fromPlatformCreationParams(params);
+    webviewController ??= WebViewController();
     webviewController!.setJavaScriptMode(JavaScriptMode.unrestricted);
     bridgeInited = false;
     initEventController.add(true);
@@ -49,7 +47,6 @@ class WebviewOhosItemControllerImpel
       {int offset = 0}) async {
     ifrmaeParserTimer?.cancel();
     videoParserTimer?.cancel();
-    await unloadPage();
     await setDesktopUserAgent();
     if (!bridgeInited) {
       await initBridge(useNativePlayer, useLegacyParser);
@@ -60,7 +57,10 @@ class WebviewOhosItemControllerImpel
     isIframeLoaded = false;
     isVideoSourceLoaded = false;
     videoLoadingEventController.add(true);
-    initJSBridge(useNativePlayer, useLegacyParser);
+    await initJSBridge(useNativePlayer, useLegacyParser);
+    if (!bridgeInited) {
+      await initBridge(useNativePlayer, useLegacyParser);
+    }
     webviewController!.loadRequest(Uri.parse(url));
 
     ifrmaeParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -75,6 +75,7 @@ class WebviewOhosItemControllerImpel
       videoParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (isVideoSourceLoaded) {
           timer.cancel();
+          unloadPage();
         } else {
           if (count >= 15) {
             timer.cancel();
@@ -101,9 +102,6 @@ class WebviewOhosItemControllerImpel
         .catchError((_) {});
     await webviewController!
         .removeJavaScriptChannel('VideoBridgeDebug')
-        .catchError((_) {});
-    await webviewController!
-        .removeJavaScriptChannel('FullscreenBridgeDebug')
         .catchError((_) {});
     await webviewController!
         .removeJavaScriptChannel('IframeRedirectBridge')
