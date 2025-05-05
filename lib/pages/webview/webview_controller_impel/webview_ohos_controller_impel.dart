@@ -47,6 +47,8 @@ class WebviewOhosItemControllerImpel
       {int offset = 0}) async {
     ifrmaeParserTimer?.cancel();
     videoParserTimer?.cancel();
+    // Do not unloadPage here or reload will throw error because webview is not
+    // yet initialized here.
     await setDesktopUserAgent();
     if (!bridgeInited) {
       await initBridge(useNativePlayer, useLegacyParser);
@@ -58,9 +60,6 @@ class WebviewOhosItemControllerImpel
     isVideoSourceLoaded = false;
     videoLoadingEventController.add(true);
     await initJSBridge(useNativePlayer, useLegacyParser);
-    if (!bridgeInited) {
-      await initBridge(useNativePlayer, useLegacyParser);
-    }
     webviewController!.loadRequest(Uri.parse(url));
 
     ifrmaeParserTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
