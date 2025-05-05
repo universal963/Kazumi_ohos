@@ -15,7 +15,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:hive/hive.dart';
 import 'package:kazumi/utils/storage.dart';
 import 'package:kazumi/utils/utils.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
@@ -95,7 +94,6 @@ class _VideoPageState extends State<VideoPage>
       parent: animation,
       curve: Curves.easeIn,
     ));
-    WakelockPlus.enable();
     videoPageController.currentEpisode = 1;
     videoPageController.currentRoad = 0;
     videoPageController.historyOffset = 0;
@@ -165,7 +163,6 @@ class _VideoPageState extends State<VideoPage>
         ScreenBrightnessPlatform.instance.resetApplicationScreenBrightness();
       } catch (_) {}
     }
-    WakelockPlus.disable();
     videoPageController.episodeInfo.reset();
     videoPageController.episodeCommentsList.clear();
     Utils.unlockScreenRotation();
