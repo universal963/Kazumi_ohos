@@ -156,7 +156,7 @@ class WebviewOhosItemControllerImpel
     });
     await webviewController!.addJavaScriptChannel('IframeRedirectBridge',
         onMessageReceived: (JavaScriptMessage message) {
-      logEventController.add('Redict to: ${message.message}');
+      logEventController.add('Redirect to: ${message.message}');
       if (!useNativePlayer) {
         Future.delayed(const Duration(seconds: 2), () {
           isIframeLoaded = true;
