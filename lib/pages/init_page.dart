@@ -24,6 +24,7 @@ class InitPage extends StatefulWidget {
 class _InitPageState extends State<InitPage> {
   final PluginsController pluginsController = Modular.get<PluginsController>();
   final CollectController collectController = Modular.get<CollectController>();
+  final MyController myController = Modular.get<MyController>();
   Box setting = GStorage.setting;
   late final ThemeProvider themeProvider;
 
@@ -32,6 +33,7 @@ class _InitPageState extends State<InitPage> {
     _pluginInit();
     _webDavInit();
     _migrateStorage();
+    _loadDanmakuShield();
     _update();
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     super.initState();
@@ -40,6 +42,10 @@ class _InitPageState extends State<InitPage> {
   // migrate collect from old version (favorites)
   Future<void> _migrateStorage() async {
     await collectController.migrateCollect();
+  }
+
+  Future<void> _loadDanmakuShield() async {
+    myController.loadShieldList();
   }
 
   Future<void> _webDavInit() async {
