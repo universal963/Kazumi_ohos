@@ -135,21 +135,9 @@ abstract class _PlayerController with Store {
 
   Duration get playerDuration => mediaPlayer.value.duration;
 
-  int? get playerWidth => mediaPlayer.state.width;
+  int? get playerWidth => mediaPlayer.value.size.width.toInt();
 
-  int? get playerHeight => mediaPlayer.state.height;
-
-  String get playerVideoParams => mediaPlayer.state.videoParams.toString();
-
-  String get playerAudioParams => mediaPlayer.state.audioParams.toString();
-
-  String get playerPlaylist => mediaPlayer.state.playlist.toString();
-
-  String get playerAudioTracks => mediaPlayer.state.track.audio.toString();
-
-  String get playerVideoTracks => mediaPlayer.state.track.video.toString();
-
-  String get playerAudioBitrate => mediaPlayer.state.audioBitrate.toString();
+  int? get playerHeight => mediaPlayer.value.size.height.toInt();
 
   /// 播放器内部日志
   List<String> playerLog = ['暂不支持'];
