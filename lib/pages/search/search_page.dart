@@ -122,9 +122,7 @@ class _SearchPageState extends State<SearchPage> {
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             child: SearchAnchor.bar(
               searchController: searchController,
-              barElevation: WidgetStateProperty<double>.fromMap(
-                <WidgetStatesConstraint, double>{WidgetState.any: 0},
-              ),
+              barElevation: WidgetStateProperty.all(0),
               viewElevation: 0,
               viewLeading: IconButton(
                 onPressed: () {
