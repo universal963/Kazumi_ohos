@@ -25,6 +25,9 @@ ohos (HarmonyOS NEXT) 版本。
     - [ ] 视频比例切换
     - [ ] 视频调试信息
     - [ ] 超分辨率
+- [ ] 鸿蒙 PC (见[关于鸿蒙PC](#关于鸿蒙-PC))
+  - [x] 键盘控制
+  - [ ] 沉浸式标题栏
 - [ ] ~~手势系统音量调节~~(架构不支持)
 
 ## 下载与安装
@@ -36,6 +39,14 @@ ohos (HarmonyOS NEXT) 版本。
 </a>
 
 使用[小白调试助手](https://github.com/likuai2010/auto-installer)进行安装
+
+## 关于鸿蒙 PC
+
+看到 DevEco 可以创建鸿蒙 PC 模拟器，心血来潮做了点适配。
+和 ohos 的手机端功能基本相同，只支持电脑端的操作，不支持触摸操作，就是好像音量调节不了。
+
+沉浸式标题栏其实也挺好做，[官网](https://developer.huawei.com/consumer/cn/doc/best-practices/bpta-multi-window#section337674919110)有详细适配流程，
+我做好适配给 window_manager 插件提个 PR 就可以了，但我懒得写那么多东西，真有人会买鸿蒙 PC 来看番吗？
 
 ## 开源协议
 
