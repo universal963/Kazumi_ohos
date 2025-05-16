@@ -43,7 +43,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     useDynamicColor =
         setting.get(SettingBoxKey.useDynamicColor, defaultValue: false);
     showWindowButton =
-        setting.get(SettingBoxKey.showWindowButton, defaultValue: false);
+        setting.get(SettingBoxKey.showWindowButton, defaultValue: true);
     themeProvider = Provider.of<ThemeProvider>(context, listen: false);
   }
 
