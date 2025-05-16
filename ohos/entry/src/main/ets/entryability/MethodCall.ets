@@ -12,6 +12,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class MethodCallPlugin implements FlutterPlugin {
   private channel?: MethodChannel;
+  private deviceType: string = deviceInfo.deviceType;
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.predidit.kazumi/intent");
@@ -32,6 +33,10 @@ export default class MethodCallPlugin implements FlutterPlugin {
           case "exitFullscreen":
             this.exitFullScreen();
             result.success("");
+            break;
+          case "checkOhosIsDesktop":
+            let isDesktop = this.checkOhosDesktop();
+            result.success(isDesktop);
             break;
           default:
             result.notImplemented();
@@ -58,6 +63,10 @@ export default class MethodCallPlugin implements FlutterPlugin {
   private enterFullScreen(needSet: boolean): void {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
+      if (this.deviceType == '2in1') {
+        lastWindow.maximize();
+        return;
+      }
       lastWindow.enableLandscapeMultiWindow();
       if (needSet) {
         lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_LANDSCAPE);
@@ -71,12 +80,20 @@ export default class MethodCallPlugin implements FlutterPlugin {
   private exitFullScreen(): void {
     let context = getContext(this) as common.UIAbilityContext;
     window.getLastWindow(context).then((lastWindow) => {
+      if (this.deviceType == '2in1') {
+        lastWindow.recover();
+        return;
+      }
       lastWindow.disableLandscapeMultiWindow();
-      if (!display.isFoldable() && deviceInfo.deviceType == 'phone') {
+      if (!display.isFoldable() && this.deviceType == 'phone') {
         lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_PORTRAIT);
       }
       lastWindow.setWindowSystemBarEnable(['status']);
     })
+  }
+
+  private checkOhosDesktop(): boolean {
+    return this.deviceType == '2in1';
   }
 
   getUniqueClassName(): string {

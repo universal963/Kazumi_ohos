@@ -22,6 +22,7 @@ import 'package:screen_pixel/screen_pixel.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Utils {
+  static bool isOhosDesktop = false;
   static final Random random = Random();
 
   static Future<bool> isLowResolution() async {
@@ -312,7 +313,20 @@ class Utils {
 
   /// 判断是否为桌面设备
   static bool isDesktop() {
-    return Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    return Platform.isWindows || Platform.isMacOS || Platform.isLinux || isOhosDesktop;
+  }
+
+  static checkOhosDesktop() async {
+    if (Platform.isOhos) {
+      const platform = MethodChannel('com.predidit.kazumi/intent');
+      try {
+        isOhosDesktop = await platform.invokeMethod('checkOhosIsDesktop');
+      } on PlatformException catch (e) {
+        debugPrint("Failed to check device type: '${e.message}'.");
+        isOhosDesktop = false;
+      }
+      debugPrint("ohos 桌面: $isOhosDesktop");
+    }
   }
 
   /// 判断设备是否为宽屏

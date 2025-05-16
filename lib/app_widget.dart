@@ -219,6 +219,7 @@ class _AppWidgetState extends State<AppWidget>
   @override
   Widget build(BuildContext context) {
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    Utils.checkOhosDesktop();
     if (Utils.isDesktop()) {
       _handleTray();
     }
