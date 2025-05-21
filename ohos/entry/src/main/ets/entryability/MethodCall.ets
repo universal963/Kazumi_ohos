@@ -7,7 +7,7 @@ import {
 } from "@ohos/flutter_ohos";
 import { common, Want } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
-import { display, window } from "@kit.ArkUI";
+import { window } from "@kit.ArkUI";
 import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class MethodCallPlugin implements FlutterPlugin {
@@ -85,7 +85,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
         return;
       }
       lastWindow.disableLandscapeMultiWindow();
-      if (!display.isFoldable() && this.deviceType == 'phone') {
+      if (this.deviceType == 'phone') {
         lastWindow.setPreferredOrientation(window.Orientation.USER_ROTATION_PORTRAIT);
       }
       lastWindow.setWindowSystemBarEnable(['status']);
