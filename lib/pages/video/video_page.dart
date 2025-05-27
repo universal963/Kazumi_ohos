@@ -354,7 +354,7 @@ class _VideoPageState extends State<VideoPage>
     });
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         if (didPop) {
           return;
         }

@@ -133,7 +133,7 @@ class _PluginViewPageState extends State<PluginViewPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: !isMultiSelectMode,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         if (isMultiSelectMode) {
           setState(() {
             isMultiSelectMode = false;
