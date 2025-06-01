@@ -39,15 +39,18 @@ jobs:
         shell: bash
       - name: Setup HarmonyOS toolchain
         run: |
-          curl -fL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.aa -o ohos-sdk-linux-amd64.tar.gz.aa
-          curl -fL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.ab -o ohos-sdk-linux-amd64.tar.gz.ab
-          curl -fL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.sha256 -o ohos-sdk-linux-amd64.tar.gz.sha256
-          
+          echo Downloading sdk...
+          curl -fsSL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.aa -o ohos-sdk-linux-amd64.tar.gz.aa
+          curl -fsSL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.ab -o ohos-sdk-linux-amd64.tar.gz.ab
+          curl -fsSL https://github.com/ErBWs/ohos-sdk/releases/download/5.0.13.200/ohos-sdk-linux-amd64.tar.gz.sha256 -o ohos-sdk-linux-amd64.tar.gz.sha256
           cat ohos-sdk-linux-amd64.tar.gz.aa ohos-sdk-linux-amd64.tar.gz.ab > ohos-sdk-linux-amd64.tar.gz
           sha256sum -c ohos-sdk-linux-amd64.tar.gz.sha256
+
+          echo Extracting sdk...
           tar -xzf ohos-sdk-linux-amd64.tar.gz
           rm ohos-sdk-linux-amd64.tar.*
-          
+
+          echo "OHOS_BASE_SDK_HOME=$GITHUB_WORKSPACE/command-line-tools/sdk/default/openharmony" >> "$GITHUB_ENV"
           echo "$GITHUB_WORKSPACE/command-line-tools/tool/node/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/command-line-tools/bin" >> $GITHUB_PATH
         shell: bash
@@ -64,11 +67,11 @@ jobs:
           git pull origin
           echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
         shell: bash
-      - name: Get Flutter dependencies
-        run: flutter pub get
-        shell: bash
       - name: Print Flutter version
         run: flutter doctor -v
+        shell: bash
+      - name: Get Flutter dependencies
+        run: flutter pub get
         shell: bash
       - name: Build Flutter for ohos
         run: flutter build hap --release
