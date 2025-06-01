@@ -127,7 +127,7 @@ class _AboutPageState extends State<AboutPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         onBackPressed(context);
       },
       child: Scaffold(
