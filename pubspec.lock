@@ -1411,12 +1411,12 @@ packages:
     source: hosted
     version: "2.6.3"
   video_player_ohos:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "packages/video_player/video_player_ohos"
       ref: "br_video_player-v2.9.2_ohos"
       resolved-ref: "0827e5f7c35aa1f1b2f59353d10632839677823d"
-      url: "https://gitcode.com/openharmony-tpc/flutter_packages.git"
+      url: "https://gitcode.com/openharmony-sig/flutter_packages.git"
     source: git
     version: "1.0.0+1"
   video_player_platform_interface:

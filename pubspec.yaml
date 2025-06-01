@@ -121,11 +121,6 @@ dependency_overrides:
     git:
       url: https://gitcode.com/openharmony-tpc/flutter_packages.git
       path: packages/path_provider/path_provider
-  video_player_ohos:
-    git:
-      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
-      ref: br_video_player-v2.9.2_ohos
-      path: packages/video_player/video_player_ohos
   webview_flutter_ohos:
     git:
       url: https://gitcode.com/openharmony-tpc/flutter_packages.git
