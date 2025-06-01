@@ -43,9 +43,9 @@ jobs:
         shell: bash
       - name: Build Flutter for ohos
         run: |
-          git clone https://gitcode.com/openharmony-sig/flutter_flutter.git $GITHUB_WORKSPACE/flutter
+          git clone https://gitcode.com/openharmony-tpc/flutter_flutter.git $GITHUB_WORKSPACE/flutter
           cd flutter
-          git switch 3.22.0-ohos
+          git switch oh-3.27.4-dev
           git pull origin
           cd ..
           
