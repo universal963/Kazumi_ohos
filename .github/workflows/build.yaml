@@ -48,11 +48,10 @@ jobs:
 
           echo Extracting sdk...
           tar -xzf ohos-sdk-linux-amd64.tar.gz
+          chmod -R +x $GITHUB_WORKSPACE/command-line-tools/bin
           rm ohos-sdk-linux-amd64.tar.*
 
-          echo "OHOS_BASE_SDK_HOME=$GITHUB_WORKSPACE/command-line-tools/sdk/default/openharmony" >> $GITHUB_ENV
-          echo "OHOS_NDK_HOME=$GITHUB_WORKSPACE/command-line-tools/sdk/default/openharmony" >> $GITHUB_ENV
-          echo "OHOS_SDK_NATIVE=$GITHUB_WORKSPACE/command-line-tools/sdk/default/openharmony/native" >> $GITHUB_ENV
+          echo "HOS_SDK_HOME=$GITHUB_WORKSPACE/command-line-tools/sdk" >> $GITHUB_ENV
           echo "$GITHUB_WORKSPACE/command-line-tools/tool/node/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/command-line-tools/bin" >> $GITHUB_PATH
         shell: bash
