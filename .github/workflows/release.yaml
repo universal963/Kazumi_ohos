@@ -37,8 +37,8 @@ jobs:
         shell: bash
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y curl xz-utils zip libglu1-mesa
+          sudo apt-get update
+          sudo apt-get install -y curl xz-utils zip libglu1-mesa
         shell: bash
       - name: Setup HarmonyOS toolchain
         uses: ErBWs/setup-ohos@v1
