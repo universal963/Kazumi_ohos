@@ -1,6 +1,6 @@
 # Kazumi
 
-该分支为使用 [OpenHarmony-SIG / flutter_flutter](https://gitcode.com/openharmony-sig/flutter_flutter) 进行适配的 Kazumi
+该分支为使用 [OpenHarmony-TPC / flutter_flutter](https://gitcode.com/openharmony-tpc/flutter_flutter) 进行适配的 Kazumi
 ohos (HarmonyOS NEXT) 版本。
 
 > [!IMPORTANT]
@@ -9,7 +9,7 @@ ohos (HarmonyOS NEXT) 版本。
 
 ## 支持情况
 
-- 目标 API 版本：5.0.4(16)
+- 目标 API 版本：5.0.5(17)
 - 兼容 API 版本：5.0.3(15)
 - Flutter 版本：3.27.4-ohos-0.0.1
 
