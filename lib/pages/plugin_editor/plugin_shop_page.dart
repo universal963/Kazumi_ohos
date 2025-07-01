@@ -214,7 +214,7 @@ class _PluginShopPageState extends State<PluginShopPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
+      onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }

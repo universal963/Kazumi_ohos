@@ -88,7 +88,7 @@ class _PopularPageState extends State<PopularPage>
     return OrientationBuilder(builder: (context, orientation) {
       return PopScope(
         canPop: false,
-        onPopInvokedWithResult: (bool didPop, Object? result) {
+        onPopInvoked: (bool didPop) {
           if (didPop) {
             return;
           }
