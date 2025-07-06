@@ -7,21 +7,10 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@ohos/flutter_ohos": "file:./har/flutter.har"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.6"
   },
   "overrides": {
-    "@ohos/flutter_ohos": "file:./har/flutter.har",
-    "path_provider_ohos": "file:./har/path_provider_ohos.har",
-    "url_launcher_ohos": "file:./har/url_launcher_ohos.har",
-    "video_player_ohos": "file:./har/video_player_ohos.har",
-    "webview_flutter_ohos": "file:./har/webview_flutter_ohos.har",
-    "connectivity_plus": "file:./har/connectivity_plus.har",
-    "device_info_plus": "file:./har/device_info_plus.har",
-    "@ohos/flutter_module": "file:./entry",
-    "saver_gallery": "file:./har/saver_gallery.har",
-    "screen_brightness_ohos": "file:./har/screen_brightness_ohos.har"
   }
 }
