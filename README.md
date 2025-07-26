@@ -40,7 +40,7 @@ ohos (HarmonyOS NEXT) 版本。
 和 ohos 的手机端功能基本相同，只支持电脑端的操作，不支持触摸操作
 
 沉浸式标题栏其实也挺好做，[官网](https://developer.huawei.com/consumer/cn/doc/best-practices/bpta-multi-window#section337674919110)有详细适配流程，
-我做好适配给 window_manager 插件提个 PR 就可以了。但我懒得写那么多东西，真有人会买鸿蒙 PC 来看番吗？
+我做好适配给 window_manager 插件提个 PR 就可以了。但我懒得写那么多东西（
 
 鸿蒙 PC 平台的 bug 有也不一定会修，很费劲
 
