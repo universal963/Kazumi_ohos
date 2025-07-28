@@ -62,7 +62,7 @@ jobs:
         run: flutter build hap --release --no-codesign
         shell: bash
       - name: Package ohos build output
-        run: cp ./ohos/entry/build/default/outputs/default/entry-default-unsigned.hap Kazumi_ohos_canary.hap
+        run: cp ./build/ohos/hap/entry-default-unsigned.hap Kazumi_ohos_canary.hap
         shell: bash
       - name: Upload ohos outputs
         uses: actions/upload-artifact@v4
