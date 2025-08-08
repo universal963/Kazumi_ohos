@@ -141,7 +141,9 @@ class _SearchPageState extends State<SearchPage> {
               ],
               onSubmitted: (value) {
                 searchPageController.searchBangumi(value, type: 'init');
-                searchController.closeView(value);
+                if (searchController.isOpen) {
+                  searchController.closeView(value);
+                }
               },
             ),
           ),
