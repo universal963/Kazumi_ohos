@@ -100,7 +100,8 @@ class _VideoPageState extends State<VideoPage>
     videoPageController.showTabBody = true;
     playResume = setting.get(SettingBoxKey.playResume, defaultValue: true);
     var progress = historyController.lastWatching(
-        videoPageController.bangumiItem, videoPageController.currentPlugin.name);
+        videoPageController.bangumiItem,
+        videoPageController.currentPlugin.name);
     if (progress != null) {
       if (videoPageController.roadList.length > progress.road) {
         if (videoPageController.roadList[progress.road].data.length >=
@@ -624,16 +625,20 @@ class _VideoPageState extends State<VideoPage>
         /// workaround for webview_windows and webview_ohos
         /// The webview_windows component cannot be removed from the widget tree; otherwise, it can never be reinitialized.
         Positioned(
-            child: SizedBox(
-                height: (videoPageController.loading &&
-                        videoPageController.currentPlugin.useNativePlayer)
-                    ? 1
-                    : 0,
-                width: (videoPageController.loading &&
-                        videoPageController.currentPlugin.useNativePlayer)
-                    ? 1
-                    : 0,
-                child: const WebviewItem()))
+          child: SizedBox(
+            height: (videoPageController.loading)
+                ? 1
+                : videoPageController.currentPlugin.useNativePlayer
+                    ? 0
+                    : null,
+            width: (videoPageController.loading)
+                ? 1
+                : videoPageController.currentPlugin.useNativePlayer
+                    ? 0
+                    : null,
+            child: const WebviewItem(),
+          ),
+        ),
       ],
     );
   }
