@@ -1,0 +1,28 @@
+{
+  "trending": "推荐",
+  "timeline": "时间线",
+  "collect": "追番",
+  "my": "我的",
+
+  "liveFrom": "放送开始：",
+  "votes": "{num} 人评分：",
+  "@votes": {
+    "placeholders": {
+      "num": {
+        "type": "int",
+        "example": "1234"
+      }
+    }
+  },
+  "bangumiRank": "Bangumi 评分：",
+  "overview": "概览",
+  "comments": "吐槽",
+  "characters": "角色",
+  "reviews": "评论",
+  "staff": "制作人员",
+  "introduction": "简介",
+  "tag": "标签",
+  "loadMore": "加载更多",
+  "more": "更多",
+  "startWatching": "开始观看"
+}

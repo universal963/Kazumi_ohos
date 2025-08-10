@@ -3,6 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:kazumi/bean/widget/embedded_native_control_area.dart';
 import 'package:kazumi/pages/router.dart';
 import 'package:provider/provider.dart';
+import 'package:kazumi/l10n/app_localizations.dart';
 
 class ScaffoldMenu extends StatefulWidget {
   const ScaffoldMenu({super.key});
@@ -69,7 +70,7 @@ class _ScaffoldMenu extends State<ScaffoldMenu> {
         bottomNavigationBar: state.isHide
             ? const SizedBox(height: 0)
             : NavigationBar(
-                destinations: const <Widget>[
+                destinations: <Widget>[
                   NavigationDestination(
                     selectedIcon: Icon(Icons.home),
                     icon: Icon(Icons.home_outlined),
@@ -124,26 +125,26 @@ class _ScaffoldMenu extends State<ScaffoldMenu> {
                             ),
                           ),
                         ))),
-                destinations: const <NavigationRailDestination>[
+                destinations: <NavigationRailDestination>[
                   NavigationRailDestination(
                     selectedIcon: Icon(Icons.home),
                     icon: Icon(Icons.home_outlined),
-                    label: Text('推荐'),
+                    label: Text(AppLocalizations.of(context)!.trending),
                   ),
                   NavigationRailDestination(
                     selectedIcon: Icon(Icons.timeline),
                     icon: Icon(Icons.timeline_outlined),
-                    label: Text('时间表'),
+                    label: Text(AppLocalizations.of(context)!.timeline),
                   ),
                   NavigationRailDestination(
                     selectedIcon: Icon(Icons.favorite),
                     icon: Icon(Icons.favorite_border),
-                    label: Text('追番'),
+                    label: Text(AppLocalizations.of(context)!.collect),
                   ),
                   NavigationRailDestination(
                     selectedIcon: Icon(Icons.settings),
                     icon: Icon(Icons.settings_outlined),
-                    label: Text('我的'),
+                    label: Text(AppLocalizations.of(context)!.my),
                   ),
                 ],
                 selectedIndex: state.selectedIndex,

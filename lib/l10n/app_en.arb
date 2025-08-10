@@ -1,0 +1,28 @@
+{
+  "trending": "Trending",
+  "timeline": "Timeline",
+  "collect": "Collects",
+  "my": "My",
+
+  "liveFrom": "Live from:",
+  "votes": "{num} votes",
+  "@votes": {
+    "placeholders": {
+      "num": {
+        "type": "int",
+        "example": "1234"
+      }
+    }
+  },
+  "bangumiRank": "Bangumi ranked:",
+  "overview": "Overview",
+  "comments": "Comments",
+  "characters": "Characters",
+  "reviews": "Reviews",
+  "staff": "Staff",
+  "introduction": "Introduction",
+  "tag": "Tags",
+  "loadMore": "Load more",
+  "more": "More",
+  "startWatching": "Start watching"
+}

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:hive/hive.dart';
+import 'package:kazumi/l10n/app_localizations.dart';
 import 'package:kazumi/utils/utils.dart';
 import 'package:kazumi/utils/storage.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -284,13 +284,13 @@ class _AppWidgetState extends State<AppWidget>
         }
         return MaterialApp.router(
           title: "Kazumi",
-          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: const [
-            Locale.fromSubtags(
-                languageCode: 'zh', scriptCode: 'Hans', countryCode: "CN")
+            Locale('zh', 'CN'),
+            Locale('zh', 'HK'),
+            Locale('zh', 'TW'),
+            Locale('en'),
           ],
-          locale: const Locale.fromSubtags(
-              languageCode: 'zh', scriptCode: 'Hans', countryCode: "CN"),
           theme: themeProvider.light,
           darkTheme: themeProvider.dark,
           themeMode: themeProvider.themeMode,
