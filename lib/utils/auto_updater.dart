@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:kazumi/request/api.dart';
@@ -21,6 +22,7 @@ enum InstallationType {
   macosDmg, // Kazumi_macos_1.7.5.dmg
   androidApk, // Kazumi_android_1.7.5.apk
   ios, // iOS App
+  ohos, // Kazumi_ohos_1.7.5_unsigned.hap
   unknown,
 }
 
@@ -88,6 +90,9 @@ class AutoUpdater {
       } else if (Platform.isAndroid) {
         // Android 平台支持 APK
         availableTypes.add(InstallationType.androidApk);
+      } else if (Platform.isOhos) {
+        // ohos 平台支持 hap
+        availableTypes.add(InstallationType.ohos);
       }
     } catch (e) {
       KazumiLogger().log(Level.warning, '检测安装类型失败: ${e.toString()}');
@@ -329,6 +334,8 @@ class AutoUpdater {
         return 'Android APK';
       case InstallationType.ios:
         return 'iOS ipa';
+      case InstallationType.ohos:
+        return 'ohos hap';
       case InstallationType.unknown:
         return '未知安装类型';
     }
@@ -673,9 +680,15 @@ class AutoUpdater {
           KazumiDialog.showToast(message: '无法打开安装文件: ${result.message}');
           return;
         }
+      } else if (Platform.isOhos) {
+        const platform = MethodChannel('com.predidit.kazumi/intent');
+        try {
+          await platform.invokeMethod(
+              'openWithInstaller', <String, String>{'path': filePath});
+        } on PlatformException catch (e) {
+          KazumiDialog.showToast(message: '无法打开安装文件: ${e.message}');
+        }
       }
-      await Future.delayed(const Duration(seconds: 1));
-      exit(0);
     } catch (e) {
       KazumiDialog.showToast(message: '启动安装程序失败: ${e.toString()}');
       KazumiLogger().log(Level.error, '启动安装程序失败: ${e.toString()}');
@@ -734,6 +747,8 @@ class AutoUpdater {
         return ['macos', '.dmg'];
       case InstallationType.androidApk:
         return ['android', '.apk'];
+      case InstallationType.ohos:
+        return ['ohos', '.hap'];
       // 以下类型直接跳转到 GitHub Release 页面，不需要下载文件
       case InstallationType.linuxDeb:
       case InstallationType.linuxTar:
@@ -762,6 +777,8 @@ class AutoUpdater {
       extension = '.deb';
     } else if (Platform.isAndroid) {
       extension = '.apk';
+    } else if (Platform.isOhos) {
+      extension = '.hap';
     }
     return 'Kazumi-$version$extension';
   }

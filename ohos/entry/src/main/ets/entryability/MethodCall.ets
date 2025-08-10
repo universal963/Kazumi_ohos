@@ -5,9 +5,10 @@ import {
   MethodChannel,
   MethodResult
 } from "@ohos/flutter_ohos";
-import { common, Want } from "@kit.AbilityKit";
+import { common, Want, wantConstant } from "@kit.AbilityKit";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { window } from "@kit.ArkUI";
+import { fileUri } from '@kit.CoreFileKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class MethodCallPlugin implements FlutterPlugin {
@@ -37,6 +38,11 @@ export default class MethodCallPlugin implements FlutterPlugin {
           case "checkOhosIsDesktop":
             let isDesktop = this.checkOhosDesktop();
             result.success(isDesktop);
+            break;
+          case "openWithInstaller":
+            let path = String(call.argument("path"));
+            this.openWithInstaller(path);
+            result.success("");
             break;
           default:
             result.notImplemented();
@@ -96,11 +102,28 @@ export default class MethodCallPlugin implements FlutterPlugin {
     return this.deviceType == '2in1';
   }
 
+  private async openWithInstaller(path: string): Promise<void> {
+    let context = getContext(this) as common.UIAbilityContext;
+
+    let want: Want = {
+      // Hardcode bundle name
+      bundleName: 'com.xiaobai.hap_installer',
+      action: 'ohos.want.action.viewData',
+      uri: fileUri.getUriFromPath(path),
+      flags: wantConstant.Flags.FLAG_AUTH_WRITE_URI_PERMISSION | wantConstant.Flags.FLAG_AUTH_READ_URI_PERMISSION
+    };
+    context.startAbility(want, (err: BusinessError) => {
+      if (err.code) {
+        console.error(`Failed to startAbility. Code: ${err.code}, message: ${err.message}`);
+      }
+    });
+  }
+
   getUniqueClassName(): string {
     return "MethodCallPlugin"
   }
 
-  onDetachedFromEngine(binding: FlutterPluginBinding): void {
+  onDetachedFromEngine(): void {
     this.channel?.setMethodCallHandler(null);
   }
 }
