@@ -127,7 +127,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: true,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, Object? result) {
         onBackPressed(context);
       },
       child: Scaffold(
