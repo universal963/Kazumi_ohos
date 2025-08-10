@@ -221,7 +221,7 @@ class Utils {
   // 版本对比
   static bool needUpdate(localVersion, remoteVersion) {
     List<String> localVersionList = localVersion.split('.');
-    List<String> remoteVersionList = remoteVersion.split('v')[1].split('.');
+    List<String> remoteVersionList = remoteVersion.split('.');
     for (int i = 0; i < localVersionList.length; i++) {
       int localVersion = int.parse(localVersionList[i]);
       int remoteVersion = int.parse(remoteVersionList[i]);
@@ -544,5 +544,12 @@ class Utils {
     } catch (e) {
       return dateString;
     }
+  }
+
+  /// 计算文件的 SHA256 哈希值
+  static Future<String> calculateFileHash(File file) async {
+    final bytes = await file.readAsBytes();
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
