@@ -25,6 +25,11 @@ void main() async {
       statusBarColor: Colors.transparent,
     ));
   }
+
+  if (Platform.isAndroid) {
+    await Utils.checkWebViewFeatureSupport();
+  }
+
   try {
     await Hive.initFlutter(
         '${(await getApplicationSupportDirectory()).path}/hive');
