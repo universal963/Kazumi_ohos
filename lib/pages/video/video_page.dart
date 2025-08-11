@@ -244,6 +244,10 @@ class _VideoPageState extends State<VideoPage>
   }
 
   void onBackPressed(BuildContext context) async {
+    if (KazumiDialog.observer.hasKazumiDialog) {
+      KazumiDialog.dismiss();
+      return;
+    }
     if (videoPageController.isPip) {
       Utils.exitDesktopPIPWindow();
       videoPageController.isPip = false;

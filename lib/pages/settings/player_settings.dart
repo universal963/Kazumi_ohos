@@ -42,7 +42,10 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   }
 
   void onBackPressed(BuildContext context) {
-    // Navigator.of(context).pop();
+    if (KazumiDialog.observer.hasKazumiDialog) {
+      KazumiDialog.dismiss();
+      return;
+    }
   }
 
   void updateDefaultPlaySpeed(double speed) {
@@ -88,6 +91,7 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                         setState(() {});
                       },
                       title: const Text('低内存模式'),
+                      description: const Text('禁用高级缓存以减少内存占用'),
                       initialValue: lowMemoryMode,
                     ),
                   ],
@@ -129,7 +133,8 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                     SettingsTile.switchTile(
                       onToggle: (value) async {
                         privateMode = value ?? !privateMode;
-                        await setting.put(SettingBoxKey.privateMode, privateMode);
+                        await setting.put(
+                            SettingBoxKey.privateMode, privateMode);
                         setState(() {});
                       },
                       title: const Text('隐身模式'),
