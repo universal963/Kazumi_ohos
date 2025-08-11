@@ -59,7 +59,7 @@ jobs:
         run: flutter pub get
         shell: bash
       - name: Build Flutter for ohos
-        run: flutter build hap --release --no-codesign
+        run: flutter build hap --release
         shell: bash
       - name: Package ohos build output
         run: cp ./ohos/entry/build/default/outputs/default/entry-default-unsigned.hap Kazumi_ohos_canary.hap

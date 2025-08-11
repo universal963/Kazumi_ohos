@@ -66,7 +66,7 @@ jobs:
           sed -i "s/kvpx7qkqjh/${{ secrets.DANDANAPI_APPID }}/g" lib/utils/mortis.dart
           sed -i "s/rABUaBLqdz7aCSi3fe88ZDj2gwga9Vax/${{ secrets.DANDANAPI_KEY }}/g" lib/utils/mortis.dart
       - name: Build Flutter for ohos
-        run: flutter build hap --release --no-codesign
+        run: flutter build hap --release
         shell: bash
       - name: Package ohos build output
         run: cp ./ohos/entry/build/default/outputs/default/entry-default-unsigned.hap Kazumi_ohos_${{ env.tag }}_unsigned.hap
