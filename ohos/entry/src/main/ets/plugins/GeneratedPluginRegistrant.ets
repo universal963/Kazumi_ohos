@@ -1,11 +1,10 @@
 import { FlutterEngine, Log } from '@ohos/flutter_ohos';
-import WebViewFlutterPlugin from 'webview_flutter_ohos';
+import InAppWebViewFlutterPlugin from 'flutter_inappwebview_ohos';
 import PathProviderPlugin from 'path_provider_ohos';
 import UrlLauncherPlugin from 'url_launcher_ohos';
 import VideoPlayerPlugin from 'video_player_ohos';
 import ConnectivityPlugin from 'connectivity_plus';
 import DeviceInfoPlusOhosPlugin from 'device_info_plus';
-import OpenFilePlugin from 'open_filex';
 import SaverGalleryPlugin from 'saver_gallery';
 import ScreenBrightnessOhosPlugin from 'screen_brightness_ohos';
 
@@ -21,13 +20,12 @@ export class GeneratedPluginRegistrant {
 
   static registerWith(flutterEngine: FlutterEngine) {
     try {
-      flutterEngine.getPlugins()?.add(new WebViewFlutterPlugin());
+      flutterEngine.getPlugins()?.add(new InAppWebViewFlutterPlugin());
       flutterEngine.getPlugins()?.add(new PathProviderPlugin());
       flutterEngine.getPlugins()?.add(new UrlLauncherPlugin());
       flutterEngine.getPlugins()?.add(new VideoPlayerPlugin());
       flutterEngine.getPlugins()?.add(new ConnectivityPlugin());
       flutterEngine.getPlugins()?.add(new DeviceInfoPlusOhosPlugin());
-      flutterEngine.getPlugins()?.add(new OpenFilePlugin());
       flutterEngine.getPlugins()?.add(new SaverGalleryPlugin());
       flutterEngine.getPlugins()?.add(new ScreenBrightnessOhosPlugin());
     } catch (e) {

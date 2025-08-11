@@ -128,6 +128,7 @@ class _VideoPageState extends State<VideoPage>
         webviewItemController.onVideoLoading.listen((event) {
       videoPageController.loading = event;
     });
+    videoPageController.loading = true;
     _videoURLSubscription =
         webviewItemController.onVideoURLParser.listen((event) {
       final (mediaUrl, offset) = event;
@@ -419,7 +420,7 @@ class _VideoPageState extends State<VideoPage>
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  Colors.black.withOpacity(0.5),
+                                  Colors.black.withValues(alpha: 0.5),
                                   Colors.transparent,
                                 ],
                               ),
