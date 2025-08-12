@@ -27,7 +27,7 @@ void main() async {
   }
 
   if (Platform.isAndroid) {
-    await;
+    await Utils.checkWebViewFeatureSupport();
   }
 
   try {
