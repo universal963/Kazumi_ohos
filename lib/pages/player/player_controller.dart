@@ -366,7 +366,8 @@ abstract class _PlayerController with Store {
 
   void lanunchExternalPlayer() async {
     String referer = videoPageController.currentPlugin.referer;
-    if ((Platform.isAndroid || Platform.isWindows) && referer.isEmpty) {
+    if ((Platform.isAndroid || Platform.isWindows || Platform.isOhos) &&
+        referer.isEmpty) {
       if (await ExternalPlayer.launchURLWithMIME(videoUrl, 'video/mp4')) {
         KazumiDialog.dismiss();
         KazumiDialog.showToast(
