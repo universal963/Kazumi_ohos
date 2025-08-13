@@ -1,4 +1,6 @@
 import {
+  AbilityAware,
+  AbilityPluginBinding,
   FlutterPlugin,
   FlutterPluginBinding,
   MethodCall,
@@ -11,9 +13,14 @@ import { window } from "@kit.ArkUI";
 import { fileUri } from '@kit.CoreFileKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
 
-export default class MethodCallPlugin implements FlutterPlugin {
+export default class MethodCallPlugin implements FlutterPlugin, AbilityAware {
   private channel?: MethodChannel;
   private deviceType: string = deviceInfo.deviceType;
+  private context?: common.UIAbilityContext;
+
+  onAttachedToAbility(binding: AbilityPluginBinding): void {
+    this.context = binding.getAbility().context;
+  }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.predidit.kazumi/intent");
@@ -53,13 +60,12 @@ export default class MethodCallPlugin implements FlutterPlugin {
   }
 
   private openWithMime(url: string, mimeType: string): void {
-    let context = getContext(this) as common.UIAbilityContext;
     let want: Want = {
+      action: 'ohos.want.action.viewData',
       uri: url,
-      type: mimeType
+      type: mimeType,
     };
-
-    context.startAbility(want, (err: BusinessError) => {
+    this.context?.startAbility(want, (err: BusinessError) => {
       if (err.code) {
         console.error(`Failed to startAbility. Code: ${err.code}, message: ${err.message}`);
       }
@@ -67,8 +73,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
   }
 
   private enterFullScreen(needSet: boolean): void {
-    let context = getContext(this) as common.UIAbilityContext;
-    window.getLastWindow(context).then((lastWindow) => {
+    window.getLastWindow(this.context).then((lastWindow) => {
       if (this.deviceType == '2in1') {
         lastWindow.maximize();
         return;
@@ -84,8 +89,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
   }
 
   private exitFullScreen(): void {
-    let context = getContext(this) as common.UIAbilityContext;
-    window.getLastWindow(context).then((lastWindow) => {
+    window.getLastWindow(this.context).then((lastWindow) => {
       if (this.deviceType == '2in1') {
         lastWindow.recover();
         return;
@@ -103,8 +107,6 @@ export default class MethodCallPlugin implements FlutterPlugin {
   }
 
   private async openWithInstaller(path: string): Promise<void> {
-    let context = getContext(this) as common.UIAbilityContext;
-
     let want: Want = {
       // Hardcode bundle name
       bundleName: 'com.xiaobai.hap_installer',
@@ -112,7 +114,7 @@ export default class MethodCallPlugin implements FlutterPlugin {
       uri: fileUri.getUriFromPath(path),
       flags: wantConstant.Flags.FLAG_AUTH_WRITE_URI_PERMISSION | wantConstant.Flags.FLAG_AUTH_READ_URI_PERMISSION
     };
-    context.startAbility(want, (err: BusinessError) => {
+    this.context?.startAbility(want, (err: BusinessError) => {
       if (err.code) {
         console.error(`Failed to startAbility. Code: ${err.code}, message: ${err.message}`);
       }
@@ -122,6 +124,8 @@ export default class MethodCallPlugin implements FlutterPlugin {
   getUniqueClassName(): string {
     return "MethodCallPlugin"
   }
+
+  onDetachedFromAbility(): void {}
 
   onDetachedFromEngine(): void {
     this.channel?.setMethodCallHandler(null);
