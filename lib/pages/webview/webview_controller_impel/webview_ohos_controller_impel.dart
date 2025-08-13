@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:kazumi/utils/utils.dart';
 import 'package:kazumi/pages/webview/webview_controller.dart';
 import 'package:flutter_inappwebview_platform_interface/flutter_inappwebview_platform_interface.dart';
@@ -53,8 +52,20 @@ class WebviewOhosItemControllerImpel
   }
 
   void addJavaScriptHandlers(bool useNativePlayer, bool useLegacyParser) {
+    logEventController.add('Adding LogBridge handler');
+    webviewController?.addJavaScriptHandler(
+      handlerName: 'LogBridge',
+      callback: (args) {
+        String message = args[0].toString();
+        if (message.contains('about:blank')) {
+          return;
+        }
+        logEventController.add(message);
+      },
+    );
+
     if (!useNativePlayer) {
-      debugPrint('[WebView] Adding IframeRedirectBridge handler');
+      logEventController.add('Adding IframeRedirectBridge handler');
       webviewController?.addJavaScriptHandler(
           handlerName: 'IframeRedirectBridge',
           callback: (args) {
@@ -66,7 +77,7 @@ class WebviewOhosItemControllerImpel
             });
           });
     } else if (useLegacyParser) {
-      debugPrint('[WebView] Adding JSBridgeDebug handler');
+      logEventController.add('Adding JSBridgeDebug handler');
       webviewController?.addJavaScriptHandler(
           handlerName: 'JSBridgeDebug',
           callback: (args) {
@@ -95,7 +106,7 @@ class WebviewOhosItemControllerImpel
             }
           });
     } else {
-      debugPrint('[WebView] Adding VideoBridgeDebug handler');
+      logEventController.add('Adding VideoBridgeDebug handler');
       webviewController?.addJavaScriptHandler(
           handlerName: 'VideoBridgeDebug',
           callback: (args) {
@@ -121,10 +132,10 @@ class WebviewOhosItemControllerImpel
     final List<UserScript> scripts = [];
 
     if (useLegacyParser) {
-      debugPrint('[WebView] Adding JSBridgeDebug user script');
+      logEventController.add('Adding JSBridgeDebug UserScript');
       const String jsBridgeDebugScript = """
         function processIframeElement(iframe) {
-          window.flutter_inappwebview.callHandler('JSBridgeDebug', 'Processing iframe element');
+          window.flutter_inappwebview.callHandler('LogBridge', 'Processing iframe element');
           let src = iframe.getAttribute('src');
           if (src) {
             window.flutter_inappwebview.callHandler('JSBridgeDebug', src);
@@ -132,7 +143,7 @@ class WebviewOhosItemControllerImpel
         }
 
         const _observer = new MutationObserver((mutations) => {
-          window.flutter_inappwebview.callHandler('JSBridgeDebug', 'Scanning for iframes');
+          window.flutter_inappwebview.callHandler('LogBridge', 'Scanning for iframes...');
           mutations.forEach(mutation => {
             if (mutation.type === 'attributes' && mutation.target.nodeName === 'IFRAME') {
               processIframeElement(mutation.target);
@@ -159,7 +170,7 @@ class WebviewOhosItemControllerImpel
         injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
       ));
     } else {
-      debugPrint('[WebView] Adding VideoBridgeDebug user script');
+      logEventController.add('Adding VideoBridgeDebug UserScripts');
       const String blobParserScript = """
         const _r_text = window.Response.prototype.text;
         window.Response.prototype.text = function () {
@@ -167,7 +178,7 @@ class WebviewOhosItemControllerImpel
                 _r_text.call(this).then((text) => {
                     resolve(text);
                     if (text.trim().startsWith("#EXTM3U")) {
-                        console.log('M3U8 source found:', this.url);
+                        window.flutter_inappwebview.callHandler('LogBridge', 'M3U8 source found: ' + this.url);
                         window.flutter_inappwebview.callHandler('VideoBridgeDebug', this.url);
                     }
                 }).catch(reject);
@@ -180,7 +191,7 @@ class WebviewOhosItemControllerImpel
                 try {
                     let content = this.responseText;
                     if (content.trim().startsWith("#EXTM3U")) {
-                        console.log('M3U8 source found:', args[1]);
+                        window.flutter_inappwebview.callHandler('LogBridge', 'M3U8 source found: ' + args[1]);
                         window.flutter_inappwebview.callHandler('VideoBridgeDebug', args[1]);
                     };
                 } catch {}
@@ -191,7 +202,7 @@ class WebviewOhosItemControllerImpel
 
       const String videoTagParserScript = """
         const _observer = new MutationObserver((mutations) => {
-          window.flutter_inappwebview.callHandler('VideoBridgeDebug', 'Scanning for video elements');
+          window.flutter_inappwebview.callHandler('LogBridge', 'Scanning for video elements...');
           for (const mutation of mutations) {
             if (mutation.type === "attributes" && mutation.target.nodeName === "VIDEO") {
               if (processVideoElement(mutation.target)) return;
@@ -210,11 +221,11 @@ class WebviewOhosItemControllerImpel
           }
         });
         function processVideoElement(video) {
-          window.flutter_inappwebview.callHandler('VideoBridgeDebug', 'Scanning video element for source URL');
+          window.flutter_inappwebview.callHandler('LogBridge', 'Scanning video element for source URL');
           let src = video.getAttribute('src');
           if (src && src.trim() !== '' && !src.startsWith('blob:') && !src.includes('googleads')) {
             _observer.disconnect();
-            console.log('VIDEO source found:', src);
+            window.flutter_inappwebview.callHandler('LogBridge', 'VIDEO source found: ' + src);
             window.flutter_inappwebview.callHandler('VideoBridgeDebug', src);
             return true;
           }
@@ -223,7 +234,7 @@ class WebviewOhosItemControllerImpel
             src = source.getAttribute('src');
             if (src && src.trim() !== '' && !src.startsWith('blob:') && !src.includes('googleads')) {
               _observer.disconnect();
-              console.log('VIDEO source found (source tag):', src);
+              window.flutter_inappwebview.callHandler('LogBridge', 'VIDEO source found (source tag): ' + src);
               window.flutter_inappwebview.callHandler('VideoBridgeDebug', src);
               return true;
             }
@@ -264,10 +275,11 @@ class WebviewOhosItemControllerImpel
 
   Future<void> onLoadStart() async {
     if (!useNativePlayer && shouldInjectIframeRedirect) {
-      debugPrint('[WebView] Adding IframeRedirectBridge user script');
+      logEventController.add('Adding IframeRedirectBridge UserScript');
       shouldInjectIframeRedirect = false;
       await webviewController?.evaluateJavascript(source: """
         const _observer = new MutationObserver((mutations) => {
+          window.flutter_inappwebview.callHandler('LogBridge', 'Scanning for iframes...');
           for (const mutation of mutations) {
             if (mutation.type === "attributes" && mutation.target.nodeName === "IFRAME") {
               if (processIframeElement(mutation.target)) return;
@@ -287,6 +299,7 @@ class WebviewOhosItemControllerImpel
         });
 
         function processIframeElement(iframe) {
+          window.flutter_inappwebview.callHandler('LogBridge', 'Processing iframe element');
           let src = iframe.getAttribute("src");
           if (src && src.trim() !== '' && (src.startsWith('http') || src.startsWith('//')) && !src.includes('googleads') && !src.includes('adtrafficquality') && !src.includes('googlesyndication.com') && !src.includes('google.com') && !src.includes('prestrain.html') && !src.includes('prestrain%2Ehtml')) {
             _observer.disconnect();

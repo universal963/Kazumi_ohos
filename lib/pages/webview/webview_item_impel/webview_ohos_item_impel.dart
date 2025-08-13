@@ -9,13 +9,12 @@ class WebviewOhosItemImpel extends StatefulWidget {
   const WebviewOhosItemImpel({super.key});
 
   @override
-  State<WebviewOhosItemImpel> createState() =>
-      _WebviewOhosItemImpelState();
+  State<WebviewOhosItemImpel> createState() => _WebviewOhosItemImpelState();
 }
 
 class _WebviewOhosItemImpelState extends State<WebviewOhosItemImpel> {
-  final webviewAndroidItemController =
-  Modular.get<WebviewItemController>() as WebviewOhosItemControllerImpel;
+  final webviewOhosItemController =
+      Modular.get<WebviewItemController>() as WebviewOhosItemControllerImpel;
 
   @override
   void initState() {
@@ -24,7 +23,7 @@ class _WebviewOhosItemImpelState extends State<WebviewOhosItemImpel> {
 
   @override
   void dispose() {
-    webviewAndroidItemController.dispose();
+    webviewOhosItemController.dispose();
     super.dispose();
   }
 
@@ -44,17 +43,19 @@ class _WebviewOhosItemImpelState extends State<WebviewOhosItemImpel> {
       ),
       onWebViewCreated: (controller) {
         debugPrint('[WebView] Created');
-        webviewAndroidItemController.webviewController = controller;
-        webviewAndroidItemController.init();
+        webviewOhosItemController.webviewController = controller;
+        webviewOhosItemController.init();
       },
       onLoadStart: (controller, url) async {
-        debugPrint('[WebView] Started loading: $url');
+        webviewOhosItemController.logEventController
+            .add('started loading: $url');
         if (url.toString() != 'about:blank') {
-          await webviewAndroidItemController.onLoadStart();
+          await webviewOhosItemController.onLoadStart();
         }
       },
       onLoadStop: (controller, url) {
-        debugPrint('[WebView] Loading completed: $url');
+        webviewOhosItemController.logEventController
+            .add('loading completed: $url');
       },
     )).build(context);
   }
