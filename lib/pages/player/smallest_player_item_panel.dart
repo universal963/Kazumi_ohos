@@ -523,6 +523,13 @@ class _SmallestPlayerItemPanelState extends State<SmallestPlayerItemPanel> {
                           MenuItemButton(
                             onPressed: () {
                               showModalBottomSheet(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.brightness ==
+                                            Brightness.light
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerHigh
+                                        : null,
                                 isScrollControlled: true,
                                 constraints: BoxConstraints(
                                     maxHeight:
