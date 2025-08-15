@@ -72,56 +72,6 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
               tiles: [
                 SettingsTile.switchTile(
                   onToggle: (value) async {
-                    hAenable = value ?? !hAenable;
-                    await setting.put(SettingBoxKey.hAenable, hAenable);
-                    setState(() {});
-                  },
-                  title: const Text('硬件解码'),
-                  initialValue: hAenable,
-                ),
-                SettingsTile.navigation(
-                  onPressed: (value) async {
-                    await Modular.to.pushNamed('/settings/player/decoder');
-                  },
-                  title: const Text('硬件解码器'),
-                  description: const Text('仅在硬件解码启用时生效'),
-                ),
-                SettingsTile.switchTile(
-                  onToggle: (value) async {
-                    lowMemoryMode = value ?? !lowMemoryMode;
-                    await setting.put(
-                        SettingBoxKey.lowMemoryMode, lowMemoryMode);
-                    setState(() {});
-                  },
-                  title: const Text('低内存模式'),
-                  description: const Text('禁用高级缓存以减少内存占用'),
-                  initialValue: lowMemoryMode,
-                ),
-                if (Platform.isAndroid) ...[
-                  SettingsTile.switchTile(
-                    onToggle: (value) async {
-                      androidEnableOpenSLES = value ?? !androidEnableOpenSLES;
-                      await setting.put(SettingBoxKey.androidEnableOpenSLES,
-                          androidEnableOpenSLES);
-                      setState(() {});
-                    },
-                    title: const Text('低延迟音频'),
-                    description: const Text('启用OpenSLES音频输出以降低延时'),
-                    initialValue: androidEnableOpenSLES,
-                  ),
-                ],
-                SettingsTile.navigation(
-                  onPressed: (_) async {
-                    Modular.to.pushNamed('/settings/player/super');
-                  },
-                  title: const Text('超分辨率'),
-                ),
-              ],
-            ),
-            SettingsSection(
-              tiles: [
-                SettingsTile.switchTile(
-                  onToggle: (value) async {
                     playResume = value ?? !playResume;
                     await setting.put(SettingBoxKey.playResume, playResume);
                     setState(() {});
@@ -179,67 +129,6 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                           double.parse(value.toStringAsFixed(2)));
                     },
                   ),
-                ),
-                SettingsTile.navigation(
-                  onPressed: (_) async {
-                    KazumiDialog.show(builder: (context) {
-                      return AlertDialog(
-                        title: const Text('默认视频比例'),
-                        content: StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            return Wrap(
-                              spacing: 8,
-                              runSpacing: Utils.isDesktop() ? 8 : 0,
-                              children: [
-                                for (final entry
-                                    in aspectRatioTypeMap.entries) ...<Widget>[
-                                  if (entry.key ==
-                                      defaultAspectRatioType) ...<Widget>[
-                                    FilledButton(
-                                      onPressed: () async {
-                                        updateDefaultAspectRatioType(entry.key);
-                                        KazumiDialog.dismiss();
-                                      },
-                                      child: Text(entry.value),
-                                    ),
-                                  ] else ...[
-                                    FilledButton.tonal(
-                                      onPressed: () async {
-                                        updateDefaultAspectRatioType(entry.key);
-                                        KazumiDialog.dismiss();
-                                      },
-                                      child: Text(entry.value),
-                                    ),
-                                  ]
-                                ]
-                              ],
-                            );
-                          },
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => KazumiDialog.dismiss(),
-                            child: Text(
-                              '取消',
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.outline),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              updateDefaultAspectRatioType(1); // 默认恢复自动
-                              KazumiDialog.dismiss();
-                            },
-                            child: const Text('默认设置'),
-                          ),
-                        ],
-                      );
-                    });
-                  },
-                  title: const Text('默认视频比例'),
-                  value:
-                      Text(aspectRatioTypeMap[defaultAspectRatioType] ?? '自动'),
                 ),
               ],
             ),
