@@ -7,6 +7,7 @@ import 'package:kazumi/utils/utils.dart';
 import 'package:kazumi/pages/video/video_controller.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:kazumi/pages/player/player_controller.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 import 'package:flutter/services.dart';
 import 'package:kazumi/utils/remote.dart';
 import 'package:kazumi/bean/appbar/drag_to_move_bar.dart' as dtb;
@@ -721,7 +722,8 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                     ),
                                     MenuItemButton(
                                       onPressed: () {
-                                        widget.showSyncPlayEndPointSwitchDialog();
+                                        widget
+                                            .showSyncPlayEndPointSwitchDialog();
                                       },
                                       child: const Padding(
                                         padding:
@@ -927,7 +929,13 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                                 showModalBottomSheet(
                                                     isScrollControlled: true,
                                                     constraints: BoxConstraints(
-                                                        maxHeight: 280,
+                                                        maxHeight:
+                                                            MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                3 /
+                                                                4,
                                                         maxWidth: (Utils
                                                                     .isDesktop() ||
                                                                 Utils
@@ -990,7 +998,11 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                       showModalBottomSheet(
                                           isScrollControlled: true,
                                           constraints: BoxConstraints(
-                                              maxHeight: 280,
+                                              maxHeight: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  3 /
+                                                  4,
                                               maxWidth: (Utils.isDesktop() ||
                                                       Utils.isTablet())
                                                   ? MediaQuery.of(context)
@@ -1021,55 +1033,57 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                                 if (!playerController.danmakuOn) const Spacer(),
                               ],
                               // 倍速播放
-                            MenuAnchor(
-                              consumeOutsideTap: true,
-                              onOpen: () {
-                                widget.cancelHideTimer();
-                                playerController.canHidePlayerPanel = false;
-                              },
-                              onClose: () {
-                                widget.cancelHideTimer();
-                                widget.startHideTimer();
-                                playerController.canHidePlayerPanel = true;
-                              },
-                              builder: (BuildContext context,
-                                  MenuController controller, Widget? child) {
-                                return TextButton(
-                                  onPressed: () {
-                                    if (controller.isOpen) {
-                                      controller.close();
-                                    } else {
-                                      controller.open();
-                                    }
-                                  },
-                                  child: Text(
-                                    playerController.playerSpeed == 1.0
-                                        ? '倍速'
-                                        : '${playerController.playerSpeed}x',
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                );
-                              },
-                              menuChildren: [
-                                for (final double i
-                                    in defaultPlaySpeedList) ...<MenuItemButton>[
-                                  MenuItemButton(
-                                    onPressed: () async {
-                                      await widget.setPlaybackSpeed(i);
+                              MenuAnchor(
+                                consumeOutsideTap: true,
+                                onOpen: () {
+                                  widget.cancelHideTimer();
+                                  playerController.canHidePlayerPanel = false;
+                                },
+                                onClose: () {
+                                  widget.cancelHideTimer();
+                                  widget.startHideTimer();
+                                  playerController.canHidePlayerPanel = true;
+                                },
+                                builder: (BuildContext context,
+                                    MenuController controller, Widget? child) {
+                                  return TextButton(
+                                    onPressed: () {
+                                      if (controller.isOpen) {
+                                        controller.close();
+                                      } else {
+                                        controller.open();
+                                      }
                                     },
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 10, 10, 10),
-                                      child: Text(
-                                        '${i}x',
-                                        style: TextStyle(
-                                            color: i ==
-                                                    playerController.playerSpeed
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : null),
-                                      ),
+                                    child: Text(
+                                      playerController.playerSpeed == 1.0
+                                          ? '倍速'
+                                          : '${playerController.playerSpeed}x',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                },
+                                menuChildren: [
+                                  for (final double i
+                                      in defaultPlaySpeedList) ...<MenuItemButton>[
+                                    MenuItemButton(
+                                      onPressed: () async {
+                                        await widget.setPlaybackSpeed(i);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 10, 10, 10),
+                                        child: Text(
+                                          '${i}x',
+                                          style: TextStyle(
+                                              color: i ==
+                                                      playerController
+                                                          .playerSpeed
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                  : null),
+                                        ),
                                       ),
                                     ),
                                   ],

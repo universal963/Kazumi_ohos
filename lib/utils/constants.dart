@@ -10,12 +10,18 @@ class StyleString {
   static const double aspectRatio = 16 / 10;
 }
 
+/// `year2023` flag is deprecated since 3.29 but not default to false yet. Keep
+/// it to false so we have the latest M3 style process indicator.
+/// ignore: deprecated_member_use
 const ProgressIndicatorThemeData progressIndicatorTheme2024 =
-    ProgressIndicatorThemeData(
-  // This flag is deprecated since 3.29 but not default to false yet. Keep
-  // it to false so we have the latest M3 style process indicator.
-  // ignore: deprecated_member_use
-  // year2023: false,
+    ProgressIndicatorThemeData(year2023: false);
+
+/// `year2023` flag is deprecated since 3.29 but not default to false yet. Keep
+/// it to false so we have the latest M3 style slider.
+/// ignore: deprecated_member_use
+const SliderThemeData sliderTheme2024 = SliderThemeData(
+  year2023: false,
+  showValueIndicator: ShowValueIndicator.always,
 );
 
 /// The page transition method defined here is managed by flutter, and the native transition method of flutter is set here.
@@ -50,7 +56,7 @@ class LayoutBreakpoint {
   static const Map<String, double> medium = {'width': 840, 'height': 900};
 }
 
-// 随机UA列表
+/// 随机UA列表
 const List<String> userAgentsList = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
@@ -63,7 +69,7 @@ const List<String> userAgentsList = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0',
 ];
 
-// 默认 SyncPlay 服务器列表
+/// 默认 SyncPlay 服务器列表
 const List<String> defaultSyncPlayEndPoints = [
   'syncplay.pl:8995',
   'syncplay.pl:8996',
@@ -74,21 +80,21 @@ const List<String> defaultSyncPlayEndPoints = [
 
 const String defaultSyncPlayEndPoint = 'syncplay.pl:8996';
 
-// 随机HTTP请求头accept-language字段列表
+/// 随机HTTP请求头accept-language字段列表
 const List<String> acceptLanguageList = [
   'zh-CN,zh;q=0.9',
   'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
   'zh-CN,zh-TW;q=0.9,zh;q=0.8,en-US;q=0.7,en;q=0.6',
 ];
 
-// Bangumi API 文档要求的UA格式
+/// Bangumi API 文档要求的UA格式
 Map<String, String> bangumiHTTPHeader = {
   'user-agent':
       'Predidit/Kazumi/${Api.version} (Android) (https://github.com/Predidit/Kazumi)',
   'referer': '',
 };
 
-// 可选硬件解码器
+/// 可选硬件解码器
 const Map<String, String> hardwareDecodersList = {
   'auto': '启用任意可用解码器',
   'auto-safe': '启用最佳解码器',
@@ -117,7 +123,7 @@ const Map<String, String> hardwareDecodersList = {
   'rkmpp': 'Rockchip MPP (仅部分Rockchip芯片)',
 };
 
-// 超分辨率滤镜
+/// 超分辨率滤镜
 const List<String> mpvAnime4KShaders = [
   'Anime4K_Clamp_Highlights.glsl',
   'Anime4K_Restore_CNN_VL.glsl',
@@ -127,7 +133,7 @@ const List<String> mpvAnime4KShaders = [
   'Anime4K_Upscale_CNN_x2_M.glsl'
 ];
 
-// 超分辨率滤镜 (轻量)
+/// 超分辨率滤镜 (轻量)
 const List<String> mpvAnime4KShadersLite = [
   'Anime4K_Clamp_Highlights.glsl',
   'Anime4K_Restore_CNN_M.glsl',
@@ -138,7 +144,7 @@ const List<String> mpvAnime4KShadersLite = [
   'Anime4K_Upscale_CNN_x2_S.glsl'
 ];
 
-// 可选播放倍速
+/// 可选播放倍速
 const List<double> defaultPlaySpeedList = [
   0.25,
   0.5,
@@ -152,86 +158,6 @@ const List<double> defaultPlaySpeedList = [
   2.5,
   2.75,
   3.0,
-];
-
-// 可选弹幕透明度
-const List<double> danOpacityList = [
-  0.1,
-  0.2,
-  0.3,
-  0.4,
-  0.5,
-  0.6,
-  0.7,
-  0.8,
-  0.9,
-  1.0,
-];
-
-// 可选弹幕字体大小
-final List<double> danFontList = [
-  10.0,
-  11.0,
-  12.0,
-  13.0,
-  14.0,
-  15.0,
-  16.0,
-  17.0,
-  18.0,
-  19.0,
-  20.0,
-  21.0,
-  22.0,
-  23.0,
-  24.0,
-  25.0,
-  26.0,
-  27.0,
-  28.0,
-  29.0,
-  30.0,
-  31.0,
-  32.0,
-  if (!Utils.isCompact()) ...[
-    33.0,
-    34.0,
-    35.0,
-    36.0,
-    37.0,
-    38.0,
-    39.0,
-    40.0,
-    41.0,
-    42.0,
-    43.0,
-    44.0,
-    45.0,
-    46.0,
-    47.0,
-    48.0,
-  ]
-];
-
-// 可选弹幕字体字重
-final List<int> danFontWeightList = [
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-];
-
-// 可选弹幕区域
-const List<double> danAreaList = [
-  0.25,
-  0.5,
-  0.75,
-  1.0,
 ];
 
 const String danmakuOnSvg = '''
