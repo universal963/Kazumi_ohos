@@ -339,7 +339,7 @@ class Utils {
 
   static checkOhosDesktop() async {
     if (Platform.isOhos) {
-      const platform = MethodChannel('com.predidit.kazumi/intent');
+      const platform = MethodChannel('com.predidit.kazumi_ohos/intent');
       try {
         isOhosDesktop = await platform.invokeMethod('checkOhosIsDesktop');
       } on PlatformException catch (e) {
@@ -371,7 +371,7 @@ class Utils {
   /// 判断是否分屏模式 (android only)
   static Future<bool> isInMultiWindowMode() async {
     if (Platform.isAndroid) {
-      const platform = MethodChannel('com.predidit.kazumi/intent');
+      const platform = MethodChannel('com.predidit.kazumi_ohos/intent');
       try {
         final bool result =
             await platform.invokeMethod('checkIfInMultiWindowMode');
@@ -385,7 +385,7 @@ class Utils {
   }
 
   static Future<void> enterWindowsFullscreen(bool needSet) async {
-    const platform = MethodChannel('com.predidit.kazumi/intent');
+    const platform = MethodChannel('com.predidit.kazumi_ohos/intent');
     try {
       await platform
           .invokeMethod('enterFullscreen', <String, bool>{'needSet': needSet});
@@ -395,7 +395,7 @@ class Utils {
   }
 
   static Future<void> exitWindowsFullscreen() async {
-    const platform = MethodChannel('com.predidit.kazumi/intent');
+    const platform = MethodChannel('com.predidit.kazumi_ohos/intent');
     try {
       await platform.invokeMethod('exitFullscreen');
     } on PlatformException catch (e) {

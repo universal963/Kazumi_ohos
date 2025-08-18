@@ -16,7 +16,7 @@ class AppDelegate: FlutterAppDelegate {
     
     override func applicationDidFinishLaunching(_ notification: Notification) {
         let controller : FlutterViewController = mainFlutterWindow?.contentViewController as! FlutterViewController
-        let channel = FlutterMethodChannel.init(name: "com.predidit.kazumi/intent", binaryMessenger: controller.engine.binaryMessenger)
+        let channel = FlutterMethodChannel.init(name: "com.predidit.kazumi_ohos/intent", binaryMessenger: controller.engine.binaryMessenger)
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "openWithReferer" {

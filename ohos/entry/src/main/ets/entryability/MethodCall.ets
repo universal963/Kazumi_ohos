@@ -23,7 +23,7 @@ export default class MethodCallPlugin implements FlutterPlugin, AbilityAware {
   }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
-    this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.predidit.kazumi/intent");
+    this.channel = new MethodChannel(binding.getBinaryMessenger(), "com.predidit.kazumi_ohos/intent");
     this.channel.setMethodCallHandler({
       onMethodCall: (call: MethodCall, result: MethodResult) => {
         switch (call.method) {
