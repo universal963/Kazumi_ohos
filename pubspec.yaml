@@ -96,7 +96,7 @@ dependencies:
   desktop_webview_window:
     git:
       url: https://github.com/Predidit/linux_webview_window.git
-      ref: user_script
+      ref: main
   flutter_inappwebview_platform_interface:
     git:
       url: "https://gitcode.com/openharmony-sig/flutter_inappwebview.git"
