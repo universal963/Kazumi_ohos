@@ -57,7 +57,6 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
     return PopScope(
       canPop: true,
       onPopInvokedWithResult: (bool didPop, Object? result) {

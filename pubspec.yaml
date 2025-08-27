@@ -52,7 +52,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   cached_network_image: ^3.4.1
-  card_settings_ui: ^2.0.0
+  card_settings_ui: ^2.0.1
 
   # fvp: ^0.28.0
   video_player:
@@ -96,7 +96,7 @@ dependencies:
   desktop_webview_window:
     git:
       url: https://github.com/Predidit/linux_webview_window.git
-      ref: user_script
+      ref: main
   flutter_inappwebview_platform_interface:
     git:
       url: "https://gitcode.com/openharmony-sig/flutter_inappwebview.git"
