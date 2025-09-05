@@ -165,14 +165,7 @@ abstract class _PlayerController with Store {
     if (episodeFromTitle == 0) {
       episodeFromTitle = videoPageController.currentEpisode;
     }
-
-    List<String> titleList = [
-      videoPageController.title,
-      videoPageController.bangumiItem.nameCn,
-      videoPageController.bangumiItem.name
-    ].where((title) => title.isNotEmpty).toList();
-    // 根据标题列表获取弹幕,优先级: 视频源标题 > 番剧中文名 > 番剧日文名
-    getDanDanmaku(titleList, episodeFromTitle);
+    getDanDanmakuByBgmBangumiID(videoPageController.bangumiItem.id, episodeFromTitle);
     mediaPlayer = await createVideoController();
     bool autoPlay = setting.get(SettingBoxKey.autoPlay, defaultValue: true);
     playerSpeed =
@@ -332,11 +325,12 @@ abstract class _PlayerController with Store {
     forwardTime = time;
   }
 
-  Future<void> getDanDanmaku(List<String> titleList, int episode) async {
-    KazumiLogger().log(Level.info, '尝试获取弹幕 $titleList');
+  Future<void> getDanDanmakuByBgmBangumiID(
+      int bgmBangumiID, int episode) async {
+    KazumiLogger().log(Level.info, '尝试获取弹幕 [BgmBangumiID] $bgmBangumiID');
     try {
       danDanmakus.clear();
-      bangumiID = await DanmakuRequest.getBangumiIDByTitles(titleList);
+      bangumiID = await DanmakuRequest.getDanDanBangumiIDByBgmBangumiID(bgmBangumiID);
       var res = await DanmakuRequest.getDanDanmaku(bangumiID, episode);
       addDanmakus(res);
     } catch (e) {
