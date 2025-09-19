@@ -681,7 +681,7 @@ class AutoUpdater {
           return;
         }
       } else if (Platform.isOhos) {
-        const platform = MethodChannel('com.predidit.kazumi/intent');
+        const platform = MethodChannel('com.predidit.kazumi_ohos/intent');
         try {
           await platform.invokeMethod(
               'openWithInstaller', <String, String>{'path': filePath});
