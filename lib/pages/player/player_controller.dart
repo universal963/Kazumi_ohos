@@ -89,7 +89,7 @@ abstract class _PlayerController with Store {
   int bangumiID = 0;
 
   // 播放器实体
-  late VideoPlayerController mediaPlayer;
+  VideoPlayerController? mediaPlayer;
 
   // 播放器面板状态
   @observable
@@ -118,29 +118,19 @@ abstract class _PlayerController with Store {
   int forwardTime = 80;
 
   // 播放器实时状态
-  bool get playerPlaying => mediaPlayer.value.isPlaying;
+  bool get playerPlaying => mediaPlayer!.value.isPlaying;
+  bool get playerBuffering => mediaPlayer!.value.isBuffering;
+  bool get playerCompleted => mediaPlayer!.value.position >= mediaPlayer!.value.duration;
+  double get playerVolume => mediaPlayer!.value.volume;
+  Duration get playerPosition => mediaPlayer!.value.position;
+  Duration get playerBuffer => mediaPlayer!.value.buffered.isEmpty ? Duration.zero : mediaPlayer!.value.buffered[0].end;
+  Duration get playerDuration => mediaPlayer!.value.duration;
 
-  bool get playerBuffering => mediaPlayer.value.isBuffering;
-
-  bool get playerCompleted =>
-      mediaPlayer.value.position >= mediaPlayer.value.duration;
-
-  double get playerVolume => mediaPlayer.value.volume;
-
-  Duration get playerPosition => mediaPlayer.value.position;
-
-  Duration get playerBuffer => mediaPlayer.value.buffered.isEmpty
-      ? Duration.zero
-      : mediaPlayer.value.buffered[0].end;
-
-  Duration get playerDuration => mediaPlayer.value.duration;
-
-  int? get playerWidth => mediaPlayer.value.size.width.toInt();
-
-  int? get playerHeight => mediaPlayer.value.size.height.toInt();
-
-  /// 播放器内部日志
-  List<String> playerLog = ['暂不支持'];
+  // 播放器调试信息
+  @observable
+  ObservableList<String> playerLog = ObservableList.of(['暂不支持']);
+  int get playerWidth => mediaPlayer!.value.size.width.toInt();
+  int get playerHeight => mediaPlayer!.value.size.height.toInt();
 
   Future<void> init(String url, {int offset = 0}) async {
     videoUrl = url;
@@ -165,16 +155,17 @@ abstract class _PlayerController with Store {
     if (episodeFromTitle == 0) {
       episodeFromTitle = videoPageController.currentEpisode;
     }
-    getDanDanmakuByBgmBangumiID(videoPageController.bangumiItem.id, episodeFromTitle);
-    mediaPlayer = await createVideoController();
+    getDanDanmakuByBgmBangumiID(
+        videoPageController.bangumiItem.id, episodeFromTitle);
+    mediaPlayer ??= await createVideoController();
     bool autoPlay = setting.get(SettingBoxKey.autoPlay, defaultValue: true);
     playerSpeed =
         setting.get(SettingBoxKey.defaultPlaySpeed, defaultValue: 1.0);
     if (offset != 0) {
-      await mediaPlayer.seekTo(Duration(seconds: offset));
+      await mediaPlayer!.seekTo(Duration(seconds: offset));
     }
     if (autoPlay) {
-      await mediaPlayer.play();
+      await mediaPlayer!.play();
     }
     if (Utils.isDesktop()) {
       volume = volume != -1 ? volume : 100;
@@ -208,33 +199,34 @@ abstract class _PlayerController with Store {
       'user-agent': userAgent,
       if (referer.isNotEmpty) 'referer': referer,
     };
-    mediaPlayer = VideoPlayerController.networkUrl(Uri.parse(videoUrl),
+    mediaPlayer ??= VideoPlayerController.networkUrl(Uri.parse(videoUrl),
         httpHeaders: httpHeaders);
+
     // error handle
     bool showPlayerError =
         setting.get(SettingBoxKey.showPlayerError, defaultValue: true);
-    mediaPlayer.addListener(() {
-      if (mediaPlayer.value.hasError &&
-          mediaPlayer.value.position < mediaPlayer.value.duration) {
+    mediaPlayer!.addListener(() {
+      if (mediaPlayer!.value.hasError &&
+          mediaPlayer!.value.position < mediaPlayer!.value.duration) {
         if (showPlayerError) {
           KazumiDialog.showToast(
               message:
-                  '播放器内部错误 ${mediaPlayer.value.errorDescription} $videoUrl',
+                  '播放器内部错误 ${mediaPlayer!.value.errorDescription} $videoUrl',
               duration: const Duration(seconds: 5),
               showActionButton: true);
         }
         KazumiLogger().log(Level.error,
-            'Player inent error. ${mediaPlayer.value.errorDescription} $videoUrl');
+            'Player inent error. ${mediaPlayer!.value.errorDescription} $videoUrl');
       }
     });
-    await mediaPlayer.initialize();
-    return mediaPlayer;
+    await mediaPlayer!.initialize();
+    return mediaPlayer!;
   }
 
   Future<void> setPlaybackSpeed(double playerSpeed) async {
     this.playerSpeed = playerSpeed;
     try {
-      mediaPlayer.setPlaybackSpeed(playerSpeed);
+      mediaPlayer!.setPlaybackSpeed(playerSpeed);
     } catch (e) {
       KazumiLogger().log(Level.error, '设置播放速度失败 ${e.toString()}');
     }
@@ -245,15 +237,15 @@ abstract class _PlayerController with Store {
     volume = value;
     try {
       if (Utils.isDesktop()) {
-        await mediaPlayer.setVolume(value);
+        await mediaPlayer!.setVolume(value);
       } else {
-        await mediaPlayer.setVolume(volume / 100);
+        await mediaPlayer!.setVolume(volume / 100);
       }
     } catch (_) {}
   }
 
   Future<void> playOrPause() async {
-    if (mediaPlayer.value.isPlaying) {
+    if (mediaPlayer!.value.isPlaying) {
       await pause();
     } else {
       await play();
@@ -263,7 +255,7 @@ abstract class _PlayerController with Store {
   Future<void> seek(Duration duration, {bool enableSync = true}) async {
     currentPosition = duration;
     danmakuController.clear();
-    await mediaPlayer.seekTo(duration);
+    await mediaPlayer!.seekTo(duration);
     if (syncplayController != null) {
       setSyncPlayCurrentPosition();
       if (enableSync) {
@@ -274,7 +266,7 @@ abstract class _PlayerController with Store {
 
   Future<void> pause({bool enableSync = true}) async {
     danmakuController.pause();
-    await mediaPlayer.pause();
+    await mediaPlayer!.pause();
     playing = false;
     if (syncplayController != null) {
       setSyncPlayCurrentPosition();
@@ -286,7 +278,7 @@ abstract class _PlayerController with Store {
 
   Future<void> play({bool enableSync = true}) async {
     danmakuController.resume();
-    await mediaPlayer.play();
+    await mediaPlayer!.play();
     playing = true;
     if (syncplayController != null) {
       setSyncPlayCurrentPosition();
@@ -305,20 +297,19 @@ abstract class _PlayerController with Store {
         syncplayController = null;
       } catch (_) {}
     }
-    try {
-      await mediaPlayer.dispose();
-    } catch (_) {}
+    await mediaPlayer?.dispose();
+    mediaPlayer = null;
   }
 
   Future<void> stop() async {
     try {
-      await mediaPlayer.pause();
+      await mediaPlayer?.pause();
       loading = true;
     } catch (_) {}
   }
 
   // Future<Uint8List?> screenshot({String format = 'image/jpeg'}) async {
-  //   return await mediaPlayer.screenshot(format: format);
+  //   return await mediaPlayer!.screenshot(format: format);
   // }
 
   void setForwardTime(int time) {
@@ -330,7 +321,8 @@ abstract class _PlayerController with Store {
     KazumiLogger().log(Level.info, '尝试获取弹幕 [BgmBangumiID] $bgmBangumiID');
     try {
       danDanmakus.clear();
-      bangumiID = await DanmakuRequest.getDanDanBangumiIDByBgmBangumiID(bgmBangumiID);
+      bangumiID =
+          await DanmakuRequest.getDanDanBangumiIDByBgmBangumiID(bgmBangumiID);
       var res = await DanmakuRequest.getDanDanmaku(bangumiID, episode);
       addDanmakus(res);
     } catch (e) {

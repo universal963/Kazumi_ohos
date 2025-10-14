@@ -28,7 +28,6 @@ import 'package:kazumi/request/damaku.dart';
 import 'package:kazumi/modules/danmaku/danmaku_search_response.dart';
 import 'package:kazumi/modules/danmaku/danmaku_episode_response.dart';
 import 'package:kazumi/pages/player/player_item_surface.dart';
-import 'package:kazumi/bean/widget/text_display.dart';
 import 'package:mobx/mobx.dart' as mobx;
 import 'package:kazumi/pages/my/my_controller.dart';
 
@@ -41,6 +40,7 @@ class PlayerItem extends StatefulWidget {
     required this.onBackPressed,
     required this.keyboardFocus,
     required this.sendDanmaku,
+    this.disableAnimations = false,
   });
 
   final VoidCallback openMenu;
@@ -50,6 +50,7 @@ class PlayerItem extends StatefulWidget {
   final void Function(BuildContext) onBackPressed;
   final void Function(String) sendDanmaku;
   final FocusNode keyboardFocus;
+  final bool disableAnimations;
 
   @override
   State<PlayerItem> createState() => _PlayerItemState();
@@ -503,7 +504,8 @@ class _PlayerItemState extends State<PlayerItem>
   }
 
   Widget get videoInfoBody {
-    return ListView(
+    return Observer(
+      builder: (context) {return ListView(
       children: [
         ListTile(
           title: const Text("Source"),
@@ -529,7 +531,8 @@ class _PlayerItemState extends State<PlayerItem>
             );
           },
         ),
-      ],
+      ],);
+      }
     );
   }
 
@@ -537,7 +540,16 @@ class _PlayerItemState extends State<PlayerItem>
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-        child: TextDisplayWidget(logLines: playerController.playerLog),
+        child: Observer(
+          builder: (context) {
+            return ListView.builder(
+              itemCount: playerController.playerLog.length,
+              itemBuilder: (context, index) {
+                return Text(playerController.playerLog[index]);
+              },
+            );
+          }
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.copy),
@@ -1143,7 +1155,8 @@ class _PlayerItemState extends State<PlayerItem>
                             showSyncPlayRoomCreateDialog:
                                 showSyncPlayRoomCreateDialog,
                             showSyncPlayEndPointSwitchDialog:
-                                showSyncPlayEndPointSwitchDialog,
+                                showSyncPlayEndPointSwitchDialog,                         
+                            disableAnimations: widget.disableAnimations,
                           )
                         : SmallestPlayerItemPanel(
                             onBackPressed: widget.onBackPressed,
@@ -1164,6 +1177,7 @@ class _PlayerItemState extends State<PlayerItem>
                                 showSyncPlayRoomCreateDialog,
                             showSyncPlayEndPointSwitchDialog:
                                 showSyncPlayEndPointSwitchDialog,
+                            disableAnimations: widget.disableAnimations,
                           ),
                     // 播放器手势控制
                     Positioned.fill(

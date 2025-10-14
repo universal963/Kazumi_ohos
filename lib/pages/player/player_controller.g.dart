@@ -73,6 +73,38 @@ mixin _$PlayerController on _PlayerController, Store {
     });
   }
 
+  late final _$aspectRatioTypeAtom =
+      Atom(name: '_PlayerController.aspectRatioType', context: context);
+
+  @override
+  int get aspectRatioType {
+    _$aspectRatioTypeAtom.reportRead();
+    return super.aspectRatioType;
+  }
+
+  @override
+  set aspectRatioType(int value) {
+    _$aspectRatioTypeAtom.reportWrite(value, super.aspectRatioType, () {
+      super.aspectRatioType = value;
+    });
+  }
+
+  late final _$superResolutionTypeAtom =
+      Atom(name: '_PlayerController.superResolutionType', context: context);
+
+  @override
+  int get superResolutionType {
+    _$superResolutionTypeAtom.reportRead();
+    return super.superResolutionType;
+  }
+
+  @override
+  set superResolutionType(int value) {
+    _$superResolutionTypeAtom.reportWrite(value, super.superResolutionType, () {
+      super.superResolutionType = value;
+    });
+  }
+
   late final _$volumeAtom =
       Atom(name: '_PlayerController.volume', context: context);
 
@@ -377,6 +409,22 @@ mixin _$PlayerController on _PlayerController, Store {
     });
   }
 
+  late final _$playerLogAtom =
+      Atom(name: '_PlayerController.playerLog', context: context);
+
+  @override
+  ObservableList<String> get playerLog {
+    _$playerLogAtom.reportRead();
+    return super.playerLog;
+  }
+
+  @override
+  set playerLog(ObservableList<String> value) {
+    _$playerLogAtom.reportWrite(value, super.playerLog, () {
+      super.playerLog = value;
+    });
+  }
+
   @override
   String toString() {
     return '''
@@ -384,6 +432,8 @@ danDanmakus: ${danDanmakus},
 danmakuOn: ${danmakuOn},
 syncplayRoom: ${syncplayRoom},
 syncplayClientRtt: ${syncplayClientRtt},
+aspectRatioType: ${aspectRatioType},
+superResolutionType: ${superResolutionType},
 volume: ${volume},
 brightness: ${brightness},
 lockPanel: ${lockPanel},
@@ -402,7 +452,8 @@ completed: ${completed},
 currentPosition: ${currentPosition},
 buffer: ${buffer},
 duration: ${duration},
-playerSpeed: ${playerSpeed}
+playerSpeed: ${playerSpeed},
+playerLog: ${playerLog}
     ''';
   }
 }
