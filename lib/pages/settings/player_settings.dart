@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:hive/hive.dart';
 import 'package:kazumi/bean/appbar/sys_app_bar.dart';
@@ -25,6 +27,8 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
   late bool privateMode;
   late bool playerDebugMode;
   late bool playerDisableAnimations;
+  late int playerButtonSkipTime;
+  late int playerArrowKeySkipTime;
   final MenuController menuController = MenuController();
 
   @override
@@ -43,6 +47,11 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
         setting.get(SettingBoxKey.playerDebugMode, defaultValue: false);
     playerDisableAnimations =
         setting.get(SettingBoxKey.playerDisableAnimations, defaultValue: false);
+
+    playerButtonSkipTime =
+        setting.get(SettingBoxKey.buttonSkipTime, defaultValue: 80);
+    playerArrowKeySkipTime =
+        setting.get(SettingBoxKey.arrowKeySkipTime, defaultValue: 10);
   }
 
   void onBackPressed(BuildContext context) {
@@ -56,6 +65,73 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
     setting.put(SettingBoxKey.defaultPlaySpeed, speed);
     setState(() {
       defaultPlaySpeed = speed;
+    });
+  }
+
+  Future<void> updateButtonSkipTime() async {
+    final int? newButtonSkipTime = await _showSkipTimeChangeDialog(
+        title: '顶部按钮快进时长', initialValue: playerButtonSkipTime.toString());
+    print('新设置的顶部按钮快进时长: $newButtonSkipTime');
+
+    if (newButtonSkipTime != null &&
+        newButtonSkipTime != playerButtonSkipTime) {
+      setting.put(SettingBoxKey.buttonSkipTime, newButtonSkipTime);
+      setState(() {
+        playerButtonSkipTime = newButtonSkipTime;
+      });
+    }
+  }
+
+  Future<int?> _showSkipTimeChangeDialog(
+      {required String title, required String initialValue}) async {
+    return KazumiDialog.show<int>(builder: (context) {
+      String input = "";
+      return AlertDialog(
+        title: Text(title),
+        content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return TextField(
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly, // 只允许输入数字
+            ],
+            decoration: InputDecoration(
+              floatingLabelBehavior:
+                  FloatingLabelBehavior.never, // 控制label的显示方式
+              labelText: initialValue,
+            ),
+            onChanged: (value) {
+              input = value;
+            },
+          );
+        }),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => KazumiDialog.dismiss(),
+            child: Text(
+              '取消',
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final int? newValue = int.tryParse(input);
+
+              if (newValue == null) {
+                KazumiDialog.showToast(message: '请输入数字');
+                return;
+              }
+
+              if (newValue <= 0) {
+                KazumiDialog.showToast(message: '请输入大于0的数字');
+                return;
+              }
+              // 以新设置的值弹出
+              KazumiDialog.dismiss(popWith: newValue);
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      );
     });
   }
 
@@ -143,6 +219,36 @@ class _PlayerSettingsPageState extends State<PlayerSettingsPage> {
                           double.parse(value.toStringAsFixed(2)));
                     },
                   ),
+                ),
+                SettingsTile.navigation(
+                  description: Slider(
+                    value: playerArrowKeySkipTime.toDouble(),
+                    min: 0,
+                    max: 15,
+                    divisions: 15,
+                    label: '$playerArrowKeySkipTime秒',
+                    onChanged: (value) {
+                      final newArrowKeySkipTime = value.toInt();
+                      print('新设置的方向键快进/快退时长: $newArrowKeySkipTime');
+
+                      if (value != playerArrowKeySkipTime) {
+                        setting.put(SettingBoxKey.arrowKeySkipTime,
+                            newArrowKeySkipTime);
+                        setState(() {
+                          playerArrowKeySkipTime = newArrowKeySkipTime;
+                        });
+                      }
+                    },
+                  ),
+                  title: const Text('左右方向键的快进/快退秒数'),
+                ),
+                SettingsTile.navigation(
+                  onPressed: (_) async {
+                    await updateButtonSkipTime();
+                  },
+                  title: const Text('跳过时长'),
+                  description: const Text('顶栏跳过按钮的秒数'),
+                  value: Text('$playerButtonSkipTime 秒'),
                 ),
               ],
             ),
